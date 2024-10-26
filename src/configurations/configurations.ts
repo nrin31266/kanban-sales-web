@@ -4,7 +4,7 @@ export const API = {
   LOGIN: "/identity/auth/login",
   LOGOUT: "/identity/auth/logout",
   LOGIN_WITH_GOOGLE: (code: string)=> `/identity/auth/outbound/google-login?code=${code}`,
-  SIGNUP: "/identity/users/create",
+  REGISTER: "/identity/users/create",
   REFRESH_TOKEN: "/identity/auth/refresh",
   VERIFY_TOKEN:'identity/auth/introspect',
   CREATE_SUPPLIER: "/kanban/suppliers/create",

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AuthModel } from '@/model/AuthenticationModel';
+import { localDataNames } from "@/constants/appInfos";
 
 const initialState: AuthModel = {
     accessToken: '',
@@ -17,12 +18,20 @@ const authSlice = createSlice({
     reducers: {
         addAuth: (state, action)=>{
             state.data = action.payload;
+            syncLocal(state.data);
         },
         removeAuth: (state, _action) =>{
             state.data = initialState;
+            syncLocal({});
         }
     },
 })
+
+const syncLocal = (data: AuthModel | {}) => {
+    if (data) {
+        localStorage.setItem(localDataNames.authData, JSON.stringify(data));
+    }
+};
 
 export const authReducer = authSlice.reducer;
 export const {addAuth, removeAuth} = authSlice.actions;

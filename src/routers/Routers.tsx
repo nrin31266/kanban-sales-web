@@ -8,7 +8,7 @@ import { localDataNames, Role } from "../constants/appInfos";
 import { Layout, Spin } from "antd";
 import { AuthModel } from "@/model/AuthenticationModel";
 import type { AppProps } from "next/app";
-import { authSelector } from "@/reducx/reducers/authReducer";
+import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
 import { usePathname } from "next/navigation";
 import HeaderComponent from "@/components/HeaderComponent";
 
@@ -17,7 +17,7 @@ const { Header, Content, Footer } = Layout;
 const Routers = ({ Component, pageProps }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  const auth = useSelector(authSelector);
+  const auth: AuthModel = useSelector(authSelector);
   const path = usePathname();
   console.log(path);
 
@@ -36,9 +36,13 @@ const Routers = ({ Component, pageProps }: any) => {
       localDataNames.authData
     );
 
+    
+
     if (authInLocal) {
       let authData: AuthModel = JSON.parse(authInLocal);
       if (authData.accessToken) {
+
+        dispatch(addAuth({accessToken: authData.accessToken}));
         fetch(authData);
       }
     }
