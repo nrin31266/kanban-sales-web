@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import queryString from "query-string";
 import { localDataNames } from "../constants/appInfos";
+import handleAPI from "./handleAPI";
+import { API } from "../configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
 import { ApiResponse } from "@/model/AppModel";
-
 
 const baseURL = `http://localhost:8888/api/v1`;
 

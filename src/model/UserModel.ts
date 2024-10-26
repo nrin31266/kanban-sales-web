@@ -2,16 +2,17 @@ export interface UserInfo {
   id: string;
   name: string;
   email: string;
-  roles: Role[];
+  roles: RoleModel[];
 }
 
-export interface Role {
+export interface RoleModel {
   name: string;
   description: string;
-  permissions: Permission[];
+  permissions: PermissionModel[];
 }
 
-export interface Permission {
+export interface PermissionModel {
   name: string;
   description: string;
 }
+

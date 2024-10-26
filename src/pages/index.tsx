@@ -1,13 +1,18 @@
+import { AuthModel } from '@/model/AuthenticationModel'
 import { Button } from 'antd'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import Login from './auth/Login'
 
-const index = () => {
-  return (
-    <div>
-      <Button type='primary'>Ant</Button>
-      <button className='btn-primary'>B</button>
+const HomePage = () => {
+
+  return <>
+    <div className="row">
+      <div className="col">
+        <h1>Hello</h1>
+      </div>
     </div>
-  )
+  </>
 }
-
-export default index
+  
+export default HomePage;
