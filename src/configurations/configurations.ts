@@ -3,7 +3,7 @@ export const API = {
   USER_INFO: "/identity/users/info",
   LOGIN: "/identity/auth/login",
   LOGOUT: "/identity/auth/logout",
-  LOGIN_WITH_GOOGLE: "/identity/auth/outbound/google-login",
+  LOGIN_WITH_GOOGLE: (code: string)=> `/identity/auth/outbound/google-login?code=${code}`,
   SIGNUP: "/identity/users/create",
   REFRESH_TOKEN: "/identity/auth/refresh",
   VERIFY_TOKEN:'identity/auth/introspect',
@@ -22,10 +22,28 @@ export const API = {
   PRODUCT_DETAIL: (productId:string)=> `/kanban/sub-products/product-detail/${productId}`,
 };
 
-export const appInfos = {
+export const PAGE = {
+  HOME: '/',
+  LOGIN: '/auth/login',
+  REGISTER: '/auth/register',
+  AUTHENTICATE: '/auth/authenticate'
+}
+
+export const APP = {
   logo: "https://firebasestorage.googleapis.com/v0/b/kanban-ac9c5.appspot.com/o/kanban-logo.png?alt=media&token=b72b8db5-b31d-4ae9-aab8-8bd7e10e6d8e",
   title: "KANBAN",
   description: "",
-
 };
+export const CONFIG = {
+  BASE_URL: "http://localhost:3004",
+};
+
+export const OAuthConfig = {
+  clientId: "427147667603-bodrqv4jh0148qag2cegph5dh7k8djbv.apps.googleusercontent.com",
+  redirectUri: `${CONFIG.BASE_URL}${PAGE.AUTHENTICATE}`,
+  authUri: "https://accounts.google.com/o/oauth2/auth",
+};
+
+
+
 

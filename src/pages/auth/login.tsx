@@ -1,14 +1,16 @@
 import handleAPI from '@/apis/handleAPI';
-import { API } from '@/configurations/configurations';
+import { API, PAGE } from '@/configurations/configurations';
 import { ApiResponse } from '@/model/AppModel';
 import { LoginRequest, LoginResponse } from '@/model/AuthenticationModel';
 import { Button } from 'antd';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react'
 import { useDispatch } from 'react-redux'
 
-const Login = () => {
+const login = () => {
     const dispatch = useDispatch();
+    const router = useRouter();
     const handleLogin = async ()=>{
       const api = `${API.LOGIN}`;
       try {
@@ -27,9 +29,10 @@ const Login = () => {
   return (
     <div>
         <Button onClick={handleLogin}>Test login</Button>
-        <Link href={'/'}>Logout</Link>
+        <Link href={PAGE.HOME}>Go home</Link>
+        <Link href={PAGE.REGISTER}>Register</Link>
     </div>
   )
 }
 
-export default Login
+export default login
