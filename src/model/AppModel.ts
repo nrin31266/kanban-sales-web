@@ -1,6 +1,6 @@
 export interface ApiResponse <T = any> {
     code: number
-    result?: T
+    result: T
     message?: string
 }
 

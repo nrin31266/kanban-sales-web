@@ -1,5 +1,6 @@
 import handleAPI from "@/apis/handleAPI";
 import SocialLogin from "@/components/SocialLogin";
+import VerifyOtp from "@/components/VerifyOtp";
 import { API, PAGE } from "@/configurations/configurations";
 import { ApiResponse } from "@/model/AppModel";
 import {
@@ -33,6 +34,7 @@ const Register = () => {
   const [isRegister, setIsRegister] = useState<boolean>(false);
   const [loginData, setLoginData] = useState<LoginRequest>();
   const [apiNotification, contextHolder] = notification.useNotification();
+  const [isCreated, setIsCreated] = useState(false);
   const dispatch = useDispatch();
 
   const openNotification = (placement: NotificationPlacement) => {
@@ -64,8 +66,8 @@ const Register = () => {
       }
       const auth: AuthModel = { accessToken: response.result?.token };
       dispatch(addAuth(auth));
-      message.success("Register successfully");
-      router.push(PAGE.HOME);
+      // message.success("Register successfully");
+      setIsCreated(true);
     } catch (error: any) {
       message.error(error.message);
       console.log(error);
@@ -100,6 +102,9 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+  const handleFinal= ()=>{
+    router.push(PAGE.HOME);
+  }
   return (
     <>
       {contextHolder}
@@ -123,76 +128,88 @@ const Register = () => {
               style={{ alignItems: "center", height: "100vh" }}
             >
               <div className="col-sm-12 col-md-12 col-lg-8 offset-lg-2">
-                <div className="mb-4">
-                  <Typography.Title>Create new account</Typography.Title>
-                  <Typography.Title type="secondary" level={5}>
-                    Please enter detail information
-                  </Typography.Title>
-                </div>
-                <Form
-                  disabled={isLoading}
-                  form={form}
-                  layout="vertical"
-                  onFinish={handleRegister}
-                  size="large"
-                >
-                  <Form.Item
-                    name={"name"}
-                    label={"Name"}
-                    required={true}
-                    rules={[{ message: "Please enter name", required: true }]}
-                  >
-                    <Input placeholder="Ronaldo" allowClear />
-                  </Form.Item>
-                  <Form.Item
-                    name={"email"}
-                    label={"Email"}
-                    required={true}
-                    rules={[{ message: "Please enter email", required: true }]}
-                  >
-                    <Input
-                      type="email"
-                      placeholder="ronaldo@gmail.com"
-                      allowClear
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name={"password"}
-                    label={"Password"}
-                    rules={[
-                      { message: "Please enter password", required: true },
-                    ]}
-                  >
-                    <Input
-                      minLength={8}
-                      type="password"
-                      placeholder="Enter password"
-                      allowClear
-                    />
-                  </Form.Item>
-                </Form>
-                <div>
-                  <Checkbox
-                    checked={isAgreeToTheTerms}
-                    onChange={(val) => setIsAgreeToTheTerms(val.target.checked)}
-                  >
-                    Agree to our<Link href=""> Terms</Link>
-                  </Checkbox>
-                </div>
-                <div className="mt-2">
-                  <Button
-                    loading={isLoading}
-                    size="large"
-                    style={{ width: "100%" }}
-                    type="primary"
-                    onClick={form.submit}
-                  >
-                    Create
-                  </Button>
-                </div>
-                <div className="mt-3">
-                  <SocialLogin />
-                </div>
+                {isCreated ? (
+                  <VerifyOtp onClose={()=>setIsCreated(false)} onFinish={()=>handleFinal()}/>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <Typography.Title>Create new account</Typography.Title>
+                      <Typography.Title type="secondary" level={5}>
+                        Please enter detail information
+                      </Typography.Title>
+                    </div>
+                    <Form
+                      disabled={isLoading}
+                      form={form}
+                      layout="vertical"
+                      onFinish={handleRegister}
+                      size="large"
+                    >
+                      <Form.Item
+                        name={"name"}
+                        label={"Name"}
+                        required={true}
+                        rules={[
+                          { message: "Please enter name", required: true },
+                        ]}
+                      >
+                        <Input placeholder="Ronaldo" allowClear />
+                      </Form.Item>
+                      <Form.Item
+                        name={"email"}
+                        label={"Email"}
+                        required={true}
+                        rules={[
+                          { message: "Please enter email", required: true },
+                        ]}
+                      >
+                        <Input
+                          type="email"
+                          placeholder="ronaldo@gmail.com"
+                          allowClear
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        name={"password"}
+                        label={"Password"}
+                        rules={[
+                          { message: "Please enter password", required: true },
+                        ]}
+                      >
+                        <Input
+                          minLength={8}
+                          type="password"
+                          placeholder="Enter password"
+                          allowClear
+                        />
+                      </Form.Item>
+                    </Form>
+                    <div>
+                      <Checkbox
+                        checked={isAgreeToTheTerms}
+                        onChange={(val) =>
+                          setIsAgreeToTheTerms(val.target.checked)
+                        }
+                      >
+                        Agree to our<Link href=""> Terms</Link>
+                      </Checkbox>
+                    </div>
+                    <div className="mt-2">
+                      <Button
+                        loading={isLoading}
+                        size="large"
+                        style={{ width: "100%" }}
+                        type="primary"
+                        onClick={form.submit}
+                      >
+                        Create
+                      </Button>
+                    </div>
+                    <div className="mt-3">
+                      <SocialLogin />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

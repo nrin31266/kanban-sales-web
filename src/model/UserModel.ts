@@ -16,6 +16,15 @@ export interface PermissionModel {
   description: string;
 }
 
+export interface UserResponse {
+  id: string
+  name: string
+  email: string
+  createdAt: string
+  updatedAt: string
+  roles: RoleModel[]
+}
+
 export interface CreateUserRequest{
   name: string,
   email: string,

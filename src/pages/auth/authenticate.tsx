@@ -4,11 +4,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import handleAPI from "@/apis/handleAPI";
 import { API, PAGE } from "@/configurations/configurations";
 import { ApiResponse } from "@/model/AppModel";
-import {
-  AuthModel,
-  LoginRequest,
-  LoginResponse,
-} from "@/model/AuthenticationModel";
+import { AuthModel, LoginResponse } from "@/model/AuthenticationModel";
 import { useDispatch } from "react-redux";
 import { addAuth } from "@/reducx/reducers/authReducer";
 import { useRouter } from "next/router";
@@ -44,9 +40,11 @@ const Authenticate = () => {
       const res = await handleAPI(api, undefined, "post");
       const response: ApiResponse<LoginResponse> = res.data;
       console.log(response);
-      const auth = response.result?.token;
-      dispatch(addAuth(auth));
-      setIsLogin(true);
+      if (response.result) {
+        const auth: AuthModel = { accessToken: response.result.token };
+        dispatch(addAuth(auth));
+        setIsLogin(true);
+      }
     } catch (error) {
       console.log(error);
     }
