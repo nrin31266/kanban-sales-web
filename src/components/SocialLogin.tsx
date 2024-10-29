@@ -26,6 +26,7 @@ const SocialLogin = () => {
 
   return (
     <Button
+    
     loading={isLoading}
     onClick={handleContinueWithGoogle}
     style={{

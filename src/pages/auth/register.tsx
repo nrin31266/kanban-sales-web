@@ -35,6 +35,7 @@ const Register = () => {
   const [loginData, setLoginData] = useState<LoginRequest>();
   const [apiNotification, contextHolder] = notification.useNotification();
   const [isCreated, setIsCreated] = useState(false);
+  
   const dispatch = useDispatch();
 
   const openNotification = (placement: NotificationPlacement) => {

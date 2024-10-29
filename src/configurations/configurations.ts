@@ -20,7 +20,8 @@ export const API = {
   GET_PRODUCT_FILTER_VALUES: "/kanban/sub-products/filter-values",
   PRODUCTS_FILTER_VALUES: "/kanban/products/filter",
   PRODUCT_DETAIL: (productId:string)=> `/kanban/sub-products/product-detail/${productId}`,
-  USER_VERIFY: '/identity/otp/user-verify'
+  USER_VERIFY: '/identity/otp/user-verify',
+  CREATE_OTP: '/identity/otp/send-email-verify',
 };
 
 export const PAGE = {

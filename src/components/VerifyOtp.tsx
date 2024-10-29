@@ -1,7 +1,10 @@
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { UserResponse } from "@/model/UserModel";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faArrowRotateLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Input, message, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
@@ -33,11 +36,20 @@ const VerifyOtp = (props: Props) => {
   ]); // State lưu trữ giá trị của từng ô
   const [otpCode, setOtpCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messageError, setMessageError] = useState('');
+  const [messageError, setMessageError] = useState("");
   const { onFinish, onClose, userId } = props;
+  const [timeReSendOtp, setTimeReSendOtp] = useState(30);
 
   useEffect(() => {
     focusWhenInputNull();
+  }, []);
+
+  useEffect(() => {
+    const time = setInterval(()=>{
+      setTimeReSendOtp(times=> times - 1);
+    }, 1000)
+    console.log('a');
+    return () => clearInterval(time);
   }, []);
 
   useEffect(() => {
@@ -51,27 +63,26 @@ const VerifyOtp = (props: Props) => {
   };
   const focusWhenInputNull = () => {
     for (let index = 0; index < otpValues.length; index++) {
-      if (otpValues[index] === '') {
-        console.log('Focus vào ô rỗng ở chỉ số:', index);
-        inpRefs[index].current.focus(); 
-        return; 
+      if (otpValues[index] === "") {
+        console.log("Focus vào ô rỗng ở chỉ số:", index);
+        inpRefs[index].current.focus();
+        return;
       }
     }
   };
-  
   const handleOtpVerify = async () => {
-    console.log('verify');
-    const request: VerifyOtpRequest={otp: otpCode};
+    console.log("verify");
+    const request: VerifyOtpRequest = { otp: otpCode };
     setIsLoading(true);
     try {
-      const res = await handleAPI(API.USER_VERIFY, request, 'post');
+      const res = await handleAPI(API.USER_VERIFY, request, "post");
       const response: ApiResponse<VerifyOtpResponse> = res.data;
       const isValid = response.result.verified;
-      if(isValid){
+      if (isValid) {
         onFinish();
         onClose();
-        message.success('Verify email successfully');
-      }else{
+        message.success("Verify email successfully");
+      } else {
         setMessageError(response.result.message);
       }
     } catch (error) {
@@ -95,6 +106,20 @@ const VerifyOtp = (props: Props) => {
 
     if (value && index < 5) {
       inpRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleReSendOtp =async ()=>{
+    console.log('re send');
+    setIsLoading(true);
+    try {
+     await handleAPI(API.CREATE_OTP, undefined, 'post');
+     setTimeReSendOtp(30);
+
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -147,11 +172,14 @@ const VerifyOtp = (props: Props) => {
           />
         ))}
       </div>
-      {
-        messageError !== '' && <div><h3 style={{color: 'red'}}>{messageError}</h3></div>
-      }
+      {messageError !== "" && (
+        <div>
+          <h3 style={{ color: "red" }}>{messageError}</h3>
+        </div>
+      )}
       <div className="mt-4">
         <Button
+          disabled={otpCode.length < 5}
           loading={isLoading}
           style={{ width: "100%" }}
           type="primary"
@@ -160,6 +188,31 @@ const VerifyOtp = (props: Props) => {
         >
           Verify
         </Button>
+      </div>
+      <div
+        className="mt-2 d-flex"
+        style={{
+          justifyContent: "center",
+        }}
+      >
+        {timeReSendOtp < 0 ? (
+          <Button
+            loading={isLoading}
+            type="text"
+            size="large"
+          >
+            <FontAwesomeIcon
+                icon={faArrowRotateLeft}
+                style={{ color: "#74C0FC" }}
+                onClick={()=> handleReSendOtp()}
+              />
+            Re-send OTP
+          </Button>
+        ) : (
+          <div>
+            <Typography.Title level={5}>You can re send email after <span style={{color: 'red'}}>{timeReSendOtp}</span>s</Typography.Title>
+          </div>
+        )}
       </div>
     </div>
   );
