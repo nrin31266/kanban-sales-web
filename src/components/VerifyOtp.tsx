@@ -179,7 +179,7 @@ const VerifyOtp = (props: Props) => {
       )}
       <div className="mt-4">
         <Button
-          disabled={otpCode.length < 5}
+          disabled={otpCode.length < 6}
           loading={isLoading}
           style={{ width: "100%" }}
           type="primary"
@@ -200,11 +200,12 @@ const VerifyOtp = (props: Props) => {
             loading={isLoading}
             type="text"
             size="large"
+            onClick={()=> handleReSendOtp()}
           >
             <FontAwesomeIcon
                 icon={faArrowRotateLeft}
                 style={{ color: "#74C0FC" }}
-                onClick={()=> handleReSendOtp()}
+                
               />
             Re-send OTP
           </Button>

@@ -1,4 +1,5 @@
 import handleAPI from "@/apis/handleAPI";
+import LeftHalfPanel from "@/components/LeftHalfPanel";
 import SocialLogin from "@/components/SocialLogin";
 import VerifyOtp from "@/components/VerifyOtp";
 import { API, PAGE } from "@/configurations/configurations";
@@ -35,7 +36,7 @@ const Register = () => {
   const [loginData, setLoginData] = useState<LoginRequest>();
   const [apiNotification, contextHolder] = notification.useNotification();
   const [isCreated, setIsCreated] = useState(false);
-  
+
   const dispatch = useDispatch();
 
   const openNotification = (placement: NotificationPlacement) => {
@@ -103,9 +104,9 @@ const Register = () => {
       setIsLoading(false);
     }
   };
-  const handleFinal= ()=>{
+  const handleFinal = () => {
     router.push(PAGE.HOME);
-  }
+  };
   return (
     <>
       {contextHolder}
@@ -114,15 +115,9 @@ const Register = () => {
         style={{ height: "100vh", backgroundColor: "silver" }}
       >
         <div className="row">
-          <div
-            className="d-none d-md-block col-6 p-0"
-            style={{
-              backgroundSize: "cover",
-              backgroundImage: 'url("/assets/images/bgtest.jpg")',
-              height: "100vh",
-              backgroundRepeat: "no-repeat",
-            }}
-          ></div>
+          <div className="d-none d-md-block col-6 p-0">
+            <LeftHalfPanel />
+          </div>
           <div className=" col-md-6 col-sm-12">
             <div
               className="container bg-white d-flex"
@@ -130,7 +125,10 @@ const Register = () => {
             >
               <div className="col-sm-12 col-md-12 col-lg-8 offset-lg-2">
                 {isCreated ? (
-                  <VerifyOtp onClose={()=>setIsCreated(false)} onFinish={()=>handleFinal()}/>
+                  <VerifyOtp
+                    onClose={() => setIsCreated(false)}
+                    onFinish={() => handleFinal()}
+                  />
                 ) : (
                   <>
                     <div className="mb-4">

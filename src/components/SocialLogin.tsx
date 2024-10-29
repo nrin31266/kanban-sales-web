@@ -30,7 +30,8 @@ const SocialLogin = () => {
     loading={isLoading}
     onClick={handleContinueWithGoogle}
     style={{
-      width: '100%'
+      width: '100%',
+      backgroundColor: '#E9F0D4'
     }}
     size="large"
       icon={
