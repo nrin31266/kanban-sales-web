@@ -9,7 +9,7 @@ import {
   LoginRequest,
   LoginResponse,
 } from "@/model/AuthenticationModel";
-import { CreateUserRequest } from "@/model/UserModel";
+import { CreateUserRequest, UserInfoResponse } from "@/model/UserModel";
 import { addAuth } from "@/reducx/reducers/authReducer";
 import {
   Button,
@@ -62,16 +62,29 @@ const Register = () => {
     try {
       const res = await handleAPI(api, loginData, "post");
       const response: ApiResponse<LoginResponse> = res.data;
-      if (!response.result?.token) {
-        message.error("Can not get token");
-        return;
-      }
-      const auth: AuthModel = { accessToken: response.result?.token };
+      const accessToken= response.result.token;
+      const auth: AuthModel = { accessToken: accessToken };
       dispatch(addAuth(auth));
       // message.success("Register successfully");
+      getUserInfo(accessToken);
       setIsCreated(true);
     } catch (error: any) {
       message.error(error.message);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getUserInfo = async (accessToken : string) => {
+    setIsLoading(true);
+    try {
+      //Gọi api gì đó
+      const res = await handleAPI(API.USER_INFO);
+      const response: ApiResponse<UserInfoResponse> = res.data;
+      dispatch(addAuth({accessToken: accessToken, userInfo: response.result}));
+      
+    } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -162,7 +175,7 @@ const Register = () => {
                           { message: "Please enter email", required: true },
                         ]}
                       >
-                        <Input.Password
+                        <Input
                           type="email"
                           placeholder="ronaldo@gmail.com"
                           allowClear

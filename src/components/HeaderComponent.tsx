@@ -28,6 +28,11 @@ const HeaderComponent = () => {
         <div className="col">papa</div>
         <div className="col" style={{ textAlign: "right" }}>
           <Space>
+            {
+              auth.userInfo && (auth.userInfo.emailVerified===false || auth.userInfo.emailVerified===null ) &&
+              <Button type="primary" onClick={handleLogout}>Verify account</Button>
+              
+            }
             {auth.accessToken ? (
               <>
                 {/* <Avatar /> */}

@@ -1,5 +1,6 @@
 export interface UserInfo {
   id: string;
+  emailVerified: boolean;
   name: string;
   email: string;
   roles: RoleModel[];
@@ -29,4 +30,12 @@ export interface CreateUserRequest{
   name: string,
   email: string,
   password: string
+}
+
+export interface UserInfoResponse {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  roles: RoleModel[]
 }

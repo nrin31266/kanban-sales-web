@@ -8,6 +8,7 @@ import { AuthModel, LoginResponse } from "@/model/AuthenticationModel";
 import { useDispatch } from "react-redux";
 import { addAuth } from "@/reducx/reducers/authReducer";
 import { useRouter } from "next/router";
+import { UserInfoResponse } from "@/model/UserModel";
 
 const Authenticate = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -16,6 +17,7 @@ const Authenticate = () => {
   const router = useRouter();
 
   useEffect(() => {
+    setIsLoading(true);
     const authCodeRegex = /code=([^&]+)/;
     const isMatch = window.location.href.match(authCodeRegex);
     if (!isMatch) {
@@ -35,16 +37,28 @@ const Authenticate = () => {
     const authCode = isMatch[1];
     console.log(authCode);
     const api = `${API.LOGIN_WITH_GOOGLE(authCode)}`;
-    setIsLoading(true);
     try {
       const res = await handleAPI(api, undefined, "post");
       const response: ApiResponse<LoginResponse> = res.data;
       console.log(response);
-      if (response.result) {
-        const auth: AuthModel = { accessToken: response.result.token };
-        dispatch(addAuth(auth));
-        setIsLogin(true);
-      }
+      const accessToken = response.result.token;
+      const auth: AuthModel = { accessToken: accessToken };
+      dispatch(addAuth(auth));
+      getUserInfo(accessToken);
+      setIsLogin(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getUserInfo = async (accessToken: string) => {
+    
+    try {
+      //Gọi api gì đó
+      const res = await handleAPI(API.USER_INFO);
+      const response: ApiResponse<UserInfoResponse> = res.data;
+      dispatch(
+        addAuth({ accessToken: accessToken, userInfo: response.result })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -69,11 +83,9 @@ const Authenticate = () => {
       </div>
     </div>
   ) : (
-    <Empty
-      description={
-        <Typography.Title className="text-danger">Error</Typography.Title>
-      }
-    />
+    <div>
+      ...
+    </div>
   );
 };
 

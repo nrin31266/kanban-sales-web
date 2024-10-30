@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AuthModel } from './../../model/AuthenticationModel';
+import { UserInfoResponse } from "@/model/UserModel";
 
 const login = () => {
   const dispatch = useDispatch();
@@ -25,12 +26,28 @@ const login = () => {
     try {
       const res = await handleAPI(api, values, "post");
       const response: ApiResponse<LoginResponse> = res.data;
-      const auth: AuthModel = {accessToken: response.result.token};
-      dispatch(addAuth(auth));
+      const accessToken = response.result.token;
+      dispatch(addAuth({accessToken: accessToken}))
+      getUserInfo(accessToken);
       router.push(PAGE.HOME);
     } catch (error) {
       console.log(error);
     }finally{
+      setIsLoading(false);
+    }
+  };
+
+  const getUserInfo = async (accessToken : string) => {
+    setIsLoading(true);
+    try {
+      //Gọi api gì đó
+      const res = await handleAPI(API.USER_INFO);
+      const response: ApiResponse<UserInfoResponse> = res.data;
+      dispatch(addAuth({accessToken: accessToken, userInfo: response.result}));
+      
+    } catch (error) {
+      console.log(error);
+    } finally {
       setIsLoading(false);
     }
   };

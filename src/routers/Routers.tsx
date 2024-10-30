@@ -11,6 +11,10 @@ import type { AppProps } from "next/app";
 import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
 import { usePathname } from "next/navigation";
 import HeaderComponent from "@/components/HeaderComponent";
+import handleAPI from "@/apis/handleAPI";
+import { API } from "@/configurations/configurations";
+import { ApiResponse } from "@/model/AppModel";
+import { UserInfoResponse } from "@/model/UserModel";
 
 const { Header, Content, Footer } = Layout;
 
@@ -18,32 +22,19 @@ const Routers = ({ Component, pageProps }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const auth: AuthModel = useSelector(authSelector);
+  const [isGetUserInfo, setIsGetUserInfo] = useState(false);
   const path = usePathname();
   console.log(path);
 
   useEffect(() => {
-    const fetch = async (authData: AuthModel) => {
-      setIsLoading(true);
-      try {
-        //Gọi api gì đó
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     const authInLocal: string | null = localStorage.getItem(
       localDataNames.authData
     );
 
-    
-
     if (authInLocal) {
       let authData: AuthModel = JSON.parse(authInLocal);
       if (authData.accessToken) {
-
-        dispatch(addAuth({accessToken: authData.accessToken}));
-        fetch(authData);
+        dispatch(addAuth(authData));
       }
     }
   }, []);
