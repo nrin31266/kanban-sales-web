@@ -4,6 +4,7 @@ import SocialLogin from "@/components/SocialLogin";
 import { API, PAGE } from "@/configurations/configurations";
 import { ApiResponse } from "@/model/AppModel";
 import { LoginRequest, LoginResponse } from "@/model/AuthenticationModel";
+import { addAuth } from "@/reducx/reducers/authReducer";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Form, Input, Typography } from "antd";
@@ -11,22 +12,27 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { AuthModel } from './../../model/AuthenticationModel';
 
 const login = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
-  const handleLogin = async () => {
+  const handleLogin = async (values: LoginRequest) => {
+    setIsLoading(true);
     const api = `${API.LOGIN}`;
     try {
-      const value = {
-        email: "admin",
-        password: "admin",
-      };
-      const res = await handleAPI(api, value, "post");
+      const res = await handleAPI(api, values, "post");
       const response: ApiResponse<LoginResponse> = res.data;
-    } catch (error) {}
+      const auth: AuthModel = {accessToken: response.result.token};
+      dispatch(addAuth(auth));
+      router.push(PAGE.HOME);
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,6 +73,7 @@ const login = () => {
                 </Typography.Title>
                 <div>
                   <Form
+                    onFinish={handleLogin}
                     disabled={isLoading}
                     form={form}
                     layout="vertical"
@@ -93,11 +100,15 @@ const login = () => {
                         { message: "Please enter password", required: true },
                       ]}
                     >
-                      <Input
+                      <Input.Password
+                        
                         minLength={8}
                         type="password"
                         placeholder="Enter password"
                         allowClear
+                        visibilityToggle={{
+                          visible: false
+                        }}
                       />
                     </Form.Item>
                   </Form>
@@ -107,6 +118,7 @@ const login = () => {
                 </div>
                 <div className="mt-3">
                   <Button
+                    loading={isLoading}
                     type="primary"
                     size="large"
                     style={{ width: "100%" }}

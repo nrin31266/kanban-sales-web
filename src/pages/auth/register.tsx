@@ -162,7 +162,7 @@ const Register = () => {
                           { message: "Please enter email", required: true },
                         ]}
                       >
-                        <Input
+                        <Input.Password
                           type="email"
                           placeholder="ronaldo@gmail.com"
                           allowClear
@@ -175,7 +175,7 @@ const Register = () => {
                           { message: "Please enter password", required: true },
                         ]}
                       >
-                        <Input
+                        <Input.Password
                           minLength={8}
                           type="password"
                           placeholder="Enter password"
