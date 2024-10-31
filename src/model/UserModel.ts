@@ -1,6 +1,6 @@
 export interface UserInfo {
   id: string;
-  emailVerified: boolean;
+  emailVerified?: boolean;
   name: string;
   email: string;
   roles: RoleModel[];

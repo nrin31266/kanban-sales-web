@@ -24,12 +24,14 @@ const Routers = ({ Component, pageProps }: any) => {
   const auth: AuthModel = useSelector(authSelector);
   const [isGetUserInfo, setIsGetUserInfo] = useState(false);
   const path = usePathname();
-  console.log(path);
+  
 
   useEffect(() => {
     const authInLocal: string | null = localStorage.getItem(
       localDataNames.authData
     );
+    
+    console.log(path);
 
     if (authInLocal) {
       let authData: AuthModel = JSON.parse(authInLocal);

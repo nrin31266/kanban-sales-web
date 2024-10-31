@@ -28,7 +28,8 @@ export const PAGE = {
   HOME: '/',
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
-  AUTHENTICATE: '/auth/authenticate'
+  AUTHENTICATE: '/auth/authenticate',
+  SHOP: '/shop'
 }
 
 export const APP = {
