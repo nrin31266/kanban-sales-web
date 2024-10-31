@@ -9,12 +9,17 @@ import {
 import { changePage, pageSelector } from "@/reducx/reducers/pageReducer";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Menu, Space } from "antd";
+import { Button, Drawer, Menu, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { MdOutlineShoppingCart } from "react-icons/md";
+import { FcLike } from "react-icons/fc";
+import { FiSearch } from "react-icons/fi";
+import { IoNotificationsSharp } from "react-icons/io5";
+import { RiMenuUnfold3Line2 } from "react-icons/ri";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -25,6 +30,7 @@ const HeaderComponent = () => {
     ["shop", PAGE.SHOP],
   ]);
   const router = useRouter();
+  const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
 
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
@@ -60,19 +66,28 @@ const HeaderComponent = () => {
   };
 
   return (
-    <div className="p-3">
-      <div className="row">
-        <div className="col">LOGO</div>
-        <div className="col">
+    <div className="">
+      <div className="row" style={{}}>
+        <div className="d-block d-md-none col">
+          <Button
+            className=""
+            onClick={() => setIsVisibleDrawer(true)}
+            type="default"
+            icon={<RiMenuUnfold3Line2 size={20} />}
+          ></Button>
+        </div>
+        <div className="col d-none d-md-block">LOGO</div>
+        <div className="col d-none d-md-block">
           <Menu
             style={{ border: "none" }}
             items={items}
             mode="horizontal"
             onClick={onClick}
             selectedKeys={[current]}
+            className=""
           ></Menu>
         </div>
-        <div className="col text-right">
+        <div className="col text-right ">
           <Space>
             {auth.userInfo &&
               (auth.userInfo.emailVerified === false ||
@@ -81,7 +96,16 @@ const HeaderComponent = () => {
               )}
             {auth.accessToken ? (
               <>
-                {/* <Avatar /> */}
+                <Button type="text" icon={<FiSearch size={20} />}></Button>
+                <Button type="text" icon={<FcLike size={20} />}></Button>
+                <Button
+                  type="text"
+                  icon={<MdOutlineShoppingCart size={20} />}
+                ></Button>
+                <Button
+                  type="text"
+                  icon={<IoNotificationsSharp size={20} />}
+                ></Button>
                 <Button
                   type="text"
                   icon={<FontAwesomeIcon icon={faRightFromBracket} />}
@@ -98,6 +122,11 @@ const HeaderComponent = () => {
           </Space>
         </div>
       </div>
+      <Drawer
+        open={isVisibleDrawer}
+        onClose={() => setIsVisibleDrawer(false)}
+        placement="left"
+      ></Drawer>
     </div>
   );
 };
