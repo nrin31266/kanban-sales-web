@@ -3,7 +3,7 @@ export interface CategoryResponse {
     name: string
     description: string
     slug: string
-    parentId?: string
+    parentId: string
     createdAt: string
     updatedAt: string
   }

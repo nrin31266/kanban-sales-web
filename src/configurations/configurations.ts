@@ -23,6 +23,7 @@ export const API = {
   USER_VERIFY: '/identity/otp/user-verify',
   CREATE_OTP: '/identity/otp/send-email-verify',
   PROMOTIONS: '/kanban/promotions',
+  ROOT_CATEGORIES: "/kanban/categories/root",
 };
 
 export const PAGE = {
