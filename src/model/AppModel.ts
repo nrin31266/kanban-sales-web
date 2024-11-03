@@ -4,10 +4,10 @@ export interface ApiResponse <T = any> {
     message?: string
 }
 
-export interface PaginationResponse {
+export interface PageResponse<T = any> {
     currentPage: number
     totalPages: number
     pageSize: number
     totalElements: number
-    data: any[]
+    data: T[]
   }

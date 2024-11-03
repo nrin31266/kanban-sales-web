@@ -2,11 +2,11 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import queryString from "query-string";
 import { localDataNames } from "../constants/appInfos";
 import handleAPI from "./handleAPI";
-import { API } from "../configurations/configurations";
+import { API, APP } from "../configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
 import { ApiResponse } from "@/model/AppModel";
+import { CustomAxiosResponse } from "@/model/AxiosModel";
 
-const baseURL = `http://localhost:8888/api/v1`;
 
 export const getAuth = () => {
   const res = localStorage.getItem(localDataNames.authData);
@@ -14,7 +14,7 @@ export const getAuth = () => {
 };
 
 const axiosClient = axios.create({
-  baseURL,
+  baseURL: APP.baseURL,
   paramsSerializer: (params) => queryString.stringify(params),
 });
 
@@ -36,12 +36,11 @@ axiosClient.interceptors.request.use(
 );
 
 axiosClient.interceptors.response.use(
-  async (response: AxiosResponse) => {
-    const apiResponse: ApiResponse = response.data;
-    if (apiResponse.code === 1000) {
+  async (response: CustomAxiosResponse) => {
+    if (response.data.code === 1000) {
       return response;
     } else {
-      return Promise.reject(apiResponse);
+      return Promise.reject(response.data);
     }
   },
   async (error: AxiosError) => {

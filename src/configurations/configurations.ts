@@ -13,7 +13,7 @@ export const API = {
   UPDATE_SUPPLIER: (suppliersId:string) => `/kanban/suppliers/${suppliersId}`,
   DELETE_SUPPLIER: (suppliersId:string) => `/kanban/suppliers?suppliersId=${suppliersId}`,
   FORM_SUPPLIERS: "/kanban/suppliers/form",
-  CATEGORY: "/kanban/categories",
+  CATEGORIES: "/kanban/categories",
   GET_CATEGORIES_TREE: "/kanban/categories/get-tree",
   PRODUCTS: "/kanban/products",
   SUB_PRODUCTS: "/kanban/sub-products",
@@ -22,6 +22,7 @@ export const API = {
   PRODUCT_DETAIL: (productId:string)=> `/kanban/sub-products/product-detail/${productId}`,
   USER_VERIFY: '/identity/otp/user-verify',
   CREATE_OTP: '/identity/otp/send-email-verify',
+  PROMOTIONS: '/kanban/promotions',
 };
 
 export const PAGE = {
@@ -36,6 +37,7 @@ export const APP = {
   logo: "https://firebasestorage.googleapis.com/v0/b/kanban-ac9c5.appspot.com/o/kanban-logo.png?alt=media&token=b72b8db5-b31d-4ae9-aab8-8bd7e10e6d8e",
   title: "KANBAN",
   description: "",
+  baseURL: 'http://localhost:8888/api/v1'
 };
 export const CONFIG = {
   BASE_URL: "http://localhost:3004",

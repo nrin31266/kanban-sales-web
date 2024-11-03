@@ -20,6 +20,7 @@ import { FcLike } from "react-icons/fc";
 import { FiSearch } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 import { RiMenuUnfold3Line2 } from "react-icons/ri";
+import { IoClose } from "react-icons/io5";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -92,7 +93,7 @@ const HeaderComponent = () => {
             {auth.userInfo &&
               (auth.userInfo.emailVerified === false ||
                 auth.userInfo.emailVerified === null) && (
-                <Button type="primary">Verify account</Button>
+                <Button size="small" className="p-1" type="primary">Verify</Button>
               )}
             {auth.accessToken ? (
               <>
@@ -123,9 +124,18 @@ const HeaderComponent = () => {
         </div>
       </div>
       <Drawer
+       style={{backgroundColor: 'rgb(255, 255, 255, 0.9'}}
         open={isVisibleDrawer}
-        onClose={() => setIsVisibleDrawer(false)}
         placement="left"
+        closable={false}
+        title={
+          <div className="row">
+            <div className="col">Menu</div>
+            <div className="col text-right">
+            <Button onClick={() => setIsVisibleDrawer(false)} icon={<IoClose size={20}/>}></Button>
+            </div>
+          </div>
+        }
       ></Drawer>
     </div>
   );
