@@ -24,6 +24,7 @@ export const API = {
   CREATE_OTP: '/identity/otp/send-email-verify',
   PROMOTIONS: '/kanban/promotions',
   ROOT_CATEGORIES: "/kanban/categories/root",
+  BESTSELLER_PRODUCTS: '/kanban/products/bestseller'
 };
 
 export const PAGE = {

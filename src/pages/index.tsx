@@ -15,15 +15,18 @@ import axios from "axios";
 import TabBarComponent from "@/components/TabBarComponent";
 import Section from "@/components/Section";
 import { current } from "@reduxjs/toolkit";
-import { BiArrowBack, BiArrowToLeft } from "react-icons/bi";
+import { BiArrowBack, BiArrowFromLeft, BiArrowToLeft } from "react-icons/bi";
 import { useRouter } from "next/router";
+import { ProductResponse } from "@/model/ProductModel";
 
 const HomePage = ({
   promotions,
   categories,
+  bestsellerProducts,
 }: {
   promotions: PromotionResponse[];
   categories: CategoryResponse[];
+  bestsellerProducts: ProductResponse[];
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [numOfColumnsCategories, setNumOfColumnsCategories] = useState(4);
@@ -36,6 +39,7 @@ const HomePage = ({
   useEffect(() => {
     console.log(promotions);
     console.log(categories);
+    console.log(bestsellerProducts);
   }, []);
 
   useEffect(() => {
@@ -93,28 +97,15 @@ const HomePage = ({
                     backgroundSize: "cover",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",
-                    padding: 10,
                   }}
                 >
-                  <div style={{ marginTop: "3rem" }}>
-                    <Typography.Title
-                      style={{
-                        textShadow:
-                          "-1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000",
-                      }}
-                      className="text-white"
-                      level={3}
-                    >
-                      up to {item.value} {DISCOUNT_TYPE(item.discountType)}
-                    </Typography.Title>
+                  <div className="text-right">
                     <Button
-                      size="large"
                       iconPosition="end"
-                      icon={<BsArrowRight size={20} />}
-                      type="primary"
-                      onClick={() => console.log("detail")}
+                      size="small"
+                      className="mr-2 mt-2 btn-primary"
                     >
-                      shopping now
+                      Get
                     </Button>
                   </div>
                 </div>
@@ -156,8 +147,11 @@ const HomePage = ({
             {displayedCategories.map((category, index) => (
               <div key={category.id + index} className="col p-1 category-item">
                 <img
-                
-                onClick={()=>router.push(`${PAGE.FILTER_PRODUCTS}?categoryId=${category.id}`)}
+                  onClick={() =>
+                    router.push(
+                      `${PAGE.FILTER_PRODUCTS}?categoryId=${category.id}`
+                    )
+                  }
                   src={
                     category.imageUrl ??
                     "https://th.bing.com/th/id/OIP.LDuPjkWofVWM0adJo5hCegHaJw?rs=1&pid=ImgDetMain"
@@ -177,14 +171,18 @@ export async function getStaticProps() {
   try {
     const promotionsRes: CustomAxiosResponse<PageResponse<PromotionResponse>> =
       await axios(`${APP.baseURL}${API.PROMOTIONS}?page=1&size=5`);
-    const categoriesRes: CustomAxiosResponse<CategoryResponse[]> = await axios(
-      `${APP.baseURL}${API.ROOT_CATEGORIES}`
+    const categoriesRes: CustomAxiosResponse<CategoryResponse[]> = 
+      await axios(`${APP.baseURL}${API.ROOT_CATEGORIES}`
     );
+
+    const bestsellerProductsRes: CustomAxiosResponse<ProductResponse[]> =
+      await axios(`${APP.baseURL}${API.BESTSELLER_PRODUCTS}`);
 
     return {
       props: {
         promotions: promotionsRes.data.result.data,
         categories: categoriesRes.data.result,
+        bestsellerProducts: bestsellerProductsRes.data.result
       },
     };
   } catch (error) {
@@ -192,6 +190,7 @@ export async function getStaticProps() {
       props: {
         promotions: [],
         categories: [],
+        bestsellerProducts: [],
       },
     };
   }
