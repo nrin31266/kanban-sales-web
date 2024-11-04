@@ -31,7 +31,8 @@ export const PAGE = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   AUTHENTICATE: '/auth/authenticate',
-  SHOP: '/shop'
+  SHOP: '/shop',
+  FILTER_PRODUCTS: '/filter-products',
 }
 
 export const APP = {

@@ -6,18 +6,21 @@ interface Props{
     title: string;
     titleLevel: 1 | 2 | 3 | 4 | 5 | undefined;
     titleRight?: ReactNode
-
+    children: ReactNode;
 }
 
 const TabBarComponent = (props : Props) => {
-    const {title, titleAlign, titleLevel, titleRight} = props;
+    const {title, titleAlign, titleLevel, titleRight, children} = props;
   return (
-    <div>
-        <div className="row p-2">
-            <div className={`col ${titleAlign}`}>
+    <div className='container' style={{backgroundColor: 'white'}}>
+        <div className="row">
+            <div className={`${titleRight? 'col-9' : 'col'} ${titleAlign}`}>
                 <Typography.Title level={titleLevel}>{title} </Typography.Title>
             </div>
-            {titleRight && <div className='col-2 text-right'>{titleRight}</div>}
+            {titleRight && <div className='col-3 text-right'>{titleRight}</div>}
+        </div>
+        <div className='p-2'>
+            {children}
         </div>
     </div>
   )

@@ -1,18 +1,70 @@
-*{
-    /* background-color: white; */
+* {
+  /* background-color: white; */
+}
+
+@media (max-width: 575.98px) {
+  .promotion-carousel {
+    height: 20vh;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .promotion-carousel {
+    height: 30vh;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .promotion-carousel {
+    height: 45vh;
+  }
+}
+
+@media (min-width: 992px) {
+  .promotion-carousel {
+    height: 50vh;
+  }
 }
 
 .title-danger {
-    color: orangered;
+  color: orangered;
 }
 
-:where(.css-dev-only-do-not-override-dz3jpi).ant-form-item .ant-form-item-label >label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before{
-    content: '***';
-    color: silver;
+:where(.css-dev-only-do-not-override-dz3jpi).ant-form-item
+  .ant-form-item-label
+  > label.ant-form-item-required:not(
+    .ant-form-item-required-mark-optional
+  )::before {
+  content: "***";
+  color: silver;
 }
 
-.section{
-    margin-top: 20px;
-    margin-bottom: 20px;
+.section {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
+.categories-list .category-item img {
+  width: 100%;
+  max-width: 200px;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 4;
+}
+
+.categories-list .category-item img{
+    cursor: pointer;
+  }
+
+.categories-list .category-item .category-item-content {
+  padding: 5 0;
+  width: 100%;
+  text-align: center;
+  display: -webkit-box; 
+  -webkit-box-orient: vertical; 
+  -webkit-line-clamp: 2; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  line-height: 1.5; 
+  max-height: 3.5em; 
+}

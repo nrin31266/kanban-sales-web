@@ -3,6 +3,7 @@ export interface CategoryResponse {
     name: string
     description: string
     slug: string
+    imageUrl: string
     parentId: string
     createdAt: string
     updatedAt: string
