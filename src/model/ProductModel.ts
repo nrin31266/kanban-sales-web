@@ -10,4 +10,7 @@ export interface ProductResponse {
   categoryIds: string[];
   createdAt: string;
   updatedAt: string;
+
+  maxPrice?:number;
+  minPrice?: number;
 }

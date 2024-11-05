@@ -50,21 +50,47 @@
   max-height: 300px;
   object-fit: cover;
   border-radius: 4;
+  cursor: pointer;
 }
 
-.categories-list .category-item img{
-    cursor: pointer;
-  }
+.product-item .ant-typography {
+  margin-bottom: 0;
+}
+
+
+.product-item .image .image-content{
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.product-item .image .image-content .btn-icon{
+  border: none;
+  padding: 0;
+}
+
+.product-item:hover .image .image-content{
+  opacity: 1; 
+  visibility: visible; 
+}
+
+.product-item:hover {
+  box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  transition: 0.5s;
+  cursor: pointer;
+}
 
 .categories-list .category-item .category-item-content {
   padding: 5 0;
   width: 100%;
   text-align: center;
-  display: -webkit-box; 
-  -webkit-box-orient: vertical; 
-  -webkit-line-clamp: 2; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  line-height: 1.5; 
-  max-height: 3.5em; 
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3.5em;
 }

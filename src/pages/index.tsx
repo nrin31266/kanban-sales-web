@@ -18,6 +18,7 @@ import { current } from "@reduxjs/toolkit";
 import { BiArrowBack, BiArrowFromLeft, BiArrowToLeft } from "react-icons/bi";
 import { useRouter } from "next/router";
 import { ProductResponse } from "@/model/ProductModel";
+import ProductItem from "@/components/ProductItem";
 
 const HomePage = ({
   promotions,
@@ -37,8 +38,8 @@ const HomePage = ({
   const router = useRouter();
 
   useEffect(() => {
-    console.log(promotions);
-    console.log(categories);
+    // console.log(promotions);
+    // console.log(categories);
     console.log(bestsellerProducts);
   }, []);
 
@@ -163,6 +164,19 @@ const HomePage = ({
           </div>
         </TabBarComponent>
       </Section>
+      <Section>
+        <TabBarComponent
+          title="Our bestseller"
+          titleAlign="text-center"
+          titleLevel={2}
+        >
+          <div className="row">
+            {bestsellerProducts.map((product) => (
+              <ProductItem key={product.id} product={product}/>
+            ))}
+          </div>
+        </TabBarComponent>
+      </Section>
     </div>
   );
 };
@@ -171,8 +185,8 @@ export async function getStaticProps() {
   try {
     const promotionsRes: CustomAxiosResponse<PageResponse<PromotionResponse>> =
       await axios(`${APP.baseURL}${API.PROMOTIONS}?page=1&size=5`);
-    const categoriesRes: CustomAxiosResponse<CategoryResponse[]> = 
-      await axios(`${APP.baseURL}${API.ROOT_CATEGORIES}`
+    const categoriesRes: CustomAxiosResponse<CategoryResponse[]> = await axios(
+      `${APP.baseURL}${API.ROOT_CATEGORIES}`
     );
 
     const bestsellerProductsRes: CustomAxiosResponse<ProductResponse[]> =
@@ -182,7 +196,7 @@ export async function getStaticProps() {
       props: {
         promotions: promotionsRes.data.result.data,
         categories: categoriesRes.data.result,
-        bestsellerProducts: bestsellerProductsRes.data.result
+        bestsellerProducts: bestsellerProductsRes.data.result,
       },
     };
   } catch (error) {

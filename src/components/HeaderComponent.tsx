@@ -9,7 +9,7 @@ import {
 import { changePage, pageSelector } from "@/reducx/reducers/pageReducer";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Drawer, Menu, Space } from "antd";
+import { Affix, Button, Drawer, Menu, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
@@ -67,77 +67,87 @@ const HeaderComponent = () => {
   };
 
   return (
-    <div className="">
-      <div className="row" style={{}}>
-        <div className="d-block d-md-none col">
-          <Button
-            className=""
-            onClick={() => setIsVisibleDrawer(true)}
-            type="default"
-            icon={<RiMenuUnfold3Line2 size={20} />}
-          ></Button>
-        </div>
-        <div className="col d-none d-md-block">LOGO</div>
-        <div className="col d-none d-md-block">
-          <Menu
-            style={{ border: "none" }}
-            items={items}
-            mode="horizontal"
-            onClick={onClick}
-            selectedKeys={[current]}
-            className=""
-          ></Menu>
-        </div>
-        <div className="col text-right ">
-          <Space>
-            {auth.userInfo &&
-              (auth.userInfo.emailVerified === false ||
-                auth.userInfo.emailVerified === null) && (
-                <Button size="small" className="p-1" type="primary">Verify</Button>
-              )}
-            {auth.accessToken ? (
-              <>
-                <Button type="text" icon={<FiSearch size={20} />}></Button>
-                <Button type="text" icon={<FcLike size={20} />}></Button>
-                <Button
-                  type="text"
-                  icon={<MdOutlineShoppingCart size={20} />}
-                ></Button>
-                <Button
-                  type="text"
-                  icon={<IoNotificationsSharp size={20} />}
-                ></Button>
-                <Button
-                  type="text"
-                  icon={<FontAwesomeIcon icon={faRightFromBracket} />}
-                  onClick={handleLogout}
-                />
-              </>
-            ) : (
-              <>
-                <Button type="primary" onClick={() => router.push(PAGE.LOGIN)}>
-                  Login
-                </Button>
-              </>
-            )}
-          </Space>
-        </div>
-      </div>
-      <Drawer
-       style={{backgroundColor: 'rgb(255, 255, 255, 0.9'}}
-        open={isVisibleDrawer}
-        placement="left"
-        closable={false}
-        title={
-          <div className="row">
-            <div className="col">Menu</div>
-            <div className="col text-right">
-            <Button onClick={() => setIsVisibleDrawer(false)} icon={<IoClose size={20}/>}></Button>
-            </div>
+    <Affix offsetTop={0}>
+      <div style={{backgroundColor: '#e0e0e0'}}>
+        <div className="row" style={{}}>
+          <div className="d-block d-md-none col">
+            <Button
+              className=""
+              onClick={() => setIsVisibleDrawer(true)}
+              type="default"
+              icon={<RiMenuUnfold3Line2 size={20} />}
+            ></Button>
           </div>
-        }
-      ></Drawer>
-    </div>
+          <div className="col d-none d-md-block">LOGO</div>
+          <div className="col d-none d-md-block">
+            <Menu
+              style={{ border: "none" }}
+              items={items}
+              mode="horizontal"
+              onClick={onClick}
+              selectedKeys={[current]}
+              className=""
+            ></Menu>
+          </div>
+          <div className="col text-right ">
+            <Space>
+              {auth.userInfo &&
+                (auth.userInfo.emailVerified === false ||
+                  auth.userInfo.emailVerified === null) && (
+                  <Button size="small" className="p-1" type="primary">
+                    Verify
+                  </Button>
+                )}
+              {auth.accessToken ? (
+                <>
+                  <Button type="text" icon={<FiSearch size={20} />}></Button>
+                  <Button type="text" icon={<FcLike size={20} />}></Button>
+                  <Button
+                    type="text"
+                    icon={<MdOutlineShoppingCart size={20} />}
+                  ></Button>
+                  <Button
+                    type="text"
+                    icon={<IoNotificationsSharp size={20} />}
+                  ></Button>
+                  <Button
+                    type="text"
+                    icon={<FontAwesomeIcon icon={faRightFromBracket} />}
+                    onClick={handleLogout}
+                  />
+                </>
+              ) : (
+                <>
+                  <Button
+                    type="primary"
+                    onClick={() => router.push(PAGE.LOGIN)}
+                  >
+                    Login
+                  </Button>
+                </>
+              )}
+            </Space>
+          </div>
+        </div>
+        <Drawer
+          style={{ backgroundColor: "rgb(255, 255, 255, 0.9" }}
+          open={isVisibleDrawer}
+          placement="left"
+          closable={false}
+          title={
+            <div className="row">
+              <div className="col">Menu</div>
+              <div className="col text-right">
+                <Button
+                  onClick={() => setIsVisibleDrawer(false)}
+                  icon={<IoClose size={20} />}
+                ></Button>
+              </div>
+            </div>
+          }
+        ></Drawer>
+      </div>
+    </Affix>
   );
 };
 
