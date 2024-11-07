@@ -9,4 +9,6 @@ export interface SubProductResponse {
     discount?: number
     createdAt: string
     updatedAt: string
+    //
+    imgUrlSelected?: string;
   }

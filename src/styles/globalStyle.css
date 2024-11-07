@@ -143,6 +143,10 @@
   margin-bottom: 0;
 }
 
+.product-detail #btn-asc, #btn-des{
+  border: none;
+}
+
 .sub-product-gallery{
   position: relative;
   overflow-x: scroll;

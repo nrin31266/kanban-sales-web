@@ -2,14 +2,15 @@ import { API, APP, PAGE } from "@/configurations/configurations";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { ProductResponse } from "@/model/ProductModel";
 import axios from "axios";
-import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SubProductResponse } from "./../../../../model/SubProduct";
 import HeadComponent from "@/components/HeadComponent";
-import { Breadcrumb, Rate, Space, Tag, Typography } from "antd";
+import { Breadcrumb, Button, Rate, Space, Tag, Typography } from "antd";
 import Link from "next/link";
 import { FormatCurrency } from "@/utils/formatNumber";
 import ScrollItems from "@/components/ScrollItems";
+import { MdAdd, MdOutlineRemove } from "react-icons/md";
+import { IoMdHeart } from "react-icons/io";
 
 const ProductDetail = ({
   initProduct,
@@ -24,6 +25,7 @@ const ProductDetail = ({
   const [subProductSelected, setSubProductSelected] = useState<
     SubProductResponse | undefined
   >(initProductDetail.length > 0 ? initProductDetail[0] : undefined);
+  const [count, setCount] = useState(1);
 
   useEffect(() => {
     console.log(initProduct, initProductDetail);
@@ -57,7 +59,7 @@ const ProductDetail = ({
           />
           {subProductSelected ? (
             <>
-              <div className="row mt-3" style={{ backgroundColor: "silver" }}>
+              <div className="row mt-3" style={{ backgroundColor: "white" }}>
                 <div className="col-sm-12 col-md-4">
                   <div
                     className="text-center p-4"
@@ -67,8 +69,10 @@ const ProductDetail = ({
                       src={
                         subProductSelected.images &&
                         subProductSelected.images.length > 0
-                          ? subProductSelected.images[0]
-                          : "https://i.pinimg.com/736x/47/50/22/47502277fa068232f5a3556f18c362a2.jpg"
+                          ? subProductSelected.imgUrlSelected
+                            ? subProductSelected.imgUrlSelected
+                            : subProductSelected.images[0]
+                          : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
                       }
                       width={"100%"}
                       alt=""
@@ -83,12 +87,12 @@ const ProductDetail = ({
                 </div>
                 <div className="col">
                   <div className="row">
-                    <div className="col">
+                    <div className="col-sm-12 col-md-8">
                       <Typography.Title level={3}>
                         {product.title}
                       </Typography.Title>
                     </div>
-                    <div className="col text-right">
+                    <div className="col">
                       <Space>
                         <Tag>
                           {subProductSelected.quantity > 0
@@ -189,6 +193,29 @@ const ProductDetail = ({
                             ""
                           )
                         )}
+                    </Space>
+                    <br />
+                    <Space className="mt-3">
+                      <div
+                        style={{
+                          border: "1px solid silver",
+                          borderRadius: 6,
+                          padding: '5px 8px',
+
+                        }}
+                      >
+                        <button id="btn-des" onClick={()=> setCount(count-1)} disabled={count===1}>
+                          <MdOutlineRemove />
+                        </button>
+                        <Typography.Text style={{fontWeight: 'bold'}} className="ml-3 mr-3">
+                          {count}
+                        </Typography.Text>
+                        <button id="btn-asc" onClick={()=> setCount(count+1)} disabled={count===subProductSelected.quantity}>
+                          <MdAdd />
+                        </button>
+                      </div>
+                      <Button type="primary">Add to cart</Button>
+                      <Button style={{color: 'silver'}} icon={<IoMdHeart size={20} />}/>
                     </Space>
                   </div>
                 </div>

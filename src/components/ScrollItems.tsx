@@ -22,17 +22,17 @@ const ScrollItems = (props: Props) => {
         const listImg: string[] = item.images;
         if (listImg) {
           listImg.forEach((img) => {
-            groups.push({ item: item, imgUrl: img });
+            groups.push({...item, imgUrlSelected: img});
           });
         }
       });
-      for (let i = 0; i < 7; i++) {
-        groups.push({
-          item: undefined,
-          imgUrl:
-            "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
-        });
-      }
+      // for (let i = 0; i < 7; i++) {
+      //   groups.push({
+      //     item: undefined,
+      //     imgUrl:
+      //       "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
+      //   });
+      // }
       setElements(groups);
     }
   }, [items]);
@@ -90,15 +90,15 @@ const ScrollItems = (props: Props) => {
       )}
       <div className="sub-product-gallery" ref={galleryRef} onWheel={handleWheel}>
         {elements.length > 0 &&
-          elements.map((group, index) => (
-            <a key={"image" + index} onClick={() => onClick(group.item)}>
+          elements.map((item, index) => (
+            <a key={"image" + index} onClick={() => onClick(item)}>
               <div>
                 <span>
                   <img
                     style={{ objectFit: "cover" }}
                     width={100}
                     height={110}
-                    src={group.imgUrl}
+                    src={item.imgUrlSelected}
                     alt=""
                   />
                 </span>
