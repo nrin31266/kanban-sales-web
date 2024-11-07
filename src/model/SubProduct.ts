@@ -4,7 +4,7 @@ export interface SubProductResponse {
     color: string
     price: number
     quantity: number
-    images?: string[]
+    images: string[]
     productId: string
     discount?: number
     createdAt: string

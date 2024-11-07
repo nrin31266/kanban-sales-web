@@ -67,6 +67,7 @@
 
 .product-item .image .img{
   object-fit: cover;
+  
 }
 
 .product-item .hover-content{
@@ -81,7 +82,7 @@
   justify-content: space-between;
   padding: 10px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 1s ease;
   /* background: rgba(0, 0, 0, 0.3); */
 }
 
@@ -89,17 +90,24 @@
   opacity: 1; 
 }
 
-.product-item:hover .hover-content .top-right {
+.product-item .hover-content .top-right {
   position: absolute;
   top: 15px;
   right: 5px;
-  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  /* background-color: rgba(0, 0, 0, 0.5);  */
   color: white;
   padding: 5px;
   border-radius: 5px;
 }
 
-.product-item:hover .hover-content .bottom {
+.product-item .hover-content .top-right .ant-btn {
+  border-radius: 100;
+  margin-bottom: 10px;
+}
+
+
+
+.product-item .hover-content .bottom {
   position: absolute;
   bottom: 60px;
   width: 100%;
@@ -114,7 +122,7 @@
   box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
-  transition: 0.5s;
+  transition: 0.7s;
   cursor: pointer;
 }
 
@@ -129,4 +137,8 @@
   text-overflow: ellipsis;
   line-height: 1.5;
   max-height: 3.5em;
+}
+
+.product-detail .ant-typography{
+  margin-bottom: 0;
 }

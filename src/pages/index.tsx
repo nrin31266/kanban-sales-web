@@ -101,13 +101,13 @@ const HomePage = ({
                   }}
                 >
                   <div className="text-right">
-                    <Button
+                    {/* <Button
                       iconPosition="end"
                       size="small"
                       className="mr-2 mt-2 btn-primary"
                     >
                       Get
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </div>

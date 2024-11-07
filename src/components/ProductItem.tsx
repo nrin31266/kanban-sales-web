@@ -1,4 +1,5 @@
 import { ProductResponse } from "@/model/ProductModel";
+import { FormatCurrency } from "@/utils/formatNumber";
 import { Button, Typography } from "antd";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
@@ -35,7 +36,8 @@ const ProductItem = (props: Props) => {
             <img
               width={"100%"}
               height={elementWidth ? elementWidth * 1.1 : 250}
-              src="https://i.pinimg.com/736x/47/50/22/47502277fa068232f5a3556f18c362a2.jpg"
+              // src="https://i.pinimg.com/736x/47/50/22/47502277fa068232f5a3556f18c362a2.jpg"
+              src={`${product.images[0]}`}
               alt={product.slug}
             />
           </div>
@@ -43,12 +45,12 @@ const ProductItem = (props: Props) => {
             
           }}> 
             <div className="top-right">
-              <Button>J</Button> <br />
-              <Button>J</Button> <br />
-              <Button>J</Button>
+              <div> <Button onClick={(e)=>{e.stopPropagation();}} icon={<FcLike size={25}/>}></Button> </div>
+              <div><Button onClick={(e)=>{e.stopPropagation();}} icon={<BiTransfer size={25}/>}></Button> </div>
+              <div><Button onClick={(e)=>{e.stopPropagation();}} icon={<FaEye size={25}/>}></Button></div>
             </div>
             <div className="bottom">
-              <Button style={{width: '50%'}}>J đó</Button>
+              <Button onClick={(e)=>{e.stopPropagation();}} style={{width: '50%'}} icon={<IoMdAdd />}>Add to cart</Button>
             </div>
           </div>
         </>
@@ -71,11 +73,13 @@ const ProductItem = (props: Props) => {
           {product.title}
         </Typography.Paragraph>
         <Typography.Paragraph style={{ fontSize: "1.1em" }}>
-          {product.maxPrice && product.minPrice
+          {
+            product.maxPrice && product.minPrice
             ? product.maxPrice === product.minPrice
-              ? product.maxPrice
-              : `${product.minPrice} - ${product.maxPrice}`
-            : "Hihi"}
+              ? FormatCurrency.VND.format(product.maxPrice)
+              : `${FormatCurrency.VND.format(product.minPrice)} - ${FormatCurrency.VND.format(product.maxPrice)}`
+            : "N/A"
+          }
         </Typography.Paragraph>
       </div>
     </div>
