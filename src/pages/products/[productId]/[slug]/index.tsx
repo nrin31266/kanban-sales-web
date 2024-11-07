@@ -9,6 +9,7 @@ import HeadComponent from "@/components/HeadComponent";
 import { Breadcrumb, Rate, Space, Tag, Typography } from "antd";
 import Link from "next/link";
 import { FormatCurrency } from "@/utils/formatNumber";
+import ScrollItems from "@/components/ScrollItems";
 
 const ProductDetail = ({
   initProduct,
@@ -73,27 +74,12 @@ const ProductDetail = ({
                       alt=""
                     />
                   </div>
-                  <Space wrap className="mt-3">
-                    {productDetail &&
-                      productDetail.map((item, index) => (
-                        <a
-                          onClick={() => setSubProductSelected(item)}
-                          key={"sub-image" + item.id}
-                        >
-                          <img
-                            width={70}
-                            height={80}
-                            style={{ objectFit: "cover" }}
-                            src={
-                              item.images && item.images.length > 0
-                                ? item.images[0]
-                                : "https://i.pinimg.com/736x/47/50/22/47502277fa068232f5a3556f18c362a2.jpg"
-                            }
-                            alt=""
-                          />
-                        </a>
-                      ))}
-                  </Space>
+                  <ScrollItems
+                    items={productDetail}
+                    onClick={(values) => {
+                      values && setSubProductSelected(values);
+                    }}
+                  />
                 </div>
                 <div className="col">
                   <div className="row">
@@ -159,15 +145,18 @@ const ProductDetail = ({
                                 style={{
                                   height: "40px",
                                   width: "40px",
-                                  padding: subProductSelected.color === item.color ? '0' : '5px'
+                                  padding:
+                                    subProductSelected.color === item.color
+                                      ? "0"
+                                      : "5px",
                                 }}
                               >
                                 <div
                                   style={{
                                     backgroundColor: item.color,
                                     borderRadius: 5,
-                                    height: '100%',
-                                    width: '100%',
+                                    height: "100%",
+                                    width: "100%",
                                   }}
                                 ></div>
                               </div>
