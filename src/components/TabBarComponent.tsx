@@ -19,7 +19,7 @@ const TabBarComponent = (props : Props) => {
             </div>
             {titleRight && <div className='col-3 text-right'>{titleRight}</div>}
         </div>
-        <div className='p-2'>
+        <div>
             {children}
         </div>
     </div>

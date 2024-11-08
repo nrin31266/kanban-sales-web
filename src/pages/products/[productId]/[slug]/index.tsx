@@ -200,22 +200,35 @@ const ProductDetail = ({
                         style={{
                           border: "1px solid silver",
                           borderRadius: 6,
-                          padding: '5px 8px',
-
+                          padding: "5px 8px",
                         }}
                       >
-                        <button id="btn-des" onClick={()=> setCount(count-1)} disabled={count===1}>
+                        <button
+                          id="btn-des"
+                          onClick={() => setCount(count - 1)}
+                          disabled={count === 1}
+                        >
                           <MdOutlineRemove />
                         </button>
-                        <Typography.Text style={{fontWeight: 'bold'}} className="ml-3 mr-3">
+                        <Typography.Text
+                          style={{ fontWeight: "bold" }}
+                          className="ml-3 mr-3"
+                        >
                           {count}
                         </Typography.Text>
-                        <button id="btn-asc" onClick={()=> setCount(count+1)} disabled={count===subProductSelected.quantity}>
+                        <button
+                          id="btn-asc"
+                          onClick={() => setCount(count + 1)}
+                          disabled={count === subProductSelected.quantity}
+                        >
                           <MdAdd />
                         </button>
                       </div>
                       <Button type="primary">Add to cart</Button>
-                      <Button style={{color: 'silver'}} icon={<IoMdHeart size={20} />}/>
+                      <Button
+                        style={{ color: "silver" }}
+                        icon={<IoMdHeart size={20} />}
+                      />
                     </Space>
                   </div>
                 </div>

@@ -19,69 +19,37 @@ import { BiArrowBack, BiArrowFromLeft, BiArrowToLeft } from "react-icons/bi";
 import { useRouter } from "next/router";
 import { ProductResponse } from "@/model/ProductModel";
 import ProductItem from "@/components/ProductItem";
+import ScrollItems from "@/components/ScrollItems";
+import ScrollCategories from "@/components/ScrollCategories";
 
 const HomePage = ({
   promotions,
-  categories,
+  initCategories,
   bestsellerProducts,
 }: {
   promotions: PromotionResponse[];
-  categories: CategoryResponse[];
+  initCategories: CategoryResponse[];
   bestsellerProducts: ProductResponse[];
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [numOfColumnsCategories, setNumOfColumnsCategories] = useState(4);
-  const [currentCategoriesIndex, setCurrentCategoriesIndex] = useState(0);
-  const [displayedCategories, setDisplayedCategories] = useState<
-    CategoryResponse[]
-  >([]);
+
   const router = useRouter();
 
   useEffect(() => {
     // console.log(promotions);
     // console.log(categories);
-    console.log(bestsellerProducts);
+    // console.log(bestsellerProducts);
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      const num = width < 577 ? 4 : width < 768 ? 5 : width < 993 ? 6 : 7;
-      setNumOfColumnsCategories(num);
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", () => {});
-  }, []);
-
-  useEffect(() => {
-    const maxIndex = Math.max(0, categories.length - numOfColumnsCategories);
-    if (currentCategoriesIndex > maxIndex) {
-      setCurrentCategoriesIndex(maxIndex);
-    } else {
-      setDisplayedCategories(
-        categories.slice(
-          currentCategoriesIndex,
-          currentCategoriesIndex + numOfColumnsCategories
-        )
-      );
-    }
-  }, [numOfColumnsCategories, currentCategoriesIndex]);
-
-  const handleLeftCategoriesClick = () => {
-    setCurrentCategoriesIndex((prevIndex) =>
-      Math.max(prevIndex - numOfColumnsCategories, 0)
-    );
-  };
-
-  const handleRightCategoriesClick = () => {
-    setCurrentCategoriesIndex((prevIndex) =>
-      Math.min(
-        prevIndex + numOfColumnsCategories,
-        categories.length - numOfColumnsCategories
-      )
-    );
-  };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const width = window.innerWidth;
+  //     const num = width < 577 ? 4 : width < 768 ? 5 : width < 993 ? 6 : 7;
+  //   };
+  //   window.addEventListener("resize", handleResize);
+  //   handleResize();
+  //   return () => window.removeEventListener("resize", () => {});
+  // }, []);
 
   return (
     <div className="mt-2">
@@ -118,50 +86,10 @@ const HomePage = ({
       <Section>
         <TabBarComponent
           title="Categories"
-          titleAlign="text-left"
+          titleAlign="text-center"
           titleLevel={2}
-          titleRight={
-            <Space className="mt-2">
-              <Button
-                size="small"
-                type="primary"
-                onClick={handleLeftCategoriesClick}
-                disabled={currentCategoriesIndex === 0}
-              >
-                <BiArrowBack size={15} />
-              </Button>
-              <Button
-                size="small"
-                type="primary"
-                onClick={handleRightCategoriesClick}
-                disabled={
-                  currentCategoriesIndex >=
-                  categories.length - numOfColumnsCategories
-                }
-              >
-                <BsArrowRight size={15} />
-              </Button>
-            </Space>
-          }
         >
-          <div className="row categories-list">
-            {displayedCategories.map((category, index) => (
-              <div key={category.id + index} className="col p-1 category-item">
-                <img
-                  onClick={() =>
-                    router.push(
-                      `${PAGE.FILTER_PRODUCTS}?categoryId=${category.id}`
-                    )
-                  }
-                  src={
-                    category.imageUrl ??
-                    "https://th.bing.com/th/id/OIP.LDuPjkWofVWM0adJo5hCegHaJw?rs=1&pid=ImgDetMain"
-                  }
-                />
-                <div className="category-item-content">{category.name}</div>
-              </div>
-            ))}
-          </div>
+          <ScrollCategories items={initCategories} onClick={(v)=> console.log(v)}/>
         </TabBarComponent>
       </Section>
       <Section>
@@ -195,7 +123,7 @@ export async function getStaticProps() {
     return {
       props: {
         promotions: promotionsRes.data.result.data,
-        categories: categoriesRes.data.result,
+        initCategories: categoriesRes.data.result,
         bestsellerProducts: bestsellerProductsRes.data.result,
       },
     };
@@ -203,7 +131,7 @@ export async function getStaticProps() {
     return {
       props: {
         promotions: [],
-        categories: [],
+        initCategories: [],
         bestsellerProducts: [],
       },
     };

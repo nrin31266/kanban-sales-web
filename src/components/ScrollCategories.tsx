@@ -1,41 +1,19 @@
-import { SubProductResponse } from "@/model/SubProduct";
+import { CategoryResponse } from "@/model/CategoryModel";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
-  items: SubProductResponse[];
-  onClick: (value: SubProductResponse) => void;
+  items: CategoryResponse[];
+  onClick: (value: CategoryResponse) => void;
 }
 
-const ScrollItems = (props: Props) => {
+const ScrollCategories = (props: Props) => {
   const { items, onClick } = props;
-  const [elements, setElements] = useState<any[]>([]);
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (items) {
-      const groups: any[] = [];
-      items.forEach((item) => {
-        const listImg: string[] = item.images;
-        if (listImg) {
-          listImg.forEach((img) => {
-            groups.push({ ...item, imgUrlSelected: img });
-          });
-        }
-      });
-      // for (let i = 0; i < 7; i++) {
-      //   groups.push({
-      //     item: undefined,
-      //     imgUrl:
-      //       "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
-      //   });
-      // }
-      setElements(groups);
-    }
-  }, [items]);
   const scrollGallery = (offset: number) => {
     if (galleryRef.current) {
       galleryRef.current.scrollLeft += offset;
@@ -77,35 +55,39 @@ const ScrollItems = (props: Props) => {
         gallery.removeEventListener("scroll", checkScrollPosition);
       }
     };
-  }, [elements]);
+  }, [items]);
 
   return (
     <div className="gallery-wrap">
       {!isAtStart && (
-        <button id="btn-back" className="btn" onClick={scrollLeft}>
+        <button style={{ marginBottom: "30px" }} id="btn-back" className="btn" onClick={scrollLeft}>
           <FontAwesomeIcon icon={faAngleLeft} className="btn-icon" />
         </button>
       )}
-      <div className="sub-product-gallery" ref={galleryRef}>
-        {elements.length > 0 &&
-          elements.map((item, index) => (
+      <div className="category-gallery" ref={galleryRef}>
+        {items.length > 0 &&
+          items.map((item, index) => (
             <a key={"image" + index} onClick={() => onClick(item)}>
-              <div className="image">
+              <div>
                 <span>
                   <img
                     style={{ objectFit: "cover" }}
-                    width={100}
-                    height={110}
-                    src={item.imgUrlSelected}
+                    src={
+                      item.imageUrl ??
+                      "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312"
+                    }
                     alt=""
                   />
                 </span>
+              </div>
+              <div className="category-content">
+                <span>{item.name}</span>
               </div>
             </a>
           ))}
       </div>
       {!isAtEnd && (
-        <button id="btn-next" className="btn" onClick={scrollRight}>
+        <button style={{ marginBottom: "30px" }} id="btn-next" className="btn" onClick={scrollRight}>
           <FontAwesomeIcon icon={faAngleRight} className="btn-icon" />
         </button>
       )}
@@ -113,4 +95,4 @@ const ScrollItems = (props: Props) => {
   );
 };
 
-export default ScrollItems;
+export default ScrollCategories;
