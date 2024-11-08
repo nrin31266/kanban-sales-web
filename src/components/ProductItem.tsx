@@ -35,7 +35,7 @@ const ProductItem = (props: Props) => {
           <div className="image" style={{ backgroundColor: "#e0e0e0" }}>
             <img
               width={"100%"}
-              height={elementWidth ? elementWidth * 1.1 : 250}
+              height={elementWidth ? elementWidth : 250}
               // src="https://i.pinimg.com/736x/47/50/22/47502277fa068232f5a3556f18c362a2.jpg"
               src={`${product.images[0]}`}
               alt={product.slug}

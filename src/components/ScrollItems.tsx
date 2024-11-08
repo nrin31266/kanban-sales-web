@@ -36,6 +36,11 @@ const ScrollItems = (props: Props) => {
       setElements(groups);
     }
   }, [items]);
+
+  useEffect(()=>{
+    console.log(elements);
+  }, [elements])
+
   const scrollGallery = (offset: number) => {
     if (galleryRef.current) {
       galleryRef.current.scrollLeft += offset;
@@ -43,8 +48,8 @@ const ScrollItems = (props: Props) => {
     }
   };
 
-  const scrollLeft = () => scrollGallery(-600);
-  const scrollRight = () => scrollGallery(600);
+  const scrollLeft = () => scrollGallery(-300);
+  const scrollRight = () => scrollGallery(300);
 
   const checkScrollPosition = () => {
     if (galleryRef.current) {
@@ -94,8 +99,8 @@ const ScrollItems = (props: Props) => {
                 <span>
                   <img
                     style={{ objectFit: "cover" }}
-                    width={100}
-                    height={110}
+                    width={'80px'}
+                    height={'90px'}
                     src={item.imgUrlSelected}
                     alt=""
                   />

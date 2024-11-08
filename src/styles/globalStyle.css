@@ -171,7 +171,7 @@
   scroll-behavior: smooth;
 }
 
-.sub-product-gallery, .category-gallery div {
+.sub-product-gallery div, .category-gallery div {
   width: 100%;
   display: grid;
   grid-template-columns: auto auto auto;
@@ -188,7 +188,7 @@
 
 } */
 
-.sub-product-gallery, .category-gallery::-webkit-scrollbar{
+.sub-product-gallery::-webkit-scrollbar, .category-gallery::-webkit-scrollbar{
   display: none;
 }
 
@@ -240,7 +240,7 @@
   height: 25px;
 }
 
-.sub-product-gallery, .category-gallery a:hover{
+.sub-product-gallery a:hover, .category-gallery a:hover{
   transform: scale(1.1);
 }
 .category-gallery a:hover .category-content{
