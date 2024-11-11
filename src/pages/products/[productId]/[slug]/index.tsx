@@ -26,10 +26,47 @@ const ProductDetail = ({
     SubProductResponse | undefined
   >(initProductDetail.length > 0 ? initProductDetail[0] : undefined);
   const [count, setCount] = useState(1);
+  const [photoSelected, setPhotoSelected] = useState(
+    product.images.length > 0
+      ? product.images[0]
+      : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
+  );
 
   useEffect(() => {
     console.log(initProduct, initProductDetail);
+    getListOptions();
   }, []);
+
+  const [listOptions, setListOptions] = useState<Map<string, Set<string>>>();
+
+  const getListOptions = () => {
+    const map: Map<string, Set<string>> = new Map();
+    if (product.options && product.options.length > 0) {
+      product.options.forEach((option) => map.set(option, new Set()));
+    }
+    productDetail.forEach((subPro) => {
+      if (subPro.options && typeof subPro.options === 'object' && !Array.isArray(subPro.options)) {
+        Object.entries(subPro.options).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            const optionSet = map.get(key);
+            if (optionSet) {
+              optionSet.add(value);
+            }
+          } else {
+            console.warn(`Invalid value for key "${key}":`, value);
+          }
+        });
+      } else {
+        console.warn('subPro.options is not an object:', subPro.options);
+      }
+    });
+
+    setListOptions(map);
+  };
+
+  useEffect(()=>{
+    console.log(listOptions);
+  }, [listOptions])
 
   return (
     <div>
@@ -65,20 +102,11 @@ const ProductDetail = ({
                     className="text-center p-4"
                     style={{ backgroundColor: "#e0e0e0" }}
                   >
-                    <img
-                      src={
-                        subProductSelected.images &&
-                        subProductSelected.images.length > 0
-                          ? subProductSelected.imgUrlSelected
-                            ? subProductSelected.imgUrlSelected
-                            : subProductSelected.images[0]
-                          : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
-                      }
-                      width={"100%"}
-                      alt=""
-                    />
+                    <img src={photoSelected} width={"100%"} alt="" />
                   </div>
                   <ScrollItems
+                    onPhotoSelected={(p) => setPhotoSelected(p)}
+                    product={product}
                     items={productDetail}
                     onClick={(values) => {
                       values && setSubProductSelected(values);
@@ -137,63 +165,9 @@ const ProductDetail = ({
                     )}
                     <p className="mb-0">{product.description}</p>
                     <Typography.Title level={5}>Color</Typography.Title>
-                    <Space>
-                      {productDetail.length > 0 &&
-                        productDetail.map((item, index) =>
-                          item.color ? (
-                            <a
-                              key={"sub-product-color" + index}
-                              onClick={() => setSubProductSelected(item)}
-                            >
-                              <div
-                                style={{
-                                  height: "40px",
-                                  width: "40px",
-                                  padding:
-                                    subProductSelected.color === item.color
-                                      ? "0"
-                                      : "5px",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    backgroundColor: item.color,
-                                    borderRadius: 5,
-                                    height: "100%",
-                                    width: "100%",
-                                  }}
-                                ></div>
-                              </div>
-                            </a>
-                          ) : (
-                            ""
-                          )
-                        )}
-                    </Space>
-                    <Typography.Title level={5}>Size</Typography.Title>
-                    <Space wrap>
-                      {productDetail.length > 0 &&
-                        productDetail.map((item, index) =>
-                          item.color ? (
-                            <a
-                              key={"sub-product-size" + index}
-                              onClick={() => setSubProductSelected(item)}
-                            >
-                              <Tag
-                                color={
-                                  subProductSelected.size === item.size
-                                    ? "black"
-                                    : ""
-                                }
-                              >
-                                {item.size}
-                              </Tag>
-                            </a>
-                          ) : (
-                            ""
-                          )
-                        )}
-                    </Space>
+                    {product.options.map((option, index) => {
+                      productDetail.map((sub, index) => {});
+                    })}
                     <br />
                     <Space className="mt-3">
                       <div

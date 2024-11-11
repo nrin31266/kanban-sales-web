@@ -1,14 +1,13 @@
 export interface SubProductResponse {
-    id: string
-    size: string
-    color: string
-    price: number
-    quantity: number
-    images: string[]
-    productId: string
-    discount?: number
-    createdAt: string
-    updatedAt: string
-    //
-    imgUrlSelected?: string;
-  }
+  id: string;
+  options: any;
+  discount: number;
+  price: number;
+  quantity: number;
+  images: string[];
+  productId: string;
+  createdAt: string;
+  updatedAt: string;
+  //
+  imgUrlSelected?: string;
+}

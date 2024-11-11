@@ -54,7 +54,7 @@ const HomePage = ({
   return (
     <div className="mt-2">
       {promotions.length > 0 && (
-        <div className="container">
+        <div className="container" style={{backgroundColor: '#e0e0e0'}}>
           <Carousel autoplay autoplaySpeed={2000}>
             {promotions.map((item, index) => (
               <div key={index}>

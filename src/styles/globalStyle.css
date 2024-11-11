@@ -171,6 +171,11 @@
   scroll-behavior: smooth;
 }
 
+.sub-product-gallery img{
+  border: 1px solid silver;
+  border-radius: 6;
+}
+
 .sub-product-gallery div, .category-gallery div {
   width: 100%;
   display: grid;

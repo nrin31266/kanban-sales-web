@@ -1,3 +1,4 @@
+import { ProductResponse } from "@/model/ProductModel";
 import { SubProductResponse } from "@/model/SubProduct";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -5,24 +6,31 @@ import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
   items: SubProductResponse[];
+  product?: ProductResponse;
   onClick: (value: SubProductResponse) => void;
+  onPhotoSelected: (photoUrl: string) => void;
 }
 
 const ScrollItems = (props: Props) => {
-  const { items, onClick } = props;
+  const { items, onClick, product, onPhotoSelected } = props;
   const [elements, setElements] = useState<any[]>([]);
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const groups: any[] = [];
+    if (product) {
+      product.images.forEach((img) => {
+        groups.push({ item: undefined, imgUrlSelected: img });
+      });
+    }
     if (items) {
-      const groups: any[] = [];
       items.forEach((item) => {
         const listImg: string[] = item.images;
         if (listImg) {
           listImg.forEach((img) => {
-            groups.push({ ...item, imgUrlSelected: img });
+            groups.push({ item: { ...item }, imgUrlSelected: img });
           });
         }
       });
@@ -33,13 +41,13 @@ const ScrollItems = (props: Props) => {
       //       "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
       //   });
       // }
-      setElements(groups);
     }
+    setElements(groups);
   }, [items]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(elements);
-  }, [elements])
+  }, [elements]);
 
   const scrollGallery = (offset: number) => {
     if (galleryRef.current) {
@@ -94,13 +102,19 @@ const ScrollItems = (props: Props) => {
       <div className="sub-product-gallery" ref={galleryRef}>
         {elements.length > 0 &&
           elements.map((item, index) => (
-            <a key={"image" + index} onClick={() => onClick(item)}>
+            <a
+              key={"image" + index}
+              onClick={() => {
+                onPhotoSelected(item.imgUrlSelected);
+                item.item && onClick(item.item);
+              }}
+            >
               <div className="image">
                 <span>
                   <img
                     style={{ objectFit: "cover" }}
-                    width={'80px'}
-                    height={'90px'}
+                    width={"80px"}
+                    height={"90px"}
                     src={item.imgUrlSelected}
                     alt=""
                   />
