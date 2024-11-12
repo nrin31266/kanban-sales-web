@@ -12,6 +12,10 @@ import ScrollItems from "@/components/ScrollItems";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import { IoMdHeart } from "react-icons/io";
 import { isMapsOptionsEqual } from "@/utils/compare";
+import { useSelector } from "react-redux";
+import { authSelector } from "@/reducx/reducers/authReducer";
+import { AuthModel } from "@/model/AuthenticationModel";
+import { useRouter } from "next/router";
 
 const ProductDetail = ({
   initProduct,
@@ -34,6 +38,8 @@ const ProductDetail = ({
   const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
     new Map()
   );
+  const auth: AuthModel = useSelector(authSelector);
+  const router = useRouter();
 
   useEffect(() => {
     console.log("hihi");
@@ -51,33 +57,26 @@ const ProductDetail = ({
               setPhotoSelected(sub.images[0]);
             }
             break;
-          } else {
-            console.log(sub);
-            console.log(optionSelected);
           }
         }
       }
-    } else {
-      console.log("hihihihi");
-      console.log(optionSelected);
     }
   }, [optionSelected]);
 
   useEffect(() => {
-    console.log(initProduct, initProductDetail);
     getListOptions();
     setInitOptions();
   }, []);
 
-  useEffect(()=>{
-    if(subProductSelected){
-      if(subProductSelected.quantity> 0){
+  useEffect(() => {
+    if (subProductSelected) {
+      if (subProductSelected.quantity > 0) {
         setCount(1);
-      }else{
+      } else {
         setCount(0);
       }
     }
-  }, [subProductSelected])
+  }, [subProductSelected]);
 
   const setInitOptions = () => {
     if (productDetail && productDetail.length > 0) {
@@ -87,6 +86,14 @@ const ProductDetail = ({
           return;
         }
       });
+    }
+  };
+
+  const handleCart = async () => {
+    if (!auth.accessToken) {
+      router.push(`${PAGE.LOGIN}?productId=${product.id}&slug=${product.slug}`);
+      return;
+    } else {
     }
   };
 
@@ -130,9 +137,7 @@ const ProductDetail = ({
     setListOptions(map);
   };
 
-  useEffect(() => {
-    console.log(listOptions);
-  }, [listOptions]);
+  useEffect(() => {}, [listOptions]);
 
   return (
     <div>
@@ -191,7 +196,9 @@ const ProductDetail = ({
                     <div className="col">
                       <Space>
                         <Tag
-                          color={subProductSelected.quantity > 0 ? 'green' : 'red'}
+                          color={
+                            subProductSelected.quantity > 0 ? "green" : "red"
+                          }
                         >
                           {subProductSelected.quantity > 0
                             ? "In stock"
@@ -241,18 +248,38 @@ const ProductDetail = ({
                           <div key={key}>
                             <Typography.Title level={5}>{key}</Typography.Title>
                             {Array.from(valuesSet).map((value) => {
-                              const isDisabled = !productDetail.some(
-                                (sub) =>
-                                  sub.options &&
-                                  sub.options[key] === value &&
-                                  Object.entries(
-                                    Object.fromEntries(optionSelected)
-                                  ).every(
-                                    ([optKey, optValue]) =>
-                                      optKey === key ||
-                                      sub.options[optKey] === optValue
-                                  )
-                              );
+                              let isDisabled = true;
+                              // Duyệt qua từng sản phẩm
+                              for (let i = 0; i < productDetail.length; i++) {
+                                const sub = productDetail[i];
+                                // Bước 1: Kiểm tra xem sản phẩm có tùy chọn không
+                                if (!sub.options) {
+                                  continue; // Nếu không có tùy chọn thì bỏ qua sản phẩm này
+                                }
+                                // Bước 2: Kiểm tra nếu sản phẩm có giá trị khớp với `key` và `value`
+                                if (sub.options[key] !== value) {
+                                  continue; // Nếu không khớp với `size`, bỏ qua sản phẩm này
+                                }
+
+                                // Bước 3: Kiểm tra tất cả các tùy chọn đã chọn có khớp với sản phẩm
+                                let allOptionsValid = true;
+                                for (let [optKey, optValue] of optionSelected) {
+                                  // Nếu `optKey` không phải là `key`, kiểm tra xem giá trị có khớp không
+                                  if (
+                                    optKey !== key &&
+                                    sub.options[optKey] !== optValue
+                                  ) {
+                                    allOptionsValid = false;
+                                    break; // Nếu có một tùy chọn không hợp lệ thì dừng kiểm tra
+                                  }
+                                }
+
+                                // Bước 4: Nếu tất cả các tùy chọn khớp, sản phẩm này hợp lệ
+                                if (allOptionsValid) {
+                                  isDisabled = false; // Sản phẩm hợp lệ, cho phép nhấn nút
+                                  break; // Dừng kiểm tra sau khi tìm thấy sản phẩm hợp lệ đầu tiên
+                                }
+                              }
 
                               return (
                                 <Button
@@ -270,6 +297,9 @@ const ProductDetail = ({
                                   key={value}
                                   disabled={isDisabled}
                                 >
+                                  {
+                                    key === 'Color' && <div style={{border: '1px solid silver', backgroundColor: value, borderRadius: 100, width: 20, height: 20}}></div>
+                                  }
                                   {value}
                                 </Button>
                               );
@@ -307,7 +337,13 @@ const ProductDetail = ({
                           <MdAdd />
                         </button>
                       </div>
-                      <Button type="primary" disabled={subProductSelected.quantity <=0}>Add to cart</Button>
+                      <Button
+                        onClick={() => handleCart()}
+                        type="primary"
+                        disabled={subProductSelected.quantity <= 0}
+                      >
+                        Add to cart
+                      </Button>
                       <Button
                         style={{ color: "silver" }}
                         icon={<IoMdHeart size={20} />}

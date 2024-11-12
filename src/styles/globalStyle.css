@@ -86,6 +86,16 @@
   
 }
 
+.product-item .title-content .title{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3.5em;
+}
+
 .product-item .hover-content{
   position: absolute;
   top: 0;
@@ -125,7 +135,7 @@
 
 .product-item .hover-content .bottom {
   position: absolute;
-  bottom: 60px;
+  bottom: 70px;
   width: 100%;
   text-align: center;
   /* background-color: rgba(0, 0, 0, 0.5); */

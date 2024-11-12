@@ -68,8 +68,8 @@ const ProductItem = (props: Props) => {
           <MdImage size={32} />
         </div>
       )}
-      <div>
-        <Typography.Paragraph style={{ fontWeight: "bold" }}>
+      <div className="title-content">
+        <Typography.Paragraph className="title" style={{ fontWeight: "bold" }}>
           {product.title}
         </Typography.Paragraph>
         <Typography.Paragraph style={{ fontSize: "1.1em" }}>

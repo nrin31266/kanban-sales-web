@@ -34,6 +34,7 @@ export const PAGE = {
   AUTHENTICATE: '/auth/authenticate',
   SHOP: '/shop',
   FILTER_PRODUCTS: '/filter-products',
+  PRODUCTS: '/products'
 }
 
 export const APP = {

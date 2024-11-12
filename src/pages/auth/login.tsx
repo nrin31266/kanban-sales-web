@@ -14,12 +14,18 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AuthModel } from './../../model/AuthenticationModel';
 import { UserInfoResponse } from "@/model/UserModel";
+import { useSearchParams } from "next/navigation";
 
 const login = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
+  const searchParam = useSearchParams();
+  const productId = searchParam.get('productId');
+  const productSlug = searchParam.get('slug');
+
+
   const handleLogin = async (values: LoginRequest) => {
     setIsLoading(true);
     const api = `${API.LOGIN}`;
@@ -29,7 +35,7 @@ const login = () => {
       const accessToken = response.result.token;
       dispatch(addAuth({accessToken: accessToken}))
       getUserInfo(accessToken);
-      router.push(PAGE.HOME);
+      router.push(productId && productSlug ? `${PAGE.PRODUCTS}/${productId}/${productSlug}` : PAGE.HOME);
     } catch (error) {
       console.log(error);
     }finally{
