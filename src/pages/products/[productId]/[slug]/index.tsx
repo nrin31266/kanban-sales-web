@@ -146,7 +146,7 @@ const ProductDetail = ({
     <Button
       onClick={() => handleCart()}
       type="primary"
-      disabled={item? (count > (subProductSelected.quantity - item.count)) : (count > subProductSelected.quantity)}
+      disabled={item? (count >= (subProductSelected.quantity - item.count)) : (count >= subProductSelected.quantity)}
     >
       Add to cart
     </Button>

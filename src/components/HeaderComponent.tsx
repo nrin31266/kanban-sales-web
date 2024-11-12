@@ -8,7 +8,7 @@ import {
 } from "@/reducx/reducers/authReducer";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Affix, Badge, Button, Drawer, Menu, Space } from "antd";
+import { Affix, Badge, Button, Drawer, Dropdown, Menu, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
@@ -23,6 +23,8 @@ import { IoClose } from "react-icons/io5";
 import useSelection from "antd/es/table/hooks/useSelection";
 import { cartSelector } from "@/reducx/reducers/cartReducer";
 import { SubProductResponse } from "@/model/SubProduct";
+import CartComponent from "./CartComponent";
+import { CartResponse } from "@/model/CartModel";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -34,7 +36,7 @@ const HeaderComponent = () => {
   ]);
   const router = useRouter();
   const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
-  const cart : SubProductResponse[] = useSelector(cartSelector);
+  const carts: CartResponse[] = useSelector(cartSelector);
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
 
@@ -104,14 +106,17 @@ const HeaderComponent = () => {
                 <>
                   <Button type="text" icon={<FiSearch size={20} />}></Button>
                   <Button type="text" icon={<FcLike size={20} />}></Button>
-                  <Button
-                    type="text"
-                    icon={
-                      <Badge count={cart.length}>
+                  <Dropdown
+                    placement="bottom"
+                    trigger={["click"]}
+                    dropdownRender={() => <CartComponent products={carts} />}
+                  >
+                    <a onClick={(e) => e.preventDefault()}>
+                      <Badge count={carts.length}>
                         <MdOutlineShoppingCart size={20} />
                       </Badge>
-                    }
-                  ></Button>
+                    </a>
+                  </Dropdown>
                   <Button
                     type="text"
                     icon={<IoNotificationsSharp size={20} />}

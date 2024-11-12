@@ -27,9 +27,16 @@ const cartSlice = createSlice({
       }
       state.data = items;
     },
-    removeProduct: (state, _action) => {
-      state.data = initialState;
-      syncLocal({});
+    removeProduct: (state, action) => {
+      const items = state.data;
+      const item = action.payload;
+      const index = items.findIndex((ele) => ele.id === item.id);
+
+      if(index != -1){
+        items.splice(index, 1);
+        state.data = items;
+        removeCart(item.id, item.createdBy);
+      }
     },
     addAllProduct: (state, action)=>{
         state.data = action.payload;
@@ -55,7 +62,7 @@ const addCart = async (item: SubProductResponse) => {
         options: item.options,
         quantity: item.quantity,
         subProductId: item.id,
-        imageUrl: item.images.length> 0 ? item.images[0]  : ''
+        imageUrl: item.images && item.images.length> 0 ? item.images[0]  : ''
     }
 
   try {
@@ -73,7 +80,7 @@ const updateCart = async (item: SubProductResponse) => {
         options: item.options,
         quantity: item.quantity,
         subProductId: item.id,
-        imageUrl: item.images.length> 0 ? item.images[0]  : ''
+        imageUrl: item.images && item.images.length> 0 ? item.images[0]  : ''
     }
 
   try {
@@ -84,4 +91,11 @@ const updateCart = async (item: SubProductResponse) => {
   }
 };
 
-const removeCart = () => {};
+const removeCart = async (subProductId: string, createdBy: string) => {
+    try {
+        await handleAPI(`${API.CARTS}/${subProductId}/${createdBy}`, undefined, 'delete');
+        
+    } catch (error) {
+        console.log(error);
+    }
+};
