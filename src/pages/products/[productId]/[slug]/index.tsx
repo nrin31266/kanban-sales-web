@@ -11,6 +11,7 @@ import { FormatCurrency } from "@/utils/formatNumber";
 import ScrollItems from "@/components/ScrollItems";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import { IoMdHeart } from "react-icons/io";
+import { isMapsOptionsEqual } from "@/utils/compare";
 
 const ProductDetail = ({
   initProduct,
@@ -22,20 +23,82 @@ const ProductDetail = ({
   const [product, setProduct] = useState<ProductResponse>(initProduct);
   const [productDetail, setProductDetail] =
     useState<SubProductResponse[]>(initProductDetail);
-  const [subProductSelected, setSubProductSelected] = useState<
-    SubProductResponse | undefined
-  >(initProductDetail.length > 0 ? initProductDetail[0] : undefined);
+  const [subProductSelected, setSubProductSelected] =
+    useState<SubProductResponse>();
   const [count, setCount] = useState(1);
   const [photoSelected, setPhotoSelected] = useState(
-    product.images.length > 0
+    product.images && product.images.length > 0
       ? product.images[0]
       : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
   );
+  const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
+    new Map()
+  );
+
+  useEffect(() => {
+    console.log("hihi");
+
+    if (optionSelected && optionSelected.size > 0) {
+      for (const sub of productDetail) {
+        if (sub.options && Object.keys(sub.options).length > 0) {
+          const map: Map<string, string> = new Map();
+          Object.entries(sub.options).forEach(([key, value]) => {
+            if (typeof value === "string") map.set(key, value);
+          });
+          if (isMapsOptionsEqual(map, optionSelected)) {
+            setSubProductSelected(sub);
+            if (sub.images && sub.images.length > 0) {
+              setPhotoSelected(sub.images[0]);
+            }
+            break;
+          } else {
+            console.log(sub);
+            console.log(optionSelected);
+          }
+        }
+      }
+    } else {
+      console.log("hihihihi");
+      console.log(optionSelected);
+    }
+  }, [optionSelected]);
 
   useEffect(() => {
     console.log(initProduct, initProductDetail);
     getListOptions();
+    setInitOptions();
   }, []);
+
+  useEffect(()=>{
+    if(subProductSelected){
+      if(subProductSelected.quantity> 0){
+        setCount(1);
+      }else{
+        setCount(0);
+      }
+    }
+  }, [subProductSelected])
+
+  const setInitOptions = () => {
+    if (productDetail && productDetail.length > 0) {
+      productDetail.forEach((sub) => {
+        if (sub.quantity > 0) {
+          setOptions(sub);
+          return;
+        }
+      });
+    }
+  };
+
+  const setOptions = (sub: SubProductResponse) => {
+    if (sub.options && Object.keys(sub.options).length > 0) {
+      const map: Map<string, string> = new Map();
+      Object.entries(sub.options).forEach(([key, value]) => {
+        if (typeof value === "string") map.set(key, value);
+      });
+      setOptionSelected(map);
+    }
+  };
 
   const [listOptions, setListOptions] = useState<Map<string, Set<string>>>();
 
@@ -45,9 +108,13 @@ const ProductDetail = ({
       product.options.forEach((option) => map.set(option, new Set()));
     }
     productDetail.forEach((subPro) => {
-      if (subPro.options && typeof subPro.options === 'object' && !Array.isArray(subPro.options)) {
+      if (
+        subPro.options &&
+        typeof subPro.options === "object" &&
+        !Array.isArray(subPro.options)
+      ) {
         Object.entries(subPro.options).forEach(([key, value]) => {
-          if (typeof value === 'string') {
+          if (typeof value === "string") {
             const optionSet = map.get(key);
             if (optionSet) {
               optionSet.add(value);
@@ -57,16 +124,15 @@ const ProductDetail = ({
           }
         });
       } else {
-        console.warn('subPro.options is not an object:', subPro.options);
+        console.warn("subPro.options is not an object:", subPro.options);
       }
     });
-
     setListOptions(map);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(listOptions);
-  }, [listOptions])
+  }, [listOptions]);
 
   return (
     <div>
@@ -109,7 +175,9 @@ const ProductDetail = ({
                     product={product}
                     items={productDetail}
                     onClick={(values) => {
-                      values && setSubProductSelected(values);
+                      if (values) {
+                        setOptions(values);
+                      }
                     }}
                   />
                 </div>
@@ -122,7 +190,9 @@ const ProductDetail = ({
                     </div>
                     <div className="col">
                       <Space>
-                        <Tag>
+                        <Tag
+                          color={subProductSelected.quantity > 0 ? 'green' : 'red'}
+                        >
                           {subProductSelected.quantity > 0
                             ? "In stock"
                             : "Out stock"}
@@ -132,8 +202,8 @@ const ProductDetail = ({
                     </div>
                   </div>
                   <div>
-                    <Typography.Title level={5}>
-                      {product.supplierId}
+                    <Typography.Title type="secondary" level={5}>
+                      {product.supplierResponse.name}
                     </Typography.Title>
                     <div>
                       <Rate disabled defaultValue={5} />
@@ -165,10 +235,49 @@ const ProductDetail = ({
                     )}
                     <p className="mb-0">{product.description}</p>
                     <Typography.Title level={5}>Color</Typography.Title>
-                    {product.options.map((option, index) => {
-                      productDetail.map((sub, index) => {});
-                    })}
-                    <br />
+                    {listOptions &&
+                      Array.from(listOptions.entries()).map(
+                        ([key, valuesSet]) => (
+                          <div key={key}>
+                            <Typography.Title level={5}>{key}</Typography.Title>
+                            {Array.from(valuesSet).map((value) => {
+                              const isDisabled = !productDetail.some(
+                                (sub) =>
+                                  sub.options &&
+                                  sub.options[key] === value &&
+                                  Object.entries(
+                                    Object.fromEntries(optionSelected)
+                                  ).every(
+                                    ([optKey, optValue]) =>
+                                      optKey === key ||
+                                      sub.options[optKey] === optValue
+                                  )
+                              );
+
+                              return (
+                                <Button
+                                  type={
+                                    optionSelected.get(key) === value
+                                      ? "primary"
+                                      : "default"
+                                  }
+                                  onClick={() => {
+                                    const newMap = new Map(optionSelected);
+                                    newMap.set(key, value);
+                                    setOptionSelected(newMap);
+                                  }}
+                                  className="p-1 mr-1"
+                                  key={value}
+                                  disabled={isDisabled}
+                                >
+                                  {value}
+                                </Button>
+                              );
+                            })}
+                          </div>
+                        )
+                      )}
+
                     <Space className="mt-3">
                       <div
                         style={{
@@ -180,7 +289,7 @@ const ProductDetail = ({
                         <button
                           id="btn-des"
                           onClick={() => setCount(count - 1)}
-                          disabled={count === 1}
+                          disabled={count <= 1}
                         >
                           <MdOutlineRemove />
                         </button>
@@ -198,7 +307,7 @@ const ProductDetail = ({
                           <MdAdd />
                         </button>
                       </div>
-                      <Button type="primary">Add to cart</Button>
+                      <Button type="primary" disabled={subProductSelected.quantity <=0}>Add to cart</Button>
                       <Button
                         style={{ color: "silver" }}
                         icon={<IoMdHeart size={20} />}
