@@ -10,4 +10,6 @@ export interface SubProductResponse {
   updatedAt: string;
   //
   imgUrlSelected?: string;
+  count: number;
+  createdBy: string;
 }

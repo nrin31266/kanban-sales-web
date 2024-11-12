@@ -6,10 +6,9 @@ import {
   authSelector,
   removeAuth,
 } from "@/reducx/reducers/authReducer";
-import { changePage, pageSelector } from "@/reducx/reducers/pageReducer";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Affix, Button, Drawer, Menu, Space } from "antd";
+import { Affix, Badge, Button, Drawer, Menu, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
@@ -21,6 +20,9 @@ import { FiSearch } from "react-icons/fi";
 import { IoNotificationsSharp } from "react-icons/io5";
 import { RiMenuUnfold3Line2 } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
+import useSelection from "antd/es/table/hooks/useSelection";
+import { cartSelector } from "@/reducx/reducers/cartReducer";
+import { SubProductResponse } from "@/model/SubProduct";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -32,7 +34,7 @@ const HeaderComponent = () => {
   ]);
   const router = useRouter();
   const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
-
+  const cart : SubProductResponse[] = useSelector(cartSelector);
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
 
@@ -68,7 +70,7 @@ const HeaderComponent = () => {
 
   return (
     <Affix offsetTop={0}>
-      <div style={{backgroundColor: '#e0e0e0'}}>
+      <div style={{ backgroundColor: "#e0e0e0" }}>
         <div className="row" style={{}}>
           <div className="d-block d-md-none col">
             <Button
@@ -104,7 +106,11 @@ const HeaderComponent = () => {
                   <Button type="text" icon={<FcLike size={20} />}></Button>
                   <Button
                     type="text"
-                    icon={<MdOutlineShoppingCart size={20} />}
+                    icon={
+                      <Badge count={cart.length}>
+                        <MdOutlineShoppingCart size={20} />
+                      </Badge>
+                    }
                   ></Button>
                   <Button
                     type="text"

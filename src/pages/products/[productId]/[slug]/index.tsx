@@ -12,10 +12,11 @@ import ScrollItems from "@/components/ScrollItems";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import { IoMdHeart } from "react-icons/io";
 import { isMapsOptionsEqual } from "@/utils/compare";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "@/reducx/reducers/authReducer";
 import { AuthModel } from "@/model/AuthenticationModel";
 import { useRouter } from "next/router";
+import { addProduct, cartSelector } from "@/reducx/reducers/cartReducer";
 
 const ProductDetail = ({
   initProduct,
@@ -40,6 +41,12 @@ const ProductDetail = ({
   );
   const auth: AuthModel = useSelector(authSelector);
   const router = useRouter();
+  const cart : SubProductResponse[] = useSelector(cartSelector);
+  const dispatch = useDispatch();
+
+
+  console.log(cart);
+
 
   useEffect(() => {
     console.log("hihi");
@@ -93,9 +100,61 @@ const ProductDetail = ({
     if (!auth.accessToken) {
       router.push(`${PAGE.LOGIN}?productId=${product.id}&slug=${product.slug}`);
       return;
-    } else {
+    } else if(subProductSelected && auth.userInfo){
+      const item: SubProductResponse = {...subProductSelected, count: count, createdBy: auth.userInfo.id};
+      dispatch(addProduct(item));
+      setCount(1);
     }
   };
+
+  const renderButtonGroup = ()=>{
+
+    const item : SubProductResponse | undefined= cart.find((ele)=> ele.id === subProductSelected?.id);
+
+    return subProductSelected && <Space className="mt-3">
+      <Typography.Title level={5} type="secondary">{'Available: '}{item? subProductSelected.quantity - item.count : subProductSelected.quantity}</Typography.Title>
+    <div
+      style={{
+        border: "1px solid silver",
+        borderRadius: 6,
+        padding: "5px 8px",
+      }}
+    >
+      <button
+        id="btn-des"
+        onClick={() => setCount(count - 1)}
+        disabled={count <= 1}
+      >
+        <MdOutlineRemove />
+      </button>
+      <Typography.Text
+        style={{ fontWeight: "bold" }}
+        className="ml-3 mr-3"
+      >
+        {count}
+      </Typography.Text>
+      <button
+      
+        id="btn-asc"
+        onClick={() => setCount(count + 1)}
+        disabled={item? (count >= (subProductSelected.quantity - item.count)) : (count >= subProductSelected.quantity)}
+      >
+        <MdAdd />
+      </button>
+    </div>
+    <Button
+      onClick={() => handleCart()}
+      type="primary"
+      disabled={item? (count > (subProductSelected.quantity - item.count)) : (count > subProductSelected.quantity)}
+    >
+      Add to cart
+    </Button>
+    <Button
+      style={{ color: "silver" }}
+      icon={<IoMdHeart size={20} />}
+    />
+  </Space>
+  }
 
   const setOptions = (sub: SubProductResponse) => {
     if (sub.options && Object.keys(sub.options).length > 0) {
@@ -241,12 +300,11 @@ const ProductDetail = ({
                       </Typography.Title>
                     )}
                     <p className="mb-0">{product.description}</p>
-                    <Typography.Title level={5}>Color</Typography.Title>
                     {listOptions &&
                       Array.from(listOptions.entries()).map(
                         ([key, valuesSet]) => (
                           <div key={key}>
-                            <Typography.Title level={5}>{key}</Typography.Title>
+                            <Typography.Title className="mb-2 mt-2" level={5}>{key}</Typography.Title>
                             {Array.from(valuesSet).map((value) => {
                               let isDisabled = true;
                               // Duyệt qua từng sản phẩm
@@ -308,47 +366,9 @@ const ProductDetail = ({
                         )
                       )}
 
-                    <Space className="mt-3">
-                      <div
-                        style={{
-                          border: "1px solid silver",
-                          borderRadius: 6,
-                          padding: "5px 8px",
-                        }}
-                      >
-                        <button
-                          id="btn-des"
-                          onClick={() => setCount(count - 1)}
-                          disabled={count <= 1}
-                        >
-                          <MdOutlineRemove />
-                        </button>
-                        <Typography.Text
-                          style={{ fontWeight: "bold" }}
-                          className="ml-3 mr-3"
-                        >
-                          {count}
-                        </Typography.Text>
-                        <button
-                          id="btn-asc"
-                          onClick={() => setCount(count + 1)}
-                          disabled={count === subProductSelected.quantity}
-                        >
-                          <MdAdd />
-                        </button>
-                      </div>
-                      <Button
-                        onClick={() => handleCart()}
-                        type="primary"
-                        disabled={subProductSelected.quantity <= 0}
-                      >
-                        Add to cart
-                      </Button>
-                      <Button
-                        style={{ color: "silver" }}
-                        icon={<IoMdHeart size={20} />}
-                      />
-                    </Space>
+                    {
+                      renderButtonGroup()
+                    }
                   </div>
                 </div>
               </div>
