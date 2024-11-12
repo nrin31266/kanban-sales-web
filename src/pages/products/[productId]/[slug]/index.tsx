@@ -109,7 +109,8 @@ const ProductDetail = ({
 
   const renderButtonGroup = ()=>{
 
-    const item : SubProductResponse | undefined= cart.find((ele)=> ele.id === subProductSelected?.id);
+    let item : SubProductResponse | undefined= cart.find((ele)=> ele.id === subProductSelected?.id);
+    
 
     return subProductSelected && <Space className="mt-3">
       <Typography.Title level={5} type="secondary">{'Available: '}{item? subProductSelected.quantity - item.count : subProductSelected.quantity}</Typography.Title>
@@ -134,7 +135,7 @@ const ProductDetail = ({
         {count}
       </Typography.Text>
       <button
-      
+
         id="btn-asc"
         onClick={() => setCount(count + 1)}
         disabled={item? (count >= (subProductSelected.quantity - item.count)) : (count >= subProductSelected.quantity)}

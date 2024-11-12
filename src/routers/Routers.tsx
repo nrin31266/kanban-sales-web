@@ -11,6 +11,7 @@ import { localDataNames } from "../constants/appInfos";
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { addAllProduct } from "@/reducx/reducers/cartReducer";
+import { CartResponse } from "@/model/CartModel";
 
 const { Header, Content, Footer } = Layout;
 
@@ -44,7 +45,7 @@ const Routers = ({ Component, pageProps }: any) => {
   const getCarts = async (createdBy: string)=>{
     try {
       const res = await handleAPI(`${API.CARTS}/${createdBy}`);
-      dispatch(addAllProduct(res.data.result));
+      dispatch(addAllProduct(res.data.result.map((cart: CartResponse)=>({...cart, id: cart.subProductId}))));
     } catch (error) {
       console.error(error);
     }

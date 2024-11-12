@@ -54,7 +54,8 @@ const addCart = async (item: SubProductResponse) => {
         createdBy: item.createdBy,
         options: item.options,
         quantity: item.quantity,
-        subProductId: item.id
+        subProductId: item.id,
+        imageUrl: item.images.length> 0 ? item.images[0]  : ''
     }
 
   try {
@@ -71,7 +72,8 @@ const updateCart = async (item: SubProductResponse) => {
         createdBy: item.createdBy,
         options: item.options,
         quantity: item.quantity,
-        subProductId: item.id
+        subProductId: item.id,
+        imageUrl: item.images.length> 0 ? item.images[0]  : ''
     }
 
   try {
