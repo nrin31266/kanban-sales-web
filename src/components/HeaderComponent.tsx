@@ -25,6 +25,7 @@ import { cartSelector } from "@/reducx/reducers/cartReducer";
 import { SubProductResponse } from "@/model/SubProduct";
 import CartComponent from "./CartComponent";
 import { CartResponse } from "@/model/CartModel";
+import { PageResponse } from "@/model/AppModel";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -36,7 +37,7 @@ const HeaderComponent = () => {
   ]);
   const router = useRouter();
   const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
-  const carts: CartResponse[] = useSelector(cartSelector);
+  const cart: PageResponse<CartResponse> = useSelector(cartSelector);
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
 
@@ -109,10 +110,10 @@ const HeaderComponent = () => {
                   <Dropdown
                     placement="bottom"
                     trigger={["click"]}
-                    dropdownRender={() => <CartComponent products={carts} />}
+                    dropdownRender={() => <CartComponent pageData={cart} />}
                   >
                     <a onClick={(e) => e.preventDefault()}>
-                      <Badge count={carts.length}>
+                      <Badge count={cart.totalElements}>
                         <MdOutlineShoppingCart size={20} />
                       </Badge>
                     </a>

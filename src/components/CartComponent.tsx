@@ -1,3 +1,4 @@
+import { PageResponse } from "@/model/AppModel";
 import { CartResponse } from "@/model/CartModel";
 import { removeProduct } from "@/reducx/reducers/cartReducer";
 import { Avatar, Button, Card, List, Modal, Space, Typography } from "antd";
@@ -6,11 +7,12 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 
 interface Props {
-  products: CartResponse[];
+  pageData: PageResponse<CartResponse>;
 }
 
 const CartComponent = (props: Props) => {
-  const { products } = props;
+  const { pageData } = props;
+  const products = pageData.data;
   const dispatch = useDispatch();
   return (
     <Card
@@ -32,11 +34,10 @@ const CartComponent = (props: Props) => {
         renderItem={(item, index) => (
           <List.Item
             extra={
-                <Button onClick={()=>{
-                    Modal.confirm({
-                        onCancel: ()=>{},
-                        onOk:()=>dispatch(removeProduct(item))
-                    });
+                <Button onClick={(e)=>{
+                  e.preventDefault();
+                  dispatch(removeProduct(item))
+                    
                 }} type={'text'} icon={<RiDeleteBinFill className="text-danger" size={20}/>}></Button>
             }
           >
@@ -50,16 +51,16 @@ const CartComponent = (props: Props) => {
                   src={item.imageUrl}
                 />
               }
-              title={<a href="https://ant.design">{'fafafa'}</a>}
+              title={<a>{item.title}</a>}
               
               description={
                 <Space>
                     {
-                        item.options && Object.keys(item.options).length >0 &&
-                        Object.entries(item.options).map(([key, value])=>
-                            <span key={key+value}>
+                        item.subProductResponse &&item.subProductResponse.options && Object.keys(item.subProductResponse.options).length >0 &&
+                        Object.entries(item.subProductResponse.options).map(([key, value])=>
+                            <span key={item.subProductId + key + value}>
                                 <Typography.Text style={{fontWeight: '400'}}>{key}{': '}</Typography.Text>
-                                {value}
+                                {value as string}
                             </span>
                         )
                     }
@@ -72,16 +73,8 @@ const CartComponent = (props: Props) => {
       />
 
       <div>
-        <Button style={{ width: "100%" }}  size="large">
-          View cart
-        </Button>
-        <Button
-          className="mt-2"
-          type="primary"
-          size="large"
-          style={{ width: "100%" }}
-        >
-          Check out
+        <Button style={{ width: "100%" }} type="primary"  size="large">
+          View all cart
         </Button>
       </div>
     </Card>

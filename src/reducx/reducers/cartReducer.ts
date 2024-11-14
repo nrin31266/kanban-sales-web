@@ -4,38 +4,58 @@ import { localDataNames } from "@/constants/appInfos";
 import { SubProductResponse } from "@/model/SubProduct";
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
-import { CartRequest } from "@/model/CartModel";
-import { count } from "console";
+import { CartRequest, CartResponse } from "@/model/CartModel";
+import { PageResponse } from "@/model/AppModel";
 
-const initialState: SubProductResponse[] = [];
+const initialState: PageResponse<CartResponse> = {
+  currentPage: 0,
+  data: [],
+  pageSize: 0,
+  totalElements: 0,
+  totalPages: 0
+};
 
 const cartSlice = createSlice({
   name: "cart",
   initialState: { data: initialState },
   reducers: {
     addProduct: (state, action) => {
-      const items: SubProductResponse[] = [...state.data];
-      const item: SubProductResponse = action.payload;
+      const pageData: PageResponse<CartResponse> = {...state.data};
+      const itemReceived: CartRequest = action.payload;
 
-      const index = items.findIndex((ele) => ele.id === item.id);
+      const index = pageData.data.findIndex((ele) => ele.subProductId === itemReceived.subProductId);
       if (index === -1) {
-        items.push(item);
-        addCart(item);
-      } else { 
-        updateCart({...item, count: items[index].count + item.count});
-        items[index].count += item.count;
+        const item: CartResponse= {
+          count: itemReceived.count,
+          createdAt: null,
+          imageUrl: itemReceived.imageUrl,
+          title: itemReceived.title,
+          id: null,
+          productResponse: null,
+          subProductResponse: itemReceived.subProductResponse,
+          updatedAt: null,
+          subProductId: itemReceived.subProductId,
+          createdBy: itemReceived.createdBy
+        };
+        pageData.data.push(item);
+        pageData.totalElements += 1;
+        addCart(itemReceived);
+      } else {    
+        pageData.data[index].count += itemReceived.count;
+        updateCart({...itemReceived, count: pageData.data[index].count + itemReceived.count});
       }
-      state.data = items;
+      state.data = pageData;
     },
     removeProduct: (state, action) => {
-      const items = state.data;
-      const item = action.payload;
-      const index = items.findIndex((ele) => ele.id === item.id);
+      const pageData: PageResponse<CartResponse> = {...state.data};
+      const item : CartResponse = action.payload;
+      const index = pageData.data.findIndex((ele) => ele.id === item.id);
 
       if(index != -1){
-        items.splice(index, 1);
-        state.data = items;
-        removeCart(item.id, item.createdBy);
+        pageData.data.splice(index, 1);
+        pageData.totalElements -= 1;
+        state.data = pageData;
+        removeCart(item.subProductId, item.createdBy);
       }
     },
     addAllProduct: (state, action)=>{
@@ -44,47 +64,23 @@ const cartSlice = createSlice({
   },
 });
 
-const syncLocal = (data: any | {}) => {
-  if (data) {
-    localStorage.setItem(localDataNames.authData, JSON.stringify(data));
-  }
-};
-
 export const cartReducer = cartSlice.reducer;
 export const { addProduct, removeProduct, addAllProduct } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
 
-const addCart = async (item: SubProductResponse) => {
-    const values: CartRequest ={
-        count: item.count,
-        createdBy: item.createdBy,
-        options: item.options,
-        quantity: item.quantity,
-        subProductId: item.id,
-        imageUrl: item.images && item.images.length> 0 ? item.images[0]  : ''
-    }
-
+const addCart = async (item: CartRequest) => {
   try {
-    const res = await handleAPI(API.CARTS, values, "post");
+    const res = await handleAPI(API.CARTS, item, "post");
     console.log(res);
   } catch (error) {
     console.log(error);
   }
 };
 
-const updateCart = async (item: SubProductResponse) => {
-    const values: CartRequest ={
-        count: item.count,
-        createdBy: item.createdBy,
-        options: item.options,
-        quantity: item.quantity,
-        subProductId: item.id,
-        imageUrl: item.images && item.images.length> 0 ? item.images[0]  : ''
-    }
-
+const updateCart = async (item: CartRequest) => {
   try {
-    const res = await handleAPI(API.CARTS, values, "put");
+    const res = await handleAPI(API.CARTS, item, "put");
     console.log(res);
   } catch (error) {
     console.log(error);
@@ -94,7 +90,6 @@ const updateCart = async (item: SubProductResponse) => {
 const removeCart = async (subProductId: string, createdBy: string) => {
     try {
         await handleAPI(`${API.CARTS}/${subProductId}/${createdBy}`, undefined, 'delete');
-        
     } catch (error) {
         console.log(error);
     }

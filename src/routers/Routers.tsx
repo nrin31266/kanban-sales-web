@@ -45,7 +45,7 @@ const Routers = ({ Component, pageProps }: any) => {
   const getCarts = async (createdBy: string)=>{
     try {
       const res = await handleAPI(`${API.CARTS}/${createdBy}`);
-      dispatch(addAllProduct(res.data.result.map((cart: CartResponse)=>({...cart, id: cart.subProductId}))));
+      dispatch(addAllProduct(res.data.result));
     } catch (error) {
       console.error(error);
     }

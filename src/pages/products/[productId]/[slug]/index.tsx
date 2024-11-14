@@ -17,6 +17,8 @@ import { authSelector } from "@/reducx/reducers/authReducer";
 import { AuthModel } from "@/model/AuthenticationModel";
 import { useRouter } from "next/router";
 import { addProduct, cartSelector } from "@/reducx/reducers/cartReducer";
+import { CartRequest, CartResponse } from "@/model/CartModel";
+import { PageResponse } from "@/model/AppModel";
 
 const ProductDetail = ({
   initProduct,
@@ -41,7 +43,7 @@ const ProductDetail = ({
   );
   const auth: AuthModel = useSelector(authSelector);
   const router = useRouter();
-  const cart : SubProductResponse[] = useSelector(cartSelector);
+  const cart : PageResponse<CartResponse> = useSelector(cartSelector);
   const dispatch = useDispatch();
 
 
@@ -101,7 +103,16 @@ const ProductDetail = ({
       router.push(`${PAGE.LOGIN}?productId=${product.id}&slug=${product.slug}`);
       return;
     } else if(subProductSelected && auth.userInfo){
-      const item: SubProductResponse = {...subProductSelected, count: count, createdBy: auth.userInfo.id};
+      const item: CartRequest ={
+        count: count,
+        createdBy: auth.userInfo.id,
+        imageUrl: subProductSelected.images && subProductSelected.images.length > 0
+        ? subProductSelected.images[0] : product.images[0],
+        productId: product.id,
+        subProductId: subProductSelected.id,
+        subProductResponse: subProductSelected,
+        title: product.title
+      }
       dispatch(addProduct(item));
       setCount(1);
     }
@@ -109,9 +120,7 @@ const ProductDetail = ({
 
   const renderButtonGroup = ()=>{
 
-    let item : SubProductResponse | undefined= cart.find((ele)=> ele.id === subProductSelected?.id);
-    
-
+    let item : CartResponse | undefined= cart.data.find((ele)=> ele.subProductId === subProductSelected?.id);
     return subProductSelected && <Space className="mt-3">
       <Typography.Title level={5} type="secondary">{'Available: '}{item? subProductSelected.quantity - item.count : subProductSelected.quantity}</Typography.Title>
     <div
@@ -146,7 +155,7 @@ const ProductDetail = ({
     <Button
       onClick={() => handleCart()}
       type="primary"
-      disabled={item? (count >= (subProductSelected.quantity - item.count)) : (count >= subProductSelected.quantity)}
+      disabled={item? (count > (subProductSelected.quantity - item.count)) : (count > subProductSelected.quantity)}
     >
       Add to cart
     </Button>
