@@ -51,7 +51,6 @@ const ProductDetail = ({
 
 
   useEffect(() => {
-    console.log("hihi");
 
     if (optionSelected && optionSelected.size > 0) {
       for (const sub of productDetail) {

@@ -26,6 +26,7 @@ const cartSlice = createSlice({
       const index = pageData.data.findIndex((ele) => ele.subProductId === itemReceived.subProductId);
       if (index === -1) {
         const item: CartResponse= {
+          productId: itemReceived.productId,
           count: itemReceived.count,
           createdAt: null,
           imageUrl: itemReceived.imageUrl,

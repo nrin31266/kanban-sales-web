@@ -16,6 +16,7 @@ export interface CartResponse {
     id: string | null;
     createdBy: string;
     subProductId: string;
+    productId: string;
     title: string;
     imageUrl: string;
     count: number;
