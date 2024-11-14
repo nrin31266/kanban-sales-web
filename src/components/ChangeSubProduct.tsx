@@ -19,14 +19,17 @@ import { useRouter } from "next/router";
 
 interface Props {
   isVisible: boolean;
-  initData?: any;
-  onChange: () => void;
+  initData?: { product: ProductResponse; subProducts: SubProductResponse[] };
+  onChange?: () => void;
   onClose?: () => void;
-  productId: string;
+  productId?: string;
   type: "change" | "main";
   initCount?: number;
   subProductId?: string;
-  onChangeProductDetail?: () => void;
+  onChangeProductDetail?: (
+    subSelected: SubProductResponse,
+    photoUrl: string
+  ) => void;
 }
 
 const ChangeSubProduct = (props: Props) => {
@@ -39,6 +42,7 @@ const ChangeSubProduct = (props: Props) => {
     initData,
     isVisible,
     onClose,
+    onChangeProductDetail
   } = props;
   const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
     new Map()
@@ -62,6 +66,8 @@ const ChangeSubProduct = (props: Props) => {
 
   useEffect(() => {
     if (initData) {
+      setProduct(initData.product);
+      setProductDetail(initData.subProducts);
     } else if (productId) {
       getProduct(productId);
     }
@@ -76,7 +82,7 @@ const ChangeSubProduct = (props: Props) => {
   useEffect(() => {
     if (product) {
       getListOptions(product);
-      !subProductId && setInitOptions();
+      initData && setInitOptions();
 
       setPhotoSelected(
         product.images && product.images.length > 0
@@ -93,6 +99,12 @@ const ChangeSubProduct = (props: Props) => {
       }
     }
   }, [productDetail]);
+
+  useEffect(() => {
+    if (subProductSelected && onChangeProductDetail) {
+      onChangeProductDetail(subProductSelected, photoSelected);
+    }
+  }, [subProductSelected]);
 
   const getSubProducts = async (id: string) => {
     try {
@@ -118,6 +130,8 @@ const ChangeSubProduct = (props: Props) => {
       return [];
     }
   };
+
+
 
   useEffect(() => {
     if (optionSelected && optionSelected.size > 0) {
@@ -198,6 +212,7 @@ const ChangeSubProduct = (props: Props) => {
           return;
         } else if (subProductSelected.id === subProductId) {
           //Update count
+          dispatch;
         } else {
           //Change
         }
@@ -207,13 +222,13 @@ const ChangeSubProduct = (props: Props) => {
   };
 
   const renderButtonGroup = () => {
-    let item: CartResponse | undefined = cart.data.find(
-      (ele) => ele.subProductId === subProductSelected?.id
-    );
+    // let item: CartResponse | undefined = cart.data.find(
+    //   (ele) => ele.subProductId === subProductSelected?.id
+    // );
     return (
       subProductSelected && (
         <Space className="mt-3">
-          {type === "main" ? (
+          {/* {type === "main" ? (
             <Typography.Title level={5} type="secondary">
               {"Available: "}
               {item
@@ -225,7 +240,11 @@ const ChangeSubProduct = (props: Props) => {
               {"Quantity: "}
               {subProductSelected.quantity}
             </Typography.Title>
-          )}
+          )} */}
+          <Typography.Title level={5} type="secondary">
+            {"Quantity: "}
+            {subProductSelected.quantity}
+          </Typography.Title>
           <div
             style={{
               border: "1px solid silver",
@@ -249,13 +268,14 @@ const ChangeSubProduct = (props: Props) => {
             <button
               id="btn-asc"
               onClick={() => setCount(count + 1)}
-              disabled={
-                type === "main"
-                  ? item
-                    ? count >= subProductSelected.quantity - item.count
-                    : count >= subProductSelected.quantity
-                  : count >= subProductSelected.quantity
-              }
+              // disabled={
+              //   type === "main"
+              //     ? item
+              //       ? count >= subProductSelected.quantity - item.count
+              //       : count >= subProductSelected.quantity
+              //     : count >= subProductSelected.quantity
+              // }
+              disabled={count >= subProductSelected.quantity}
             >
               <MdAdd />
             </button>
@@ -263,13 +283,14 @@ const ChangeSubProduct = (props: Props) => {
           <Button
             onClick={() => handleSubmit()}
             type="primary"
-            disabled={
-              type === "main"
-                ? item
-                  ? count > subProductSelected.quantity - item.count
-                  : count > subProductSelected.quantity
-                : count > subProductSelected.quantity
-            }
+            // disabled={
+            //   type === "main"
+            //     ? item
+            //       ? count > subProductSelected.quantity - item.count
+            //       : count > subProductSelected.quantity
+            //     : count > subProductSelected.quantity
+            // }
+            disabled={count > subProductSelected.quantity}
           >
             {type === "main" ? "Add to cart" : "Change"}
           </Button>
@@ -283,7 +304,117 @@ const ChangeSubProduct = (props: Props) => {
     onClose && onClose();
   };
 
-  return (
+  return initData ? (
+    <div>
+      {productId && product && type === "change" && (
+        <div>
+          <Typography.Title level={4}>{product.title}</Typography.Title>
+          <div className="d-flex" style={{ alignItems: "center" }}>
+            <div className="">
+              <img
+                src={photoSelected}
+                style={{ objectFit: "cover" }}
+                alt=""
+                width={80}
+                height={85}
+              />
+            </div>
+            {subProductSelected && (
+              <div className="ml-2">
+                {subProductSelected.discount && subProductSelected.price ? (
+                  <Space>
+                    <Typography.Title level={5}>
+                      {FormatCurrency.VND.format(subProductSelected.discount)}
+                    </Typography.Title>
+                    <Typography.Title type="secondary" level={5}>
+                      <del>
+                        {" "}
+                        {FormatCurrency.VND.format(subProductSelected.price)}
+                      </del>
+                    </Typography.Title>
+                  </Space>
+                ) : (
+                  <Typography.Title level={5}>
+                    {FormatCurrency.VND.format(subProductSelected.price)}
+                  </Typography.Title>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {listOptions &&
+        productDetail &&
+        Array.from(listOptions.entries()).map(([key, valuesSet]) => (
+          <div key={key}>
+            <Typography.Title className="mb-2 mt-2" level={5}>
+              {key}
+            </Typography.Title>
+            {Array.from(valuesSet).map((value) => {
+              let isDisabled = true;
+              // Duyệt qua từng sản phẩm
+              for (let i = 0; i < productDetail.length; i++) {
+                const sub = productDetail[i];
+                // Bước 1: Kiểm tra xem sản phẩm có tùy chọn không
+                if (!sub.options) {
+                  continue; // Nếu không có tùy chọn thì bỏ qua sản phẩm này
+                }
+                // Bước 2: Kiểm tra nếu sản phẩm có giá trị khớp với `key` và `value`
+                if (sub.options[key] !== value) {
+                  continue; // Nếu không khớp với `size`, bỏ qua sản phẩm này
+                }
+
+                // Bước 3: Kiểm tra tất cả các tùy chọn đã chọn có khớp với sản phẩm
+                let allOptionsValid = true;
+                for (let [optKey, optValue] of optionSelected) {
+                  // Nếu `optKey` không phải là `key`, kiểm tra xem giá trị có khớp không
+                  if (optKey !== key && sub.options[optKey] !== optValue) {
+                    allOptionsValid = false;
+                    break; // Nếu có một tùy chọn không hợp lệ thì dừng kiểm tra
+                  }
+                }
+
+                // Bước 4: Nếu tất cả các tùy chọn khớp, sản phẩm này hợp lệ
+                if (allOptionsValid) {
+                  isDisabled = false; // Sản phẩm hợp lệ, cho phép nhấn nút
+                  break; // Dừng kiểm tra sau khi tìm thấy sản phẩm hợp lệ đầu tiên
+                }
+              }
+
+              return (
+                <Button
+                  type={
+                    optionSelected.get(key) === value ? "primary" : "default"
+                  }
+                  onClick={() => {
+                    const newMap = new Map(optionSelected);
+                    newMap.set(key, value);
+                    setOptionSelected(newMap);
+                  }}
+                  className="p-1 mr-1"
+                  key={value}
+                  disabled={isDisabled}
+                >
+                  {key === "Color" && (
+                    <div
+                      style={{
+                        border: "1px solid silver",
+                        backgroundColor: value,
+                        borderRadius: 100,
+                        width: 20,
+                        height: 20,
+                      }}
+                    ></div>
+                  )}
+                  {value}
+                </Button>
+              );
+            })}
+          </div>
+        ))}
+      {renderButtonGroup()}
+    </div>
+  ) : (
     <Modal open={isVisible} onCancel={handleClose} footer={false}>
       <div>
         {productId && product && type === "change" && (
