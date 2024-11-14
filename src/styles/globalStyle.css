@@ -6,9 +6,12 @@
   .promotion-carousel {
     height: 20vh;
   }
-  .category-gallery img{
+  .category-gallery img {
     height: 140;
     width: 120;
+  }
+  .cart{
+    min-width: 360px;
   }
 }
 
@@ -16,9 +19,12 @@
   .promotion-carousel {
     height: 30vh;
   }
-  .category-gallery img{
+  .category-gallery img {
     height: 160;
     width: 145;
+  }
+  .cart{
+    min-width: 380px;
   }
 }
 
@@ -26,9 +32,12 @@
   .promotion-carousel {
     height: 45vh;
   }
-  .category-gallery img{
+  .category-gallery img {
     height: 175;
     width: 160;
+  }
+  .cart{
+    min-width: 500px;
   }
 }
 
@@ -36,9 +45,12 @@
   .promotion-carousel {
     height: 50vh;
   }
-  .category-gallery img{
+  .category-gallery img {
     height: 200;
     width: 180;
+  }
+  .cart{
+    min-width: 500px;
   }
 }
 
@@ -73,20 +85,19 @@
   margin-bottom: 0px;
 }
 
-.product-item{
-  position: relative; 
-}
-
-.product-item .image{
+.product-item {
   position: relative;
 }
 
-.product-item .image .img{
-  object-fit: cover;
-  
+.product-item .image {
+  position: relative;
 }
 
-.product-item .title-content .title{
+.product-item .image .img {
+  object-fit: cover;
+}
+
+.product-item .title-content .title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -96,7 +107,7 @@
   max-height: 3.5em;
 }
 
-.product-item .hover-content{
+.product-item .hover-content {
   position: absolute;
   top: 0;
   left: -10;
@@ -113,7 +124,7 @@
 }
 
 .product-item:hover .hover-content {
-  opacity: 1; 
+  opacity: 1;
 }
 
 .product-item .hover-content .top-right {
@@ -131,8 +142,6 @@
   margin-bottom: 10px;
 }
 
-
-
 .product-item .hover-content .bottom {
   position: absolute;
   bottom: 70px;
@@ -142,7 +151,6 @@
   padding: 5px;
   border-radius: 5px;
 }
-
 
 .product-item:hover {
   box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
@@ -164,15 +172,17 @@
   max-height: 3.5em; */
 }
 
-.product-detail .ant-typography{
+.product-detail .ant-typography {
   margin-bottom: 0;
 }
 
-.product-detail #btn-asc, #btn-des{
+.product-detail #btn-asc,
+#btn-des {
   border: none;
 }
 
-.sub-product-gallery, .category-gallery{
+.sub-product-gallery,
+.category-gallery {
   position: relative;
   overflow-x: scroll;
   width: 100%;
@@ -181,12 +191,13 @@
   scroll-behavior: smooth;
 }
 
-.sub-product-gallery img{
+.sub-product-gallery img {
   border: 1px solid silver;
   border-radius: 6;
 }
 
-.sub-product-gallery div, .category-gallery div {
+.sub-product-gallery div,
+.category-gallery div {
   width: 100%;
   display: grid;
   grid-template-columns: auto auto auto;
@@ -194,7 +205,7 @@
   grid-gap: 5px;
 }
 
-.category-gallery img{
+.category-gallery img {
   object-fit: cover;
   border-radius: 6;
 }
@@ -203,11 +214,12 @@
 
 } */
 
-.sub-product-gallery::-webkit-scrollbar, .category-gallery::-webkit-scrollbar{
+.sub-product-gallery::-webkit-scrollbar,
+.category-gallery::-webkit-scrollbar {
   display: none;
 }
 
-.gallery-wrap{
+.gallery-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,21 +228,22 @@
   overflow-y: hidden; */
 }
 
-.gallery-wrap #btn-back{
+.gallery-wrap #btn-back {
   left: -15;
 }
 
-.gallery-wrap #btn-next{
+.gallery-wrap #btn-next {
   right: -15;
 }
 
-.gallery-wrap #btn-next, #btn-back{
+.gallery-wrap #btn-next,
+#btn-back {
   position: absolute;
   z-index: 1000;
   border: 1px solid silver;
 }
 
-.gallery-wrap .btn{
+.gallery-wrap .btn {
   border-radius: 100;
   width: 30px;
   height: 30px;
@@ -238,31 +251,46 @@
   justify-items: center;
 }
 
-.gallery-wrap .btn:hover{
+.gallery-wrap .btn:hover {
   width: 45px;
   height: 45px;
   transition: 0.3s;
 }
 
-.gallery-wrap .btn .btn-icon{
+.gallery-wrap .btn .btn-icon {
   display: flex;
   justify-content: center;
 }
 
-
-.gallery-wrap .btn:hover .btn-icon{
+.gallery-wrap .btn:hover .btn-icon {
   width: 25px;
   height: 25px;
 }
 
-.sub-product-gallery a:hover, .category-gallery a:hover{
+.sub-product-gallery a:hover,
+.category-gallery a:hover {
   transform: scale(1.1);
 }
-.category-gallery a:hover .category-content{
+.category-gallery a:hover .category-content {
   font-weight: 500;
 }
 
+.cart .cart-item .ant-list-item-meta-title a {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3.5em;
+}
 
-
-
-
+.cart .cart-item .ant-space-item{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3.5em;
+}

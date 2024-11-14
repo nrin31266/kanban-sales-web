@@ -47,8 +47,6 @@ const ProductDetail = ({
   const dispatch = useDispatch();
 
 
-  console.log(cart);
-
 
   useEffect(() => {
 

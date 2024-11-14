@@ -40,6 +40,7 @@ const HeaderComponent = () => {
   const cart: PageResponse<CartResponse> = useSelector(cartSelector);
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
+  const [isCartDropDown, setIsCartDropDown] = useState(false);
 
   useEffect(() => {
     const currentPath = Array.from(pages.entries()).find(
@@ -108,11 +109,24 @@ const HeaderComponent = () => {
                   <Button type="text" icon={<FiSearch size={20} />}></Button>
                   <Button type="text" icon={<FcLike size={20} />}></Button>
                   <Dropdown
+                    open={isCartDropDown}
                     placement="bottom"
                     trigger={["click"]}
-                    dropdownRender={() => <CartComponent pageData={cart} />}
+                    dropdownRender={() => (
+                      <CartComponent
+                        onOpen={()=>setIsCartDropDown(true)}
+                        onFinish={() => {}}
+                        onClose={() => setIsCartDropDown(false)}
+                        pageData={cart}
+                      />
+                    )}
                   >
-                    <a onClick={(e) => e.preventDefault()}>
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsCartDropDown(true);
+                      }}
+                    >
                       <Badge count={cart.totalElements}>
                         <MdOutlineShoppingCart size={20} />
                       </Badge>

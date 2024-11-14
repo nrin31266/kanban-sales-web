@@ -1,7 +1,7 @@
 import { ProductResponse } from "@/model/ProductModel";
 import { SubProductResponse } from "@/model/SubProduct";
 import { isMapsOptionsEqual } from "@/utils/compare";
-import { Button, Modal, Space, Typography } from "antd";
+import { Button, Flex, Modal, Space, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import ProductDetail from "./../pages/products/[productId]/[slug]/index";
 import handleAPI from "@/apis/handleAPI";
@@ -50,7 +50,7 @@ const ChangeSubProduct = (props: Props) => {
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
   const router = useRouter();
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [product, setProduct] = useState<ProductResponse>();
   const [photoSelected, setPhotoSelected] = useState(
     product && product.images && product.images.length > 0
@@ -64,11 +64,26 @@ const ChangeSubProduct = (props: Props) => {
     if (initData) {
     } else if (productId) {
       getProduct(productId);
-      getSubProducts(productId);
     }
-  }, [initData, productId]);
+  }, [initData, subProductId]);
 
   useEffect(() => {
+    if (product && productId) {
+      getSubProducts(productId);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (product) {
+      getListOptions(product);
+      !subProductId && setInitOptions();
+
+      setPhotoSelected(
+        product.images && product.images.length > 0
+          ? product.images[0]
+          : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
+      );
+    }
     if (subProductId && productDetail && productDetail.length > 0) {
       const initSub = productDetail.find((el) => el.id === subProductId);
       console.log(initSub);
@@ -77,14 +92,7 @@ const ChangeSubProduct = (props: Props) => {
         initCount && setCount(initCount);
       }
     }
-  }, [productDetail, subProductId, initCount]);
-
-  useEffect(() => {
-    if (product) {
-      getListOptions(product);
-      !subProductId && setInitOptions();
-    }
-  }, [product]);
+  }, [productDetail]);
 
   const getSubProducts = async (id: string) => {
     try {
@@ -183,22 +191,17 @@ const ChangeSubProduct = (props: Props) => {
   };
 
   const handleSubmit = () => {
-    
-
-    if(subProductSelected && subProductId){
+    if (subProductSelected && subProductId) {
       if (type === "change") {
-        if(subProductSelected.id === subProductId && count === initCount){
-          console.log('Ko co thay doi');
+        if (subProductSelected.id === subProductId && count === initCount) {
+          console.log("Ko co thay doi");
           return;
-        }else if(subProductSelected.id === subProductId){
+        } else if (subProductSelected.id === subProductId) {
           //Update count
-
-        }else{
+        } else {
           //Change
-          
         }
       } else if (type === "main") {
-  
       }
     }
   };
@@ -248,10 +251,10 @@ const ChangeSubProduct = (props: Props) => {
               onClick={() => setCount(count + 1)}
               disabled={
                 type === "main"
-                ? item
-                  ? count >= subProductSelected.quantity - item.count
+                  ? item
+                    ? count >= subProductSelected.quantity - item.count
+                    : count >= subProductSelected.quantity
                   : count >= subProductSelected.quantity
-                : count >= subProductSelected.quantity
               }
             >
               <MdAdd />
