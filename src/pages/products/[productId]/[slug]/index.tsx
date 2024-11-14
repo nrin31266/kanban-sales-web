@@ -47,27 +47,7 @@ const ProductDetail = ({
   const cart: PageResponse<CartResponse> = useSelector(cartSelector);
   const dispatch = useDispatch();
 
-  const handleCart = async () => {
-    if (!auth.accessToken) {
-      router.push(`${PAGE.LOGIN}?productId=${product.id}&slug=${product.slug}`);
-      return;
-    } else if (subProductSelected && auth.userInfo) {
-      const item: CartRequest = {
-        count: count,
-        createdBy: auth.userInfo.id,
-        imageUrl:
-          subProductSelected.images && subProductSelected.images.length > 0
-            ? subProductSelected.images[0]
-            : product.images[0],
-        productId: product.id,
-        subProductId: subProductSelected.id,
-        subProductResponse: subProductSelected,
-        title: product.title,
-      };
-      dispatch(addProduct(item));
-      setCount(1);
-    }
-  };
+  
 
   return (
     <div>

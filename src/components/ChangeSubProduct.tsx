@@ -5,14 +5,14 @@ import { Button, Flex, Modal, Space, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import ProductDetail from "./../pages/products/[productId]/[slug]/index";
 import handleAPI from "@/apis/handleAPI";
-import { API } from "@/configurations/configurations";
+import { API, PAGE } from "@/configurations/configurations";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
-import { CartResponse } from "@/model/CartModel";
+import { CartRequest, CartResponse } from "@/model/CartModel";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import { IoMdHeart } from "react-icons/io";
 import { PageResponse } from "@/model/AppModel";
 import { useDispatch, useSelector } from "react-redux";
-import { cartSelector } from "@/reducx/reducers/cartReducer";
+import { addProduct, cartSelector } from "@/reducx/reducers/cartReducer";
 import { FormatCurrency } from "@/utils/formatNumber";
 import { authSelector } from "@/reducx/reducers/authReducer";
 import { useRouter } from "next/router";
@@ -42,7 +42,7 @@ const ChangeSubProduct = (props: Props) => {
     initData,
     isVisible,
     onClose,
-    onChangeProductDetail
+    onChangeProductDetail,
   } = props;
   const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
     new Map()
@@ -131,8 +131,6 @@ const ChangeSubProduct = (props: Props) => {
     }
   };
 
-
-
   useEffect(() => {
     if (optionSelected && optionSelected.size > 0) {
       for (const sub of productDetail) {
@@ -205,7 +203,27 @@ const ChangeSubProduct = (props: Props) => {
   };
 
   const handleSubmit = () => {
-    if (subProductSelected && subProductId) {
+    if (product && subProductSelected) {
+      if (!auth.accessToken) {
+        router.push(
+          `${PAGE.LOGIN}?productId=${product.id}&slug=${product.slug}`
+        );
+        return;
+      }
+
+      const item: CartRequest = {
+        count: count,
+        createdBy: auth.userInfo.id,
+        imageUrl:
+          subProductSelected.images && subProductSelected.images.length > 0
+            ? subProductSelected.images[0]
+            : product.images[0],
+        productId: product.id,
+        subProductId: subProductSelected.id,
+        subProductResponse: subProductSelected,
+        title: product.title,
+      };
+
       if (type === "change") {
         if (subProductSelected.id === subProductId && count === initCount) {
           console.log("Ko co thay doi");
@@ -217,6 +235,9 @@ const ChangeSubProduct = (props: Props) => {
           //Change
         }
       } else if (type === "main") {
+        
+        dispatch(addProduct(item));
+        setCount(1);
       }
     }
   };
@@ -227,7 +248,7 @@ const ChangeSubProduct = (props: Props) => {
     // );
     return (
       subProductSelected && (
-        <Space className="mt-3">
+        <Space wrap className="mt-3">
           {/* {type === "main" ? (
             <Typography.Title level={5} type="secondary">
               {"Available: "}
