@@ -69,7 +69,7 @@ const Cart = () => {
     setLoading(true);
     try {
       const res: CustomAxiosResponse<CartResponse> = await handleAPI(
-        `${API.CARTS}/additional?page=${page.current-1}&size=${9}`
+        `${API.CARTS}/additional?page=${page.current - 1}&size=${9}`
       );
       setData((pre) => [...pre, res.data.result]);
     } catch (error) {
@@ -114,9 +114,99 @@ const Cart = () => {
     }
   };
 
-  const handleChangeItem = (cartRequest: CartRequest) =>{
-    
-  }
+  const addCart = async (item: CartRequest) => {
+    setLoading(true);
+    try {
+      const res = await handleAPI(API.CARTS, item, "post");
+      return res.data.result;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCart = async (item: CartRequest) => {
+    setLoading(true);
+    try {
+      const res = await handleAPI(API.CARTS, item, "put");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeItem = (itemReceived: CartRequest) => {
+    console.log(itemReceived);
+    if (itemSelected) {
+      if (
+        itemReceived.subProductId === itemSelected.subProductId &&
+        itemReceived.count === itemSelected.count
+      ) {
+        return;
+      } else if (itemReceived.subProductId === itemSelected.subProductId) {
+        updateCart(itemReceived)
+          .then(() => {
+            const indexItem = data.findIndex(
+              (ele) => ele.subProductId === itemReceived.subProductId
+            );
+            if (indexItem != -1) {
+              const updatedData = [...data];
+              updatedData[indexItem] = {
+                ...updatedData[indexItem],
+                count: itemReceived.count,
+              };
+              setData(updatedData);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        const item: CartResponse = {
+          productId: itemReceived.productId,
+          count: itemReceived.count,
+          createdAt: null,
+          imageUrl: itemReceived.imageUrl,
+          title: itemReceived.title,
+          id: null,
+          productResponse: null,
+          subProductResponse: itemReceived.subProductResponse,
+          updatedAt: null,
+          subProductId: itemReceived.subProductId,
+          createdBy: itemReceived.createdBy,
+        };
+        const indexItem = data.findIndex(
+          (ele) => ele.subProductId === itemReceived.subProductId
+        );
+
+        if (indexItem === -1) {
+          // Có thể ko có thật
+          //Hoặc có thể chưa load
+          addCart(itemReceived) // Thêm sản phẩm vào giỏ
+          .then((result: CartResponse) => {
+            setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        } else {
+          //Có thì dễ rồi cập nhập số lượng nó thôi
+          //Và sẽ xóa nó ra theo hàm lúc trc
+          const updatedData = [...data];
+          updatedData[indexItem] = {
+            ...updatedData[indexItem],
+            count: updatedData[indexItem].count + itemReceived.count,
+          };
+          setData(updatedData);
+          updateCart(itemReceived);
+          handleRemoveItem(item);
+        }
+      }
+    }
+  };
 
   console.log(totalElements, data.length);
 
@@ -164,13 +254,13 @@ const Cart = () => {
                       </Link>
                     </div>
                     <div className="col">
-                      <Tag className="cart-item-option mt-2">
-                        <a
-                          onClick={() => {
-                            setItemSelected(item);
-                            setIsVisibleChangeSub(true);
-                          }}
-                        >
+                      <a
+                        onClick={() => {
+                          setItemSelected(item);
+                          setIsVisibleChangeSub(true);
+                        }}
+                      >
+                        <Tag className="cart-item-option mt-2">
                           <div>
                             {"Classification: "}
                             <BiSolidDownArrow size={10} />
@@ -210,8 +300,8 @@ const Cart = () => {
                                 );
                               })}
                           </Space>
-                        </a>
-                      </Tag>
+                        </Tag>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -279,7 +369,9 @@ const Cart = () => {
           type="change"
           initCount={itemSelected.count}
           initProduct={itemSelected.productResponse}
-          onChange={(cartRequest) => {handleChangeItem(cartRequest)}}
+          onChange={(cartRequest) => {
+            handleChangeItem(cartRequest);
+          }}
           onClose={() => {
             setIsVisibleChangeSub(false);
           }}
