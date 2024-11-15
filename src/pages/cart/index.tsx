@@ -10,7 +10,7 @@ import {
   Typography,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { CartResponse } from "@/model/CartModel";
+import { CartRequest, CartResponse } from "@/model/CartModel";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { PageResponse } from "@/model/AppModel";
 import { API, PAGE } from "@/configurations/configurations";
@@ -113,6 +113,10 @@ const Cart = () => {
       setLoading(false);
     }
   };
+
+  const handleChangeItem = (cartRequest: CartRequest) =>{
+    
+  }
 
   console.log(totalElements, data.length);
 
@@ -275,7 +279,7 @@ const Cart = () => {
           type="change"
           initCount={itemSelected.count}
           initProduct={itemSelected.productResponse}
-          onChange={() => {}}
+          onChange={(cartRequest) => {handleChangeItem(cartRequest)}}
           onClose={() => {
             setIsVisibleChangeSub(false);
           }}

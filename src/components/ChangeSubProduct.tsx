@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 interface Props {
   isVisible: boolean;
   initData?: { product: ProductResponse; subProducts: SubProductResponse[] };
-  onChange?: () => void;
+  onChange?: (cart: CartRequest) => void;
   onClose?: () => void;
   productId?: string;
   type: "change" | "main";
@@ -86,6 +86,7 @@ const ChangeSubProduct = (props: Props) => {
       getListOptions(product);
       initData && setInitOptions();
 
+      
       
     }
     if (subProductId && productDetail && productDetail.length > 0) {
@@ -230,11 +231,9 @@ const ChangeSubProduct = (props: Props) => {
         if (subProductSelected.id === subProductId && count === initCount) {
           console.log("Ko co thay doi");
           return;
-        } else if (subProductSelected.id === subProductId) {
-          //Update count
-          dispatch;
         } else {
-          //Change
+          onChange && onChange(item);
+          onClose && onClose();
         }
       } else if (type === "main") {
         
