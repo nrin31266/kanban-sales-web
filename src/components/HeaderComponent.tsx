@@ -95,7 +95,10 @@ const HeaderComponent = () => {
               className=""
             ></Menu>
           </div>
-          <div className="col text-right ">
+          <div
+            style={{ alignItems: "center", justifyContent: "right" }}
+            className="col d-flex"
+          >
             <Space>
               {auth.userInfo &&
                 (auth.userInfo.emailVerified === false ||
@@ -108,30 +111,36 @@ const HeaderComponent = () => {
                 <>
                   <Button type="text" icon={<FiSearch size={20} />}></Button>
                   <Button type="text" icon={<FcLike size={20} />}></Button>
-                  <Dropdown
-                    open={isCartDropDown}
-                    placement="bottom"
-                    trigger={["click"]}
-                    dropdownRender={() => (
-                      <CartComponent
-                        onOpen={()=>setIsCartDropDown(true)}
-                        onFinish={() => {}}
-                        onClose={() => setIsCartDropDown(false)}
-                        pageData={cart}
-                      />
-                    )}
+                  <Button
+                    
+                    onClick={(e) => {
+                      
+                      setIsCartDropDown(!isCartDropDown);
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="p-1"
+                    type="text"
                   >
-                    <a
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsCartDropDown(true);
-                      }}
+                    <Dropdown
+                      open={isCartDropDown}
+                      placement="bottom"
+                      trigger={["click"]}
+                      dropdownRender={() => (
+                        <CartComponent
+                          onOpen={() => setIsCartDropDown(true)}
+                          onFinish={() => {}}
+                          onClose={(e) => { e.preventDefault();
+                            setIsCartDropDown(false);}}
+                          pageData={cart}
+                        />
+                      )}
                     >
                       <Badge count={cart.totalElements}>
-                        <MdOutlineShoppingCart size={20} />
+                        <MdOutlineShoppingCart  size={20} />
                       </Badge>
-                    </a>
-                  </Dropdown>
+                    </Dropdown>
+                  </Button>
                   <Button
                     type="text"
                     icon={<IoNotificationsSharp size={20} />}

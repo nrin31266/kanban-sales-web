@@ -11,7 +11,6 @@ import { localDataNames } from "../constants/appInfos";
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { addAllProduct } from "@/reducx/reducers/cartReducer";
-import { CartResponse } from "@/model/CartModel";
 
 const { Header, Content, Footer } = Layout;
 
@@ -53,7 +52,7 @@ const Routers = ({ Component, pageProps }: any) => {
 
   return isLoading ? (
     <Spin />
-  ) : path && path.includes("auth") ? (
+  ) : path && path.includes("/auth") ? (
     <Layout>
       <Content>
         <Component {...pageProps} />

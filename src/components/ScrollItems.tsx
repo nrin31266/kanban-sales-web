@@ -25,23 +25,23 @@ const ScrollItems = (props: Props) => {
         groups.push({ item: undefined, imgUrlSelected: img });
       });
     }
-    if (items) {
-      items.forEach((item) => {
-        const listImg: string[] = item.images;
-        if (listImg) {
-          listImg.forEach((img) => {
-            groups.push({ item: { ...item }, imgUrlSelected: img });
-          });
-        }
-      });
-      // for (let i = 0; i < 7; i++) {
-      //   groups.push({
-      //     item: undefined,
-      //     imgUrl:
-      //       "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
-      //   });
-      // }
-    }
+    // if (items) {
+    //   items.forEach((item) => {
+    //     const listImg: string[] = item.images;
+    //     if (listImg) {
+    //       listImg.forEach((img) => {
+    //         groups.push({ item: { ...item }, imgUrlSelected: img });
+    //       });
+    //     }
+    //   });
+    //   // for (let i = 0; i < 7; i++) {
+    //   //   groups.push({
+    //   //     item: undefined,
+    //   //     imgUrl:
+    //   //       "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312",
+    //   //   });
+    //   // }
+    // }
     setElements(groups);
   }, [items]);
 

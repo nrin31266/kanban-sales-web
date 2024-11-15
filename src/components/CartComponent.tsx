@@ -14,7 +14,7 @@ import { TfiExchangeVertical } from "react-icons/tfi";
 interface Props {
   pageData: PageResponse<CartResponse>;
   onFinish: () => void;
-  onClose: () => void;
+  onClose: (e: any) => void;
   onOpen: () => void;
 }
 
@@ -38,7 +38,7 @@ const CartComponent = (props: Props) => {
             <Button
               size="small"
               icon={<IoClose size={20} />}
-              onClick={() => onClose()}
+              onClick={(e) => onClose(e)}
             ></Button>
           </div>
         </div>

@@ -24,27 +24,29 @@ const cartSlice = createSlice({
       const itemReceived: CartRequest = action.payload;
 
       const index = pageData.data.findIndex((ele) => ele.subProductId === itemReceived.subProductId);
+      const item: CartResponse= {
+        productId: itemReceived.productId,
+        count: itemReceived.count,
+        createdAt: null,
+        imageUrl: itemReceived.imageUrl,
+        title: itemReceived.title,
+        id: null,
+        productResponse: null,
+        subProductResponse: itemReceived.subProductResponse,
+        updatedAt: null,
+        subProductId: itemReceived.subProductId,
+        createdBy: itemReceived.createdBy
+      };
       if (index === -1) {
-        const item: CartResponse= {
-          productId: itemReceived.productId,
-          count: itemReceived.count,
-          createdAt: null,
-          imageUrl: itemReceived.imageUrl,
-          title: itemReceived.title,
-          id: null,
-          productResponse: null,
-          subProductResponse: itemReceived.subProductResponse,
-          updatedAt: null,
-          subProductId: itemReceived.subProductId,
-          createdBy: itemReceived.createdBy
-        };
-        pageData.data.push(item);
+        
         pageData.totalElements += 1;
-        addCart(itemReceived);
       } else {    
-        pageData.data[index].count += itemReceived.count;
-        updateCart({...itemReceived, count: pageData.data[index].count + itemReceived.count});
+        item.count = pageData.data[index].count + itemReceived.count;
+        pageData.data.splice(index, 1);
+        
       }
+      addCart(itemReceived);
+      pageData.data.unshift(item);
       state.data = pageData;
     },
     removeProduct: (state, action) => {
