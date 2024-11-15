@@ -75,7 +75,7 @@ const HeaderComponent = () => {
   return (
     <Affix offsetTop={0}>
       <div style={{ backgroundColor: "#e0e0e0" }}>
-        <div className="row" style={{}}>
+        <div className="row header">
           <div className="d-block d-md-none col">
             <Button
               className=""

@@ -54,6 +54,10 @@
   }
 }
 
+.header{
+  height: 60px;
+}
+
 .title-danger {
   color: orangered;
 }
@@ -291,3 +295,8 @@
   line-height: 1.5;
   max-height: 3.5em;
 }
+
+.cart-item-title{
+
+}
+

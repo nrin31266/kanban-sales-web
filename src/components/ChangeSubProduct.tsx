@@ -30,6 +30,7 @@ interface Props {
     subSelected: SubProductResponse,
     photoUrl: string
   ) => void;
+  initProduct?:ProductResponse;
 }
 
 const ChangeSubProduct = (props: Props) => {
@@ -43,26 +44,22 @@ const ChangeSubProduct = (props: Props) => {
     isVisible,
     onClose,
     onChangeProductDetail,
+    initProduct,
   } = props;
   const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
     new Map()
   );
   const [productDetail, setProductDetail] = useState<SubProductResponse[]>([]);
 
-  const cart: PageResponse<CartResponse> = useSelector(cartSelector);
+  // const cart: PageResponse<CartResponse> = useSelector(cartSelector);
   const [count, setCount] = useState(initCount ?? 1);
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [product, setProduct] = useState<ProductResponse>();
-  const [photoSelected, setPhotoSelected] = useState(
-    product && product.images && product.images.length > 0
-      ? product.images[0]
-      : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
-  );
-  const [subProductSelected, setSubProductSelected] =
-    useState<SubProductResponse>();
+  const [photoSelected, setPhotoSelected] = useState('');
+  const [subProductSelected, setSubProductSelected] = useState<SubProductResponse>();
 
   useEffect(() => {
     if (initData) {
@@ -70,12 +67,17 @@ const ChangeSubProduct = (props: Props) => {
       setProductDetail(initData.subProducts);
     } else if (productId) {
       getProduct(productId);
+    } else if (initProduct){
+      console.log(initProduct);
+      setProduct(initProduct)
     }
   }, [initData, subProductId]);
 
   useEffect(() => {
     if (product && productId) {
       getSubProducts(productId);
+    }else if(initProduct){
+      getSubProducts(initProduct.id);
     }
   }, [product]);
 
@@ -84,15 +86,10 @@ const ChangeSubProduct = (props: Props) => {
       getListOptions(product);
       initData && setInitOptions();
 
-      setPhotoSelected(
-        product.images && product.images.length > 0
-          ? product.images[0]
-          : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
-      );
+      
     }
     if (subProductId && productDetail && productDetail.length > 0) {
       const initSub = productDetail.find((el) => el.id === subProductId);
-      console.log(initSub);
       if (initSub) {
         setOptions(initSub);
         initCount && setCount(initCount);
@@ -107,6 +104,7 @@ const ChangeSubProduct = (props: Props) => {
   }, [subProductSelected]);
 
   const getSubProducts = async (id: string) => {
+    setIsLoading(true);
     try {
       const res: CustomAxiosResponse<SubProductResponse[]> = await handleAPI(
         API.PRODUCT_DETAIL(id),
@@ -115,6 +113,8 @@ const ChangeSubProduct = (props: Props) => {
       setProductDetail(res.data.result);
     } catch (error) {
       console.log(error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -143,6 +143,8 @@ const ChangeSubProduct = (props: Props) => {
             setSubProductSelected(sub);
             if (sub.images && sub.images.length > 0) {
               setPhotoSelected(sub.images[0]);
+            }else if(product && product.images && product.images.length > 0){
+              setPhotoSelected(product.images[0]);
             }
             break;
           }
@@ -242,132 +244,8 @@ const ChangeSubProduct = (props: Props) => {
     }
   };
 
-  const renderButtonGroup = () => {
-    // let item: CartResponse | undefined = cart.data.find(
-    //   (ele) => ele.subProductId === subProductSelected?.id
-    // );
-    return (
-      subProductSelected && (
-        <Space wrap className="mt-3">
-          {/* {type === "main" ? (
-            <Typography.Title level={5} type="secondary">
-              {"Available: "}
-              {item
-                ? subProductSelected.quantity - item.count
-                : subProductSelected.quantity}
-            </Typography.Title>
-          ) : (
-            <Typography.Title level={5} type="secondary">
-              {"Quantity: "}
-              {subProductSelected.quantity}
-            </Typography.Title>
-          )} */}
-          <Typography.Title level={5} type="secondary">
-            {"Quantity: "}
-            {subProductSelected.quantity}
-          </Typography.Title>
-          <div
-            style={{
-              border: "1px solid silver",
-              borderRadius: 6,
-              padding: "5px 8px",
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <Button
-              id="btn-des"
-              onClick={() => setCount(count - 1)}
-              disabled={count <= 1}
-              icon={<MdOutlineRemove size={20}/>}
-            >
-              
-            </Button>
-            <Typography.Text
-              style={{ fontWeight: "bold" }}
-              className="ml-3 mr-3"
-            >
-              {count}
-            </Typography.Text>
-            <Button
-              id="btn-asc"
-              onClick={() => setCount(count + 1)}
-              // disabled={
-              //   type === "main"
-              //     ? item
-              //       ? count >= subProductSelected.quantity - item.count
-              //       : count >= subProductSelected.quantity
-              //     : count >= subProductSelected.quantity
-              // }
-              disabled={count >= subProductSelected.quantity}
-              icon={<MdAdd size={20}/>}
-            >
-              
-            </Button>
-          </div>
-          <Button
-            onClick={() => handleSubmit()}
-            type="primary"
-            // disabled={
-            //   type === "main"
-            //     ? item
-            //       ? count > subProductSelected.quantity - item.count
-            //       : count > subProductSelected.quantity
-            //     : count > subProductSelected.quantity
-            // }
-            disabled={count > subProductSelected.quantity}
-          >
-            {type === "main" ? "Add to cart" : "Change"}
-          </Button>
-          <Button style={{ color: "silver" }} icon={<IoMdHeart size={20} />} />
-        </Space>
-      )
-    );
-  };
-
-  const handleClose = () => {
-    onClose && onClose();
-  };
-
-  return initData ? (
-    <div>
-      {productId && product && type === "change" && (
-        <div>
-          <Typography.Title level={4}>{product.title}</Typography.Title>
-          <div className="d-flex" style={{ alignItems: "center" }}>
-            <div className="">
-              <img
-                src={photoSelected}
-                style={{ objectFit: "cover" }}
-                alt=""
-                width={80}
-                height={85}
-              />
-            </div>
-            {subProductSelected && (
-              <div className="ml-2">
-                {subProductSelected.discount && subProductSelected.price ? (
-                  <Space>
-                    <Typography.Title level={5}>
-                      {FormatCurrency.VND.format(subProductSelected.discount)}
-                    </Typography.Title>
-                    <Typography.Title type="secondary" level={5}>
-                      <del>
-                        {" "}
-                        {FormatCurrency.VND.format(subProductSelected.price)}
-                      </del>
-                    </Typography.Title>
-                  </Space>
-                ) : (
-                  <Typography.Title level={5}>
-                    {FormatCurrency.VND.format(subProductSelected.price)}
-                  </Typography.Title>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+  const renderOptionsGroup = () =>{
+    return <>
       {listOptions &&
         productDetail &&
         Array.from(listOptions.entries()).map(([key, valuesSet]) => (
@@ -437,12 +315,113 @@ const ChangeSubProduct = (props: Props) => {
             })}
           </div>
         ))}
+    </>
+  }
+
+  const renderButtonGroup = () => {
+    return (
+      subProductSelected && (
+        <Space wrap className="mt-3">
+          <Typography.Title level={5} type="secondary">
+            {"Quantity: "}
+            {subProductSelected.quantity}
+          </Typography.Title>
+          <div
+            style={{
+              border: "1px solid silver",
+              borderRadius: 6,
+              padding: "5px 8px",
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <Button
+              id="btn-des"
+              onClick={() => setCount(count - 1)}
+              disabled={count <= 1}
+              icon={<MdOutlineRemove size={20}/>}
+            >
+              
+            </Button>
+            <Typography.Text
+              style={{ fontWeight: "bold" }}
+              className="ml-3 mr-3"
+            >
+              {count}
+            </Typography.Text>
+            <Button
+              id="btn-asc"
+              onClick={() => setCount(count + 1)}
+              disabled={count >= subProductSelected.quantity}
+              icon={<MdAdd size={20}/>}
+            >
+              
+            </Button>
+          </div>
+          <Button
+            onClick={() => handleSubmit()}
+            type="primary"
+            disabled={count > subProductSelected.quantity}
+          >
+            {type === "main" ? "Add to cart" : "Change"}
+          </Button>
+          <Button style={{ color: "silver" }} icon={<IoMdHeart size={20} />} />
+        </Space>
+      )
+    );
+  };
+
+  const handleClose = () => {
+    setPhotoSelected('');
+    onClose && onClose();
+  };
+
+  return initData ? (
+    <div>
+      {product && type === "change" && (
+        <div>
+          <Typography.Title level={4}>{product.title}</Typography.Title>
+          <div className="d-flex" style={{ alignItems: "center" }}>
+            <div className="">
+              <img
+                src={photoSelected}
+                style={{ objectFit: "cover" }}
+                alt=""
+                width={80}
+                height={85}
+              />
+            </div>
+            {subProductSelected && (
+              <div className="ml-2">
+                {subProductSelected.discount && subProductSelected.price ? (
+                  <Space>
+                    <Typography.Title level={5}>
+                      {FormatCurrency.VND.format(subProductSelected.discount)}
+                    </Typography.Title>
+                    <Typography.Title type="secondary" level={5}>
+                      <del>
+                        {" "}
+                        {FormatCurrency.VND.format(subProductSelected.price)}
+                      </del>
+                    </Typography.Title>
+                  </Space>
+                ) : (
+                  <Typography.Title level={5}>
+                    {FormatCurrency.VND.format(subProductSelected.price)}
+                  </Typography.Title>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {renderOptionsGroup()}
       {renderButtonGroup()}
     </div>
   ) : (
-    <Modal open={isVisible} onCancel={handleClose} footer={false}>
+    <Modal loading={isLoading} open={isVisible} onCancel={handleClose} footer={false}>
       <div>
-        {productId && product && type === "change" && (
+        {(productId || initProduct) && product && type === "change" && (
           <div>
             <Typography.Title level={4}>{product.title}</Typography.Title>
             <div className="d-flex" style={{ alignItems: "center" }}>
@@ -479,75 +458,7 @@ const ChangeSubProduct = (props: Props) => {
             </div>
           </div>
         )}
-        {listOptions &&
-          productDetail &&
-          Array.from(listOptions.entries()).map(([key, valuesSet]) => (
-            <div key={key}>
-              <Typography.Title className="mb-2 mt-2" level={5}>
-                {key}
-              </Typography.Title>
-              {Array.from(valuesSet).map((value) => {
-                let isDisabled = true;
-                // Duyệt qua từng sản phẩm
-                for (let i = 0; i < productDetail.length; i++) {
-                  const sub = productDetail[i];
-                  // Bước 1: Kiểm tra xem sản phẩm có tùy chọn không
-                  if (!sub.options) {
-                    continue; // Nếu không có tùy chọn thì bỏ qua sản phẩm này
-                  }
-                  // Bước 2: Kiểm tra nếu sản phẩm có giá trị khớp với `key` và `value`
-                  if (sub.options[key] !== value) {
-                    continue; // Nếu không khớp với `size`, bỏ qua sản phẩm này
-                  }
-
-                  // Bước 3: Kiểm tra tất cả các tùy chọn đã chọn có khớp với sản phẩm
-                  let allOptionsValid = true;
-                  for (let [optKey, optValue] of optionSelected) {
-                    // Nếu `optKey` không phải là `key`, kiểm tra xem giá trị có khớp không
-                    if (optKey !== key && sub.options[optKey] !== optValue) {
-                      allOptionsValid = false;
-                      break; // Nếu có một tùy chọn không hợp lệ thì dừng kiểm tra
-                    }
-                  }
-
-                  // Bước 4: Nếu tất cả các tùy chọn khớp, sản phẩm này hợp lệ
-                  if (allOptionsValid) {
-                    isDisabled = false; // Sản phẩm hợp lệ, cho phép nhấn nút
-                    break; // Dừng kiểm tra sau khi tìm thấy sản phẩm hợp lệ đầu tiên
-                  }
-                }
-
-                return (
-                  <Button
-                    type={
-                      optionSelected.get(key) === value ? "primary" : "default"
-                    }
-                    onClick={() => {
-                      const newMap = new Map(optionSelected);
-                      newMap.set(key, value);
-                      setOptionSelected(newMap);
-                    }}
-                    className="p-1 mr-1"
-                    key={value}
-                    disabled={isDisabled}
-                  >
-                    {key === "Color" && (
-                      <div
-                        style={{
-                          border: "1px solid silver",
-                          backgroundColor: value,
-                          borderRadius: 100,
-                          width: 20,
-                          height: 20,
-                        }}
-                      ></div>
-                    )}
-                    {value}
-                  </Button>
-                );
-              })}
-            </div>
-          ))}
+        {renderOptionsGroup()}
         {renderButtonGroup()}
       </div>
     </Modal>
