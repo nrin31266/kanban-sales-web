@@ -13,7 +13,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { CartResponse } from "@/model/CartModel";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { PageResponse } from "@/model/AppModel";
-import { API } from "@/configurations/configurations";
+import { API, PAGE } from "@/configurations/configurations";
 import handleAPI from "@/apis/handleAPI";
 import { BiSolidDownArrow } from "react-icons/bi";
 import ChangeSubProduct from "@/components/ChangeSubProduct";
@@ -23,6 +23,7 @@ import { FormatCurrency } from "@/utils/formatNumber";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { removeProduct } from "@/reducx/reducers/cartReducer";
+import Link from "next/link";
 
 const Cart = () => {
   const [loading, setLoading] = useState(false);
@@ -32,23 +33,45 @@ const Cart = () => {
   const [isVisibleChangeSub, setIsVisibleChangeSub] = useState(false);
   const [itemSelected, setItemSelected] = useState<CartResponse>();
   const dispatch = useDispatch();
-  const router = useRouter();
+  const isInitialLoad = useRef(true); // Biến kiểm tra lần đầu tải
 
   const loadMoreData = async () => {
     if (loading) return;
 
-    setLoading(true);
-    const api = `${API.CARTS}?page=${page.current}&size=5`;
+    setLoading(true); // Bắt đầu tải dữ liệu
+    const api = `${API.CARTS}?page=${page.current}&size=9`;
     try {
       const res: CustomAxiosResponse<PageResponse<CartResponse>> =
         await handleAPI(api);
 
-      // Cập nhật tổng số phần tử và thêm dữ liệu mới vào state
-      setTotalElements(res.data.result.totalElements);
-      setData((prevData) => [...prevData, ...res.data.result.data]);
+      setTotalElements(res.data.result.totalElements); // Cập nhật tổng số phần tử
+      setData((prevData) => [...prevData, ...res.data.result.data]); // Thêm dữ liệu mới vào state
 
-      // Tăng page sau mỗi lần tải dữ liệu mới
-      page.current += 1;
+      page.current += 1; // Tăng page sau mỗi lần tải
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false); // Kết thúc tải dữ liệu
+    }
+  };
+
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false; // Đảm bảo chỉ gọi một lần khi component mount
+      loadMoreData(); // Gọi API lần đầu tiên khi component mount
+    }
+  }, []); // Dependency rỗng chỉ gọi lần đầu tiên
+  const loadNextPage = () => {
+    loadMoreData(); // Gọi loadMoreData khi kéo xuống dưới
+  };
+
+  const getCartAdditional = async () => {
+    setLoading(true);
+    try {
+      const res: CustomAxiosResponse<CartResponse> = await handleAPI(
+        `${API.CARTS}/additional?page=${page.current-1}&size=${9}`
+      );
+      setData((pre) => [...pre, res.data.result]);
     } catch (error) {
       console.log(error);
     } finally {
@@ -56,13 +79,42 @@ const Cart = () => {
     }
   };
 
-  useEffect(() => {
-    loadMoreData();
-  }, []); // Chỉ gọi 1 lần khi component mount
+  const handleRemoveItem = (itemToRemove: CartResponse) => {
+    // Xóa mục khỏi backend
+    removeCart(itemToRemove.subProductId, itemToRemove.createdBy)
+      .then(() => {
+        // Xóa mục khỏi state data sau khi xóa thành công
+        setData((prevData) =>
+          prevData.filter((item) => item.id !== itemToRemove.id)
+        );
+        setTotalElements((prevTotal) => prevTotal - 1);
 
-  const loadNextPage = () => {
-    loadMoreData(); // Gọi hàm loadMoreData khi kéo xuống cuối
+        // Nếu số lượng phần tử hiện tại ít hơn totalElements, gọi API để tải thêm
+        if (data.length < totalElements) {
+          getCartAdditional();
+        }
+      })
+      .catch((error) => {
+        console.error("Error removing item from cart:", error);
+      });
   };
+
+  const removeCart = async (subProductId: string, createdBy: string) => {
+    setLoading(true);
+    try {
+      await handleAPI(
+        `${API.CARTS}/${subProductId}/${createdBy}`,
+        undefined,
+        "delete"
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log(totalElements, data.length);
 
   return (
     <div className="container bg-white p-0" style={{}}>
@@ -80,12 +132,15 @@ const Cart = () => {
         <InfiniteScroll
           dataLength={data.length}
           next={loadNextPage}
-          hasMore={data.length < totalElements}
+          hasMore={data.length < totalElements && !loading}
           loader={<Skeleton avatar paragraph={{ rows: 2 }} active />}
           endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
           scrollableTarget="scrollableDiv"
+          initialScrollY={0}
+          scrollThreshold={0.8}
         >
           <List
+            // style={{overflowX: 'hidden',}}
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id} className="cart row">
@@ -98,7 +153,11 @@ const Cart = () => {
                   </div>
                   <div className="row">
                     <div className="cart-item-title col-sm-12 col-md-8">
-                      <a href="#">{item.title}</a>
+                      <Link
+                        href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
+                      >
+                        {item.title}
+                      </Link>
                     </div>
                     <div className="col">
                       <Tag className="cart-item-option mt-2">
@@ -152,9 +211,12 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-sm-12 col-md-5 d-flex" style={{ justifyItems: "center" }}>
-                  <div className="row" style={{width: '100%'}}>
-                    <div className="col-7" style={{paddingRight: 0}}>
+                <div
+                  className="col-sm-12 col-md-5 d-flex"
+                  style={{ justifyItems: "center" }}
+                >
+                  <div className="row" style={{ width: "100%" }}>
+                    <div className="col-7" style={{ paddingRight: 0 }}>
                       {item.subProductResponse &&
                       item.subProductResponse.discount &&
                       item.subProductResponse.price ? (
@@ -164,7 +226,7 @@ const Cart = () => {
                               item.subProductResponse.discount
                             )}
                           </Typography.Text>
-                          <Typography.Text type="secondary" >
+                          <Typography.Text type="secondary">
                             <del>
                               {" "}
                               {FormatCurrency.VND.format(
@@ -175,7 +237,7 @@ const Cart = () => {
                         </Space>
                       ) : (
                         item.subProductResponse && (
-                          <Typography.Text >
+                          <Typography.Text>
                             {FormatCurrency.VND.format(
                               item.subProductResponse.price
                             )}
@@ -184,15 +246,21 @@ const Cart = () => {
                       )}
                     </div>
                     <div className="col">
-                      <Typography.Text style={{fontWeight: 'bold'}}>
+                      <Typography.Text style={{ fontWeight: "bold" }}>
                         {"x"}
                         {item.count}
                       </Typography.Text>
                     </div>
                     <div className="col">
-                      <a onClick={()=>{
-                        dispatch(removeProduct(item));
-                      }}><span className="text-danger"><u>Remove</u></span></a>
+                      <a
+                        onClick={() => {
+                          handleRemoveItem(item);
+                        }}
+                      >
+                        <span className="text-danger">
+                          <u>Remove</u>
+                        </span>
+                      </a>
                     </div>
                   </div>
                 </div>
