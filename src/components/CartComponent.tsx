@@ -10,6 +10,8 @@ import { CgArrowsExchange } from "react-icons/cg";
 import { IoClose } from "react-icons/io5";
 import { TbReload } from "react-icons/tb";
 import { TfiExchangeVertical } from "react-icons/tfi";
+import { useRouter } from "next/router";
+import { PAGE } from "@/configurations/configurations";
 
 interface Props {
   pageData: PageResponse<CartResponse>;
@@ -24,6 +26,7 @@ const CartComponent = (props: Props) => {
   const dispatch = useDispatch();
   const [isVisibleChangeModal, setIsVisibleChangeModal] = useState(false);
   const [cartSelected, setCartSelected] = useState<CartResponse>();
+  const router = useRouter();
   return (
     <Card
       className="cart"
@@ -110,11 +113,18 @@ const CartComponent = (props: Props) => {
       />
 
       <div>
-        <Button style={{ width: "100%" }} type="primary" size="large">
-          View all cart
+        <Button
+          onClick={(e)=>{
+            router.push(PAGE.CART)
+          }}
+          style={{ width: "100%" }}
+          type="primary"
+          size="large"
+        >
+          View cart all
         </Button>
       </div>
-      {cartSelected && (
+      {/* {cartSelected && (
         <ChangeSubProduct
           isVisible={isVisibleChangeModal}
           onChange={() => {}}
@@ -127,7 +137,7 @@ const CartComponent = (props: Props) => {
           type="change"
           initCount={cartSelected.count}
         />
-      )}
+      )} */}
     </Card>
   );
 };

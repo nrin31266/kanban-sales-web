@@ -271,22 +271,25 @@ const ChangeSubProduct = (props: Props) => {
               border: "1px solid silver",
               borderRadius: 6,
               padding: "5px 8px",
+              display: 'flex',
+              alignItems: 'center'
             }}
           >
-            <button
+            <Button
               id="btn-des"
               onClick={() => setCount(count - 1)}
               disabled={count <= 1}
+              icon={<MdOutlineRemove size={20}/>}
             >
-              <MdOutlineRemove />
-            </button>
+              
+            </Button>
             <Typography.Text
               style={{ fontWeight: "bold" }}
               className="ml-3 mr-3"
             >
               {count}
             </Typography.Text>
-            <button
+            <Button
               id="btn-asc"
               onClick={() => setCount(count + 1)}
               // disabled={
@@ -297,9 +300,10 @@ const ChangeSubProduct = (props: Props) => {
               //     : count >= subProductSelected.quantity
               // }
               disabled={count >= subProductSelected.quantity}
+              icon={<MdAdd size={20}/>}
             >
-              <MdAdd />
-            </button>
+              
+            </Button>
           </div>
           <Button
             onClick={() => handleSubmit()}

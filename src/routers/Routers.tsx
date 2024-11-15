@@ -32,7 +32,7 @@ const Routers = ({ Component, pageProps }: any) => {
       let authData: AuthModel = JSON.parse(authInLocal);
       if (authData.accessToken) {
         dispatch(addAuth(authData));
-        authData.userInfo && getCarts(authData.userInfo.id);
+        authData.userInfo && getCarts();
       }
     }
 
@@ -41,9 +41,9 @@ const Routers = ({ Component, pageProps }: any) => {
   }, []);
 
 
-  const getCarts = async (createdBy: string)=>{
+  const getCarts = async ()=>{
     try {
-      const res = await handleAPI(`${API.CARTS}/${createdBy}`);
+      const res = await handleAPI(`${API.CARTS}`);
       dispatch(addAllProduct(res.data.result));
     } catch (error) {
       console.error(error);

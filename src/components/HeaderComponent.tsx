@@ -111,36 +111,38 @@ const HeaderComponent = () => {
                 <>
                   <Button type="text" icon={<FiSearch size={20} />}></Button>
                   <Button type="text" icon={<FcLike size={20} />}></Button>
-                  <Button
-                    
-                    onClick={(e) => {
-                      
-                      setIsCartDropDown(!isCartDropDown);
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    className="p-1"
-                    type="text"
-                  >
-                    <Dropdown
-                      open={isCartDropDown}
-                      placement="bottom"
-                      trigger={["click"]}
-                      dropdownRender={() => (
-                        <CartComponent
-                          onOpen={() => setIsCartDropDown(true)}
-                          onFinish={() => {}}
-                          onClose={(e) => { e.preventDefault();
-                            setIsCartDropDown(false);}}
-                          pageData={cart}
-                        />
-                      )}
+                  <div style={isCartDropDown ? {} : {}}>
+                    <Button
+                      onClick={(e) => {
+                        setIsCartDropDown(!isCartDropDown);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      className="p-1"
+                      type="text"
                     >
-                      <Badge count={cart.totalElements}>
-                        <MdOutlineShoppingCart  size={20} />
-                      </Badge>
-                    </Dropdown>
-                  </Button>
+                      <Dropdown
+                        open={isCartDropDown}
+                        placement="bottom"
+                        trigger={["click"]}
+                        dropdownRender={() => (
+                          <CartComponent
+                            onOpen={() => setIsCartDropDown(true)}
+                            onFinish={() => {}}
+                            onClose={(e) => {
+                              e.preventDefault();
+                              setIsCartDropDown(false);
+                            }}
+                            pageData={cart}
+                          />
+                        )}
+                      >
+                        <Badge count={cart.totalElements}>
+                          <MdOutlineShoppingCart size={20} />
+                        </Badge>
+                      </Dropdown>
+                    </Button>
+                  </div>
                   <Button
                     type="text"
                     icon={<IoNotificationsSharp size={20} />}

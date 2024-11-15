@@ -172,13 +172,10 @@
   max-height: 3.5em; */
 }
 
-.product-detail .ant-typography {
-  margin-bottom: 0;
-}
 
-.product-detail #btn-asc,
-#btn-des {
-  border: none;
+
+.product-detail #btn-asc, #btn-des {
+  border-radius: 10;
 }
 
 .sub-product-gallery,
