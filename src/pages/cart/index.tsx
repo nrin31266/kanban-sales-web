@@ -4,6 +4,7 @@ import { API, PAGE } from "@/configurations/configurations";
 import { PageResponse } from "@/model/AppModel";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { CartRequest, CartResponse } from "@/model/CartModel";
+import { addProduct, removeProduct } from "@/reducx/reducers/cartReducer";
 import { FormatCurrency } from "@/utils/formatNumber";
 import {
   Avatar,
@@ -97,6 +98,8 @@ const Cart = () => {
         if (data.length < totalElements) {
           getCartAdditional();
         }
+        //đồng bộ reducer
+        dispatch(removeProduct(itemToRemove));
       })
       .catch((error) => {
         console.error("Error removing item from cart:", error);
@@ -168,19 +171,6 @@ const Cart = () => {
             console.error(error);
           });
       } else {
-        const item: CartResponse = {
-          productId: itemReceived.productId,
-          count: itemReceived.count,
-          createdAt: null,
-          imageUrl: itemReceived.imageUrl,
-          title: itemReceived.title,
-          id: null,
-          productResponse: null,
-          subProductResponse: itemReceived.subProductResponse,
-          updatedAt: null,
-          subProductId: itemReceived.subProductId,
-          createdBy: itemReceived.createdBy,
-        };
         const indexItem = data.findIndex(
           (ele) => ele.subProductId === itemReceived.subProductId
         );
@@ -191,6 +181,7 @@ const Cart = () => {
           addCart(itemReceived) // Thêm sản phẩm vào giỏ
             .then((result: CartResponse) => {
               setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
+              dispatch(addProduct(result));
             })
             .catch((error) => {
               console.error(error);
