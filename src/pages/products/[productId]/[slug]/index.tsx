@@ -1,52 +1,27 @@
+import ChangeSubProduct from "@/components/ChangeSubProduct";
+import HeadComponent from "@/components/HeadComponent";
+import ScrollItems from "@/components/ScrollItems";
 import { API, APP, PAGE } from "@/configurations/configurations";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { ProductResponse } from "@/model/ProductModel";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { SubProductResponse } from "./../../../../model/SubProduct";
-import HeadComponent from "@/components/HeadComponent";
-import { Breadcrumb, Button, Rate, Space, Tag, Typography } from "antd";
-import Link from "next/link";
 import { FormatCurrency } from "@/utils/formatNumber";
-import ScrollItems from "@/components/ScrollItems";
-import { MdAdd, MdOutlineRemove } from "react-icons/md";
-import { IoMdHeart } from "react-icons/io";
-import { isMapsOptionsEqual } from "@/utils/compare";
-import { useDispatch, useSelector } from "react-redux";
-import { authSelector } from "@/reducx/reducers/authReducer";
-import { AuthModel } from "@/model/AuthenticationModel";
-import { useRouter } from "next/router";
-import { addProduct, cartSelector } from "@/reducx/reducers/cartReducer";
-import { CartRequest, CartResponse } from "@/model/CartModel";
-import { PageResponse } from "@/model/AppModel";
-import ChangeSubProduct from "@/components/ChangeSubProduct";
+import { Breadcrumb, Rate, Space, Tag, Typography } from "antd";
+import axios from "axios";
+import Link from "next/link";
+import { useState } from "react";
+import { SubProductResponse } from "./../../../../model/SubProduct";
 
-const ProductDetail = ({
-  initProduct,
-  initProductDetail,
-}: {
-  initProduct: ProductResponse;
-  initProductDetail: SubProductResponse[];
-}) => {
+const ProductDetail = ({initProduct,initProductDetail}: {initProduct: ProductResponse; initProductDetail: SubProductResponse[];}) => {
   const [product, setProduct] = useState<ProductResponse>(initProduct);
   const [productDetail, setProductDetail] =
     useState<SubProductResponse[]>(initProductDetail);
   const [subProductSelected, setSubProductSelected] =
     useState<SubProductResponse>();
-  const [count, setCount] = useState(1);
   const [photoSelected, setPhotoSelected] = useState(
     product.images && product.images.length > 0
       ? product.images[0]
       : "https://th.bing.com/th/id/R.b16b871600d4270d75d30babff3507d6?rik=jsJKr9%2bb8%2fuIzQ&pid=ImgRaw&r=0"
   );
-  const [optionSelected, setOptionSelected] = useState<Map<string, string>>(
-    new Map()
-  );
-  const auth: AuthModel = useSelector(authSelector);
-  const router = useRouter();
-  const cart: PageResponse<CartResponse> = useSelector(cartSelector);
-  const dispatch = useDispatch();
-
   
 
   return (

@@ -1,29 +1,27 @@
-import { useState, useEffect, useRef } from "react";
+import handleAPI from "@/apis/handleAPI";
+import ChangeSubProduct from "@/components/ChangeSubProduct";
+import { API, PAGE } from "@/configurations/configurations";
+import { PageResponse } from "@/model/AppModel";
+import { CustomAxiosResponse } from "@/model/AxiosModel";
+import { CartRequest, CartResponse } from "@/model/CartModel";
+import { FormatCurrency } from "@/utils/formatNumber";
 import {
   Avatar,
   Button,
+  Checkbox,
   Divider,
   List,
   Skeleton,
   Space,
   Tag,
-  Typography,
+  Typography
 } from "antd";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { CartRequest, CartResponse } from "@/model/CartModel";
-import { CustomAxiosResponse } from "@/model/AxiosModel";
-import { PageResponse } from "@/model/AppModel";
-import { API, PAGE } from "@/configurations/configurations";
-import handleAPI from "@/apis/handleAPI";
-import { BiSolidDownArrow } from "react-icons/bi";
-import ChangeSubProduct from "@/components/ChangeSubProduct";
-import { SubProductResponse } from "@/model/SubProduct";
-import { ProductResponse } from "@/model/ProductModel";
-import { FormatCurrency } from "@/utils/formatNumber";
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/router";
-import { removeProduct } from "@/reducx/reducers/cartReducer";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { BiSolidDownArrow } from "react-icons/bi";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useDispatch } from "react-redux";
 
 const Cart = () => {
   const [loading, setLoading] = useState(false);
@@ -34,6 +32,10 @@ const Cart = () => {
   const [itemSelected, setItemSelected] = useState<CartResponse>();
   const dispatch = useDispatch();
   const isInitialLoad = useRef(true); // Biến kiểm tra lần đầu tải
+  const [itemsIdSelected, setItemsIdSelected] = useState<Set<string>>(
+    new Set()
+  );
+  const router = useRouter();
 
   const loadMoreData = async () => {
     if (loading) return;
@@ -88,7 +90,9 @@ const Cart = () => {
           prevData.filter((item) => item.id !== itemToRemove.id)
         );
         setTotalElements((prevTotal) => prevTotal - 1);
-
+        if (itemsIdSelected.has(itemToRemove.subProductId)) {
+          changeItemsId(itemToRemove.subProductId);
+        }
         // Nếu số lượng phần tử hiện tại ít hơn totalElements, gọi API để tải thêm
         if (data.length < totalElements) {
           getCartAdditional();
@@ -185,13 +189,12 @@ const Cart = () => {
           // Có thể ko có thật
           //Hoặc có thể chưa load
           addCart(itemReceived) // Thêm sản phẩm vào giỏ
-          .then((result: CartResponse) => {
-            setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
-            console.log(data);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+            .then((result: CartResponse) => {
+              setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         } else {
           //Có thì dễ rồi cập nhập số lượng nó thôi
           //Và sẽ xóa nó ra theo hàm lúc trc
@@ -201,184 +204,259 @@ const Cart = () => {
             count: updatedData[indexItem].count + itemReceived.count,
           };
           setData(updatedData);
-          updateCart(itemReceived);
-          handleRemoveItem(item);
+          addCart(itemReceived);
+          // handleRemoveItem(item);
         }
+      }
+      if (!itemsIdSelected.has(itemReceived.subProductId)) {
+        addItemId(itemReceived.subProductId);
       }
     }
   };
 
-  console.log(totalElements, data.length);
+  // console.log(totalElements, data.length);
+
+  const changeItemsId = (id: string) => {
+    setItemsIdSelected((pre) => {
+      const newIds: Set<string> = new Set(pre);
+      if (newIds.has(id)) {
+        newIds.delete(id);
+      } else {
+        newIds.add(id);
+      }
+      return newIds;
+    });
+  };
+
+  const addItemId = (id: string) => {
+    setItemsIdSelected((pre) => {
+      const newIds: Set<string> = new Set(pre);
+      newIds.add(id);
+      return newIds;
+    });
+  };
+
+  useEffect(() => {
+    console.log(itemsIdSelected);
+  }, [itemsIdSelected]);
 
   return (
-    <div className="container bg-white p-0" style={{}}>
-      <div
-        className="mt-3"
-        id="scrollableDiv"
-        style={{
-          height: "80vh",
-          overflow: "auto",
-          padding: "0 8px",
-          border: "1px solid rgba(140, 140, 140, 0.35)",
-          width: "100%",
-        }}
-      >
-        <InfiniteScroll
-          dataLength={data.length}
-          next={loadNextPage}
-          hasMore={data.length < totalElements && !loading}
-          loader={<Skeleton avatar paragraph={{ rows: 2 }} active />}
-          endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-          scrollableTarget="scrollableDiv"
-          initialScrollY={0}
-          scrollThreshold={0.8}
+    <>
+      <div className="container bg-white p-0" style={{}}>
+        <div style={{ backgroundColor: "GrayText" }}>
+          <Typography.Title level={2}>Cart</Typography.Title>
+        </div>
+        <div
+          className="mt-3"
+          id="scrollableDiv"
+          style={{
+            height: "80vh",
+            overflow: "auto",
+            padding: "0 8px",
+            // border: "1px solid rgba(140, 140, 140, 0.35)",
+            width: "100%",
+          }}
         >
-          <List
-            // style={{overflowX: 'hidden',}}
-            dataSource={data}
-            renderItem={(item) => (
-              <List.Item key={item.id} className="cart row">
-                <div
-                  className="col-sm-12 col-md-7 d-flex"
-                  style={{ alignItems: "center" }}
+          <InfiniteScroll
+            dataLength={data.length}
+            next={loadNextPage}
+            hasMore={data.length < totalElements && !loading}
+            loader={<Skeleton avatar paragraph={{ rows: 2 }} active />}
+            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+            scrollableTarget="scrollableDiv"
+            initialScrollY={0}
+            scrollThreshold={0.8}
+          >
+            <List
+              style={{ overflowX: "hidden" }}
+              dataSource={data}
+              renderItem={(item) => (
+                <List.Item
+                  style={
+                    {
+                      // backgroundColor: itemsIdSelected.has(item.subProductId)
+                      //   ? "rgb(106, 219, 185, 0.1)"
+                      //   : "",
+                    }
+                  }
+                  key={item.id}
+                  className="cart row"
                 >
-                  <div>
-                    <Avatar shape="square" size={120} src={item.imageUrl} />
-                  </div>
-                  <div className="row">
-                    <div className="cart-item-title col-sm-12 col-md-8">
-                      <Link
-                        href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
-                      >
-                        {item.title}
-                      </Link>
+                  <div
+                    className="col-sm-12 col-md-7 d-flex"
+                    style={{ alignItems: "center" }}
+                  >
+                    <div>
+                      <Checkbox
+                        checked={itemsIdSelected.has(item.subProductId)}
+                        onClick={() => changeItemsId(item.subProductId)}
+                      />
                     </div>
-                    <div className="col">
-                      <a
-                        onClick={() => {
-                          setItemSelected(item);
-                          setIsVisibleChangeSub(true);
-                        }}
-                      >
-                        <Tag className="cart-item-option mt-2">
-                          <div>
-                            {"Classification: "}
-                            <BiSolidDownArrow size={10} />
-                          </div>
-                          <Space>
-                            {item.subProductResponse &&
-                              item.subProductResponse.options &&
-                              Object.keys(item.subProductResponse.options)
-                                .length > 0 &&
-                              Object.entries(
-                                item.subProductResponse.options
-                              ).map(([key, value]) => {
-                                return (
-                                  typeof value === "string" && (
-                                    <Space key={item.id + key + value}>
-                                      <span>
-                                        {key}
-                                        {": "}
-                                      </span>
-                                      {key === "Color" ? (
-                                        <div
-                                          style={{
-                                            backgroundColor: value,
-                                            width: 20,
-                                            height: 20,
-                                            borderRadius: 100,
-                                            border: "1px solid silver",
-                                          }}
-                                        ></div>
-                                      ) : (
-                                        <span style={{ opacity: 0.6 }}>
-                                          {value}
+                    <div className="ml-2">
+                      <Avatar shape="square" size={120} src={item.imageUrl} />
+                    </div>
+                    <div className="row">
+                      <div className="cart-item-title col-sm-12 col-md-8">
+                        <Link
+                          href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
+                        >
+                          {item.title}
+                        </Link>
+                      </div>
+                      <div className="col">
+                        <a
+                          onClick={() => {
+                            setItemSelected(item);
+                            setIsVisibleChangeSub(true);
+                          }}
+                        >
+                          <Tag className="cart-item-option mt-2">
+                            <div>
+                              {"Classification: "}
+                              <BiSolidDownArrow size={10} />
+                            </div>
+                            <Space>
+                              {item.subProductResponse &&
+                                item.subProductResponse.options &&
+                                Object.keys(item.subProductResponse.options)
+                                  .length > 0 &&
+                                Object.entries(
+                                  item.subProductResponse.options
+                                ).map(([key, value]) => {
+                                  return (
+                                    typeof value === "string" && (
+                                      <Space key={item.id + key + value}>
+                                        <span>
+                                          {key}
+                                          {": "}
                                         </span>
-                                      )}
-                                    </Space>
-                                  )
-                                );
-                              })}
-                          </Space>
-                        </Tag>
-                      </a>
+                                        {key === "Color" ? (
+                                          <div
+                                            style={{
+                                              backgroundColor: value,
+                                              width: 20,
+                                              height: 20,
+                                              borderRadius: 100,
+                                              border: "1px solid silver",
+                                            }}
+                                          ></div>
+                                        ) : (
+                                          <span style={{ opacity: 0.6 }}>
+                                            {value}
+                                          </span>
+                                        )}
+                                      </Space>
+                                    )
+                                  );
+                                })}
+                            </Space>
+                          </Tag>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  className="col-sm-12 col-md-5 d-flex"
-                  style={{ justifyItems: "center" }}
-                >
-                  <div className="row" style={{ width: "100%" }}>
-                    <div className="col-7" style={{ paddingRight: 0 }}>
-                      {item.subProductResponse &&
-                      item.subProductResponse.discount &&
-                      item.subProductResponse.price ? (
-                        <Space>
-                          <Typography.Text>
-                            {FormatCurrency.VND.format(
-                              item.subProductResponse.discount
-                            )}
-                          </Typography.Text>
-                          <Typography.Text type="secondary">
-                            <del>
-                              {" "}
+                  <div
+                    className="col-sm-12 col-md-5 d-flex"
+                    style={{ justifyItems: "center" }}
+                  >
+                    <div className="row" style={{ width: "100%" }}>
+                      <div className="col-7" style={{ paddingRight: 0 }}>
+                        {item.subProductResponse &&
+                        item.subProductResponse.discount &&
+                        item.subProductResponse.price ? (
+                          <Space>
+                            <Typography.Text>
+                              {FormatCurrency.VND.format(
+                                item.subProductResponse.discount
+                              )}
+                            </Typography.Text>
+                            <Typography.Text type="secondary">
+                              <del>
+                                {" "}
+                                {FormatCurrency.VND.format(
+                                  item.subProductResponse.price
+                                )}
+                              </del>
+                            </Typography.Text>
+                          </Space>
+                        ) : (
+                          item.subProductResponse && (
+                            <Typography.Text>
                               {FormatCurrency.VND.format(
                                 item.subProductResponse.price
                               )}
-                            </del>
-                          </Typography.Text>
-                        </Space>
-                      ) : (
-                        item.subProductResponse && (
-                          <Typography.Text>
-                            {FormatCurrency.VND.format(
-                              item.subProductResponse.price
-                            )}
-                          </Typography.Text>
-                        )
-                      )}
-                    </div>
-                    <div className="col">
-                      <Typography.Text style={{ fontWeight: "bold" }}>
-                        {"x"}
-                        {item.count}
-                      </Typography.Text>
-                    </div>
-                    <div className="col">
-                      <a
-                        onClick={() => {
-                          handleRemoveItem(item);
-                        }}
-                      >
-                        <span className="text-danger">
-                          <u>Remove</u>
-                        </span>
-                      </a>
+                            </Typography.Text>
+                          )
+                        )}
+                      </div>
+                      <div className="col">
+                        <Typography.Text style={{ fontWeight: "bold" }}>
+                          {"x"}
+                          {item.count}
+                        </Typography.Text>
+                      </div>
+                      <div className="col">
+                        <a
+                          onClick={() => {
+                            handleRemoveItem(item);
+                          }}
+                        >
+                          <span className="text-danger">
+                            <u>Remove</u>
+                          </span>
+                        </a>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </List.Item>
-            )}
+                </List.Item>
+              )}
+            />
+          </InfiniteScroll>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: "7vh",
+            backgroundColor: "#e0e0e0",
+          }}
+        >
+          <div className="row">
+            <div className="col"></div>
+            <div className="col">
+              <Button
+                onClick={() => {
+                  if (itemsIdSelected.size > 0) {
+                    const idArray = Array.from(itemsIdSelected); // Chuyển Set thành Array
+                    const idString = idArray.join(","); // Chuyển Array thành chuỗi
+                    router.push(`/shop/checkout?ids=${idString}`);
+                  }
+                }}
+                type="primary"
+                size="large"
+              >
+                Checkout
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {itemSelected && itemSelected.productResponse && (
+          <ChangeSubProduct
+            isVisible={isVisibleChangeSub}
+            type="change"
+            initCount={itemSelected.count}
+            initProduct={itemSelected.productResponse}
+            onChange={(cartRequest) => {
+              handleChangeItem(cartRequest);
+            }}
+            onClose={() => {
+              setIsVisibleChangeSub(false);
+            }}
+            subProductId={itemSelected.subProductId}
           />
-        </InfiniteScroll>
+        )}
       </div>
-      {itemSelected && itemSelected.productResponse && (
-        <ChangeSubProduct
-          isVisible={isVisibleChangeSub}
-          type="change"
-          initCount={itemSelected.count}
-          initProduct={itemSelected.productResponse}
-          onChange={(cartRequest) => {
-            handleChangeItem(cartRequest);
-          }}
-          onClose={() => {
-            setIsVisibleChangeSub(false);
-          }}
-          subProductId={itemSelected.subProductId}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

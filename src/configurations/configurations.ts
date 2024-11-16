@@ -36,7 +36,8 @@ export const PAGE = {
   SHOP: '/shop',
   FILTER_PRODUCTS: '/filter-products',
   PRODUCTS: '/products',
-  CART: '/cart'
+  CART: '/cart',
+  CHECKOUT: '/shop/checkout'
 }
 
 export const APP = {

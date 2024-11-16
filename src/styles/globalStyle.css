@@ -296,7 +296,8 @@
   max-height: 3.5em;
 }
 
-.cart-item-title{
-
+.cart .ant-checkbox-inner{
+  height: 25px;
+  width: 25px;
 }
 

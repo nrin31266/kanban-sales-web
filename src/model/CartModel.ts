@@ -15,6 +15,7 @@ export interface CartRequest {
 export interface CartResponse {
     id: string | null;
     createdBy: string;
+    isCreated?: boolean
     subProductId: string;
     productId: string;
     title: string;
