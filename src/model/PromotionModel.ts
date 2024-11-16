@@ -24,3 +24,13 @@ export interface PromotionResponse {
   modified: string;
   imageUrl: string;
 }
+
+export interface CheckDiscountCodeRequest{
+  discountCode: string
+}
+
+export interface CheckDiscountCodeResponse{
+  isValid: boolean
+  promotionResponse: PromotionResponse
+  message: string
+}

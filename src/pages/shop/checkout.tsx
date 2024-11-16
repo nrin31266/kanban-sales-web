@@ -1,14 +1,27 @@
 import handleAPI from "@/apis/handleAPI";
-import { API, APP } from "@/configurations/configurations";
+import { API } from "@/configurations/configurations";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { CartResponse } from "@/model/CartModel";
+import {
+  CheckDiscountCodeRequest,
+  CheckDiscountCodeResponse,
+  PromotionResponse,
+} from "@/model/PromotionModel";
 import { FormatCurrency } from "@/utils/formatNumber";
-import { Avatar, List, Space, Table, Typography } from "antd";
-import { ColumnProps } from "antd/es/table";
-import axios from "axios";
-import { GetServerSideProps, GetStaticProps } from "next";
-import { useParams, useSearchParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  Button,
+  Card,
+  Divider,
+  Input,
+  InputRef,
+  message,
+  Space,
+  Typography,
+} from "antd";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import CartTable from "./component/CartTable";
+import { DISCOUNT_TYPE } from "@/constants/appInfos";
 
 const Checkout = () => {
   const params = useSearchParams();
@@ -16,6 +29,11 @@ const Checkout = () => {
   const isInitialLoad = useRef(true);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<CartResponse[]>([]);
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountCode, setDiscountCode] = useState<string>();
+  const [isCheckDiscountLoading, setIsCheckDiscountLoading] = useState(false);
+  const inputDiscountRef = useRef<InputRef>(null);
+  const [discount, setDiscount] = useState<PromotionResponse>();
 
   useEffect(() => {
     if (isInitialLoad.current && ids) {
@@ -23,6 +41,27 @@ const Checkout = () => {
       isInitialLoad.current = false;
     }
   }, [ids]);
+
+  const checkDiscountCode = async () => {
+    if (!discountCode) return;
+    setIsCheckDiscountLoading(true);
+    try {
+      const req: CheckDiscountCodeRequest = { discountCode: discountCode };
+      const res: CustomAxiosResponse<CheckDiscountCodeResponse> =
+        await handleAPI(`${API.PROMOTIONS}/check-code`, req, "post");
+      const response: CheckDiscountCodeResponse = res.data.result;
+      if (response.isValid) {
+        message.success(response.message);
+        setDiscount(response.promotionResponse);
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsCheckDiscountLoading(false);
+    }
+  };
 
   const getCarts = async () => {
     setIsLoading(true);
@@ -36,94 +75,28 @@ const Checkout = () => {
     }
   };
 
-  useEffect(() => {}, [data]);
+  useEffect(() => {
+    if (discount) {
+      if (discount.discountType === DISCOUNT_TYPE.PERCENTAGE) {
+        setDiscountValue((discount.value / 100) * getSubTotal());
+      } else {
+        setDiscountValue(discount.value);
+      }
+    }
+  }, [discount]);
 
-  const columns: ColumnProps<CartResponse>[] = [
-    {
-      key: "index",
-      title: "#",
-      render: (_, __, index) => index + 1,
-    },
-    {
-      key: "image",
-      dataIndex: "imageUrl",
-      render: (img) => <Avatar shape="square" size={70} src={img} />,
-    },
-    {
-      key: "title",
-      dataIndex: "title",
-      render: (title) => title,
-    },
-    {
-      key: "option",
-      dataIndex: "",
-      render: (item: CartResponse) => (
-        <div>
-          {item &&
-            item.subProductResponse &&
-            item.subProductResponse.options &&
-            Object.keys(item.subProductResponse.options).length > 0 &&
-            Object.entries(item.subProductResponse.options).map(
-              ([key, value]) => {
-                return (
-                  typeof value === "string" && (
-                    <Space key={item.id + key + value}>
-                      <span>
-                        {key}
-                        {": "}
-                      </span>
-                      {key === "Color" ? (
-                        <div
-                          style={{
-                            backgroundColor: value,
-                            width: 20,
-                            height: 20,
-                            borderRadius: 100,
-                            border: "1px solid silver",
-                          }}
-                        ></div>
-                      ) : (
-                        <span style={{ opacity: 0.6 }}>{value}</span>
-                      )}
-                    </Space>
-                  )
-                );
-              }
-            )}
-        </div>
-      ),
-      title: "options",
-    },
-    {
-      key: "price",
-      dataIndex: "",
-      render: (item: CartResponse) =>
-        item.subProductResponse &&
-        FormatCurrency.VND.format(
-          item.subProductResponse.discount
-            ? item.subProductResponse.discount
-            : item.subProductResponse.price
-        ),
-      title: "price",
-    },
-    {
-      key: "count",
-      dataIndex: "count",
-      render: (count) => `x${count}`,
-    },
-    {
-      key: "sub-price",
-      dataIndex: "",
-      render: (item: CartResponse) =>
-        item.subProductResponse &&
-        FormatCurrency.VND.format(
-          item.subProductResponse.discount
-            ? item.subProductResponse.discount * item.count
-            : item.subProductResponse.price * item.count
-        ),
-      title: "sub price",
-    },
-  ];
+  const getSubTotal = () => {
+    return data.reduce(
+      (a, b) =>
+        a +
+        (b.subProductResponse && b.subProductResponse.discount
+          ? b.subProductResponse.discount
+          : b.subProductResponse && b.subProductResponse.price
+          ? b.subProductResponse.price
+          : 0),
+      0
+    );
+  };
 
   return (
     <div className="container">
@@ -131,15 +104,100 @@ const Checkout = () => {
         <Typography.Title>Checkout</Typography.Title>
         <div className="row">
           <div className="col-sm-12 col-md-8">
-            <Table
-              style={{ padding: 0, margin: 0 }}
-              scroll={{ x: "100%" }}
-              pagination={false}
-              dataSource={data}
-              columns={columns}
-            ></Table>
+            <CartTable data={data} />
           </div>
-          <div className="col"></div>
+          <div className="col mt-2">
+            <Card
+              title={"Sub total"}
+              extra={
+                <div>
+                  <Typography.Title className="m-0" level={4}>
+                    {FormatCurrency.VND.format(getSubTotal())}
+                  </Typography.Title>
+                </div>
+              }
+            >
+              <div>
+                <Typography.Text type="secondary">
+                  Discount code:{" "}
+                </Typography.Text>
+                <Space.Compact style={{ width: "100%" }}>
+                  <Input
+                    ref={inputDiscountRef}
+                    onChange={(e) => setDiscountCode(e.currentTarget.value)}
+                    style={{ width: "100%" }}
+                    size="large"
+                    placeholder="Code"
+                  />
+                  <Button
+                    loading={isCheckDiscountLoading}
+                    onClick={checkDiscountCode}
+                    disabled={!discountCode}
+                    type="primary"
+                    size="large"
+                  >
+                    Apply
+                  </Button>
+                </Space.Compact>
+                <Space
+                  className="mt-2"
+                  style={{
+                    width: "100%",
+                    justifyContent: "space-between",
+                    fontWeight: "500",
+                  }}
+                >
+                  {discount && (
+                    <>
+                      <Typography.Text style={{ fontSize: "1rem" }}>
+                        Delivery change:{" "}
+                      </Typography.Text>
+                      <Typography.Text style={{ fontSize: "1rem" }}>
+                        {discount.discountType === DISCOUNT_TYPE.FIXED_AMOUNT
+                          ? FormatCurrency.VND.format(discount.value)
+                          : discount.value + "%"}
+                      </Typography.Text>
+                    </>
+                  )}
+                </Space>
+              </div>
+              <Divider />
+              <div>
+                <Space
+                  className="mt-2"
+                  style={{
+                    width: "100%",
+                    justifyContent: "space-between",
+                    fontWeight: "500",
+                  }}
+                >
+                  <Typography.Title level={3}>Grand total: </Typography.Title>
+                  {!discount ? (
+                    <Typography.Title level={3}>
+                      {FormatCurrency.VND.format(getSubTotal() - discountValue)}
+                    </Typography.Title>
+                  ) : (
+                    <div>
+                      <Typography.Title className="m-0" level={4}>
+                        {FormatCurrency.VND.format(
+                          getSubTotal() - discountValue
+                        )}
+                      </Typography.Title>
+                      <Typography.Title className="m-0" type="secondary" level={4}>
+                        <del>{FormatCurrency.VND.format(getSubTotal())}</del>
+                      </Typography.Title>
+                    </div>
+                  )}
+                </Space>
+              </div>
+
+              <div className="mt-3">
+                <Button style={{ width: "100%" }} size="large" type="primary">
+                  Process to checkout
+                </Button>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

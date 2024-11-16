@@ -7,10 +7,7 @@ export const Role = {
     USER: "USER",
 }
 
-export const DISCOUNT_TYPE = (type: string) => {
-    const types: any = {
-        FIXED_AMOUNT: 'VND',
-        PERCENTAGE: '%'
-    };
-    return types[type];
+export const DISCOUNT_TYPE ={
+    FIXED_AMOUNT: 'FIXED_AMOUNT',
+    PERCENTAGE: 'PERCENTAGE'
 };
