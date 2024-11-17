@@ -16,6 +16,7 @@ import {
   InputRef,
   message,
   Space,
+  Steps,
   Typography,
 } from "antd";
 import { useSearchParams } from "next/navigation";
@@ -23,6 +24,9 @@ import { useEffect, useRef, useState } from "react";
 import CartTable from "./component/CartTable";
 import { DISCOUNT_TYPE } from "@/constants/appInfos";
 import ShippingAddress from "./component/ShippingAddress";
+import { BiHome, BiHomeAlt } from "react-icons/bi";
+import { MdOutlinePayment } from "react-icons/md";
+import { FaRegStar } from "react-icons/fa";
 
 const Checkout = () => {
   const params = useSearchParams();
@@ -36,7 +40,6 @@ const Checkout = () => {
   const inputDiscountRef = useRef<InputRef>(null);
   const [discount, setDiscount] = useState<PromotionResponse>();
   const [checkoutStep, setCheckoutStep] = useState(0);
-  
 
   useEffect(() => {
     if (isInitialLoad.current && ids) {
@@ -101,24 +104,72 @@ const Checkout = () => {
     );
   };
 
-  const renderContent =()=>{
-    switch (checkoutStep){
-      case 1 : 
-        return <ShippingAddress onOk={(v)=>{
-          console.log(v);
-          setCheckoutStep(0);
-        }}/>
-      default: 
-        return <CartTable data={data}/>
+  const renderContent = () => {
+    switch (checkoutStep) {
+      case 1:
+        return (
+          <ShippingAddress
+            onOk={(v) => {
+              console.log(v);
+              setCheckoutStep(0);
+            }}
+          />
+        );
+      default:
+        return <CartTable data={data} />;
     }
-  }
+  };
 
   return (
     <div className="container">
       <div>
         <Typography.Title>Checkout</Typography.Title>
+
         <div className="row">
           <div className="col-sm-12 col-md-8">
+            {checkoutStep != 0 && (
+              <div>
+                <Steps
+                  current={checkoutStep-1}
+                  labelPlacement="vertical"
+                  items={[
+                    {
+                      title: "Address",
+                      icon: (
+                        <Button
+                          type={checkoutStep === 1 ? "primary" : "text"}
+                          icon={<BiHome size={30} />}
+                          style={{ padding: "20px" }}
+                          onClick={undefined}
+                        />
+                      ),
+                    },
+                    {
+                      title: "Payment Method",
+                      icon: (
+                        <Button
+                          type={checkoutStep === 2 ? "primary" : "text"}
+                          icon={<MdOutlinePayment size={30} />}
+                          style={{ padding: "20px" }}
+                          onClick={undefined}
+                        />
+                      ),
+                    },
+                    {
+                      title: "Address",
+                      icon: (
+                        <Button
+                          type={checkoutStep === 2 ? "primary" : "text"}
+                          icon={<FaRegStar size={30} />}
+                          style={{ padding: "20px" }}
+                          onClick={undefined}
+                        />
+                      ),
+                    },
+                  ]}
+                ></Steps>
+              </div>
+            )}
             {renderContent()}
           </div>
           <div className="col mt-2">
@@ -158,7 +209,7 @@ const Checkout = () => {
                   className="mt-2"
                   style={{
                     width: "100%",
-                    justifyContent: "space-between", 
+                    justifyContent: "space-between",
                     fontWeight: "500",
                   }}
                 >
@@ -198,7 +249,11 @@ const Checkout = () => {
                           getSubTotal() - discountValue
                         )}
                       </Typography.Title>
-                      <Typography.Title className="m-0" type="secondary" level={4}>
+                      <Typography.Title
+                        className="m-0"
+                        type="secondary"
+                        level={4}
+                      >
                         <del>{FormatCurrency.VND.format(getSubTotal())}</del>
                       </Typography.Title>
                     </div>
@@ -207,7 +262,12 @@ const Checkout = () => {
               </div>
 
               <div className="mt-3">
-                <Button onClick={()=>setCheckoutStep(1)} style={{ width: "100%" }} size="large" type="primary">
+                <Button
+                  onClick={() => setCheckoutStep(1)}
+                  style={{ width: "100%" }}
+                  size="large"
+                  type="primary"
+                >
                   Process to checkout
                 </Button>
               </div>

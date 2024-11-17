@@ -1,5 +1,6 @@
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
+import { AddressResponse } from "@/model/AddressModel";
 import { SelectModel } from "@/model/FormModel";
 import { replaceName } from "@/utils/replaceName";
 import {
@@ -34,7 +35,12 @@ export interface ProvincesResponse {
   isDeleted: boolean;
 }
 
-const AddressComponent = () => {
+interface Props {
+  onAddNew: (v: AddressResponse) => void;
+}
+
+const AddressComponent = (props: Props) => {
+  const { onAddNew } = props;
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const initLoad = useRef(true);
@@ -66,34 +72,31 @@ const AddressComponent = () => {
   }, []);
 
   const handleSubmit = async (v: any) => {
-  
     const items: any = { ...locationData };
     Object.entries(locationValues).forEach(([key, value]) => {
-      const selects: SelectModel[] = items[key + 's']; 
+      const selects: SelectModel[] = items[key + "s"];
       const item = selects.find((e) => e.value === value);
       if (item) {
         console.log(`${key} label: ${item.label}`);
         v[key] = item.label;
-      }else{
-        message.error('Address error. Please re-select')
+      } else {
+        message.error("Address error. Please re-select");
         return;
       }
     });
-    
+
     v.isDefault = isDefault;
     setIsLoading(true);
     try {
-        const res = await handleAPI(API.ADDRESSES, v, 'post');
-        console.log(res.data);
+      const res = await handleAPI(API.ADDRESSES, v, "post");
+      onAddNew(res.data.result);
+      form.resetFields();
     } catch (error) {
-        console.log(error)
-    }finally{
-        setIsLoading(false);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-    
   };
-  
-
 
   const getProvinces = async () => {
     try {
@@ -112,7 +115,6 @@ const AddressComponent = () => {
     }
   };
 
-  
   const getDistricts = async (provinceCode: string) => {
     try {
       const res = await axios(
@@ -175,7 +177,11 @@ const AddressComponent = () => {
         </Form.Item>
 
         {/* Province */}
-        <Form.Item name={"province"} label={"Province"} rules={[{ required: true }]}>
+        <Form.Item
+          name={"province"}
+          label={"Province"}
+          rules={[{ required: true }]}
+        >
           <Select
             value={locationValues.province}
             onChange={async (v) => {
@@ -206,7 +212,11 @@ const AddressComponent = () => {
         </Form.Item>
 
         {/* District */}
-        <Form.Item name={"district"} label={"District"} rules={[{ required: true }]}>
+        <Form.Item
+          name={"district"}
+          label={"District"}
+          rules={[{ required: true }]}
+        >
           <Select
             value={locationValues.district}
             onChange={async (v) => {
@@ -262,9 +272,7 @@ const AddressComponent = () => {
         <Form.Item name={"isDefault"}>
           <Checkbox
             checked={isDefault}
-            onChange={() =>
-              setIsDefault(!isDefault)
-            }
+            onChange={() => setIsDefault(!isDefault)}
           >
             Make this address default?
           </Checkbox>

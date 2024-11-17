@@ -301,3 +301,16 @@
   width: 25px;
 }
 
+.ant-steps-item-content{
+  margin-top: 0 !important;
+}
+.address-item .ant-card-head{
+  min-height: auto;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+.address-item .ant-card-body{
+  padding: 5px 10px;
+  margin-left: 10px;
+
+}
