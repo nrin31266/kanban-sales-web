@@ -86,11 +86,39 @@ const ShippingAddress = (props: Props) => {
                 >
                   <a onClick={() => setAddressSelected(item)}>
                     <Card
-                      extra={<Checkbox checked={addressSelected?.id === item.id}/>}
+                      actions={[
+                        <div>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            size="small"
+                            type="link"
+                            className="mr-5"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                            size="small"
+                            className="text-danger"
+                            type="text"
+                          >
+                            Remove
+                          </Button>
+                        </div>,
+                      ]}
+                      extra={
+                        <Checkbox checked={addressSelected?.id === item.id} />
+                      }
                       color="#e0e0e0"
                       title={<Typography.Text>{item.name}</Typography.Text>}
                     >
-                        <Typography.Paragraph>{item.address}</Typography.Paragraph>
+                      <Typography.Paragraph>
+                        {item.address}
+                      </Typography.Paragraph>
                     </Card>
                   </a>
                 </List.Item>
@@ -100,6 +128,7 @@ const ShippingAddress = (props: Props) => {
         )}
       </div>
       <Button
+        className="mt-2 mb-2"
         onClick={() => addressSelected && onOk(addressSelected)}
         type="primary"
         size="large"
