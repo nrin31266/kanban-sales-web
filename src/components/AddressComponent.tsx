@@ -1,3 +1,5 @@
+import handleAPI from "@/apis/handleAPI";
+import { API } from "@/configurations/configurations";
 import { SelectModel } from "@/model/FormModel";
 import { replaceName } from "@/utils/replaceName";
 import {
@@ -79,9 +81,15 @@ const AddressComponent = () => {
     });
     
     v.isDefault = isDefault;
-    console.log(v)
-   
-  
+    setIsLoading(true);
+    try {
+        const res = await handleAPI(API.ADDRESSES, v, 'post');
+        console.log(res.data);
+    } catch (error) {
+        console.log(error)
+    }finally{
+        setIsLoading(false);
+    }
     
   };
   
