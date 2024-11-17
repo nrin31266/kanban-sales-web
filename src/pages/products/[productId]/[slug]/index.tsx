@@ -11,7 +11,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { SubProductResponse } from "./../../../../model/SubProduct";
 
-const ProductDetail = ({initProduct,initProductDetail}: {initProduct: ProductResponse; initProductDetail: SubProductResponse[];}) => {
+const ProductDetail = ({
+  initProduct,
+  initProductDetail,
+}: {
+  initProduct: ProductResponse;
+  initProductDetail: SubProductResponse[];
+}) => {
   const [product, setProduct] = useState<ProductResponse>(initProduct);
   const [productDetail, setProductDetail] =
     useState<SubProductResponse[]>(initProductDetail);
