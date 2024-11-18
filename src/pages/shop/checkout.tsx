@@ -27,6 +27,13 @@ import ShippingAddress from "./component/ShippingAddress";
 import { BiHome, BiHomeAlt } from "react-icons/bi";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaRegStar } from "react-icons/fa";
+import PaymentMethod from "./component/PaymentMethod";
+import { AddressResponse } from "@/model/AddressModel";
+
+interface PaymentDetail {
+  address: AddressResponse;
+  paymentMethod: any;
+}
 
 const Checkout = () => {
   const params = useSearchParams();
@@ -40,6 +47,7 @@ const Checkout = () => {
   const inputDiscountRef = useRef<InputRef>(null);
   const [discount, setDiscount] = useState<PromotionResponse>();
   const [checkoutStep, setCheckoutStep] = useState(0);
+  const [PaymentDetail, setPaymentDetail] = useState<PaymentDetail>();
 
   useEffect(() => {
     if (isInitialLoad.current && ids) {
@@ -96,9 +104,9 @@ const Checkout = () => {
       (a, b) =>
         a +
         (b.subProductResponse && b.subProductResponse.discount
-          ? b.subProductResponse.discount
+          ? b.subProductResponse.discount * b.count
           : b.subProductResponse && b.subProductResponse.price
-          ? b.subProductResponse.price
+          ? b.subProductResponse.price * b.count
           : 0),
       0
     );
@@ -110,27 +118,37 @@ const Checkout = () => {
         return (
           <ShippingAddress
             onOk={(v) => {
-              console.log(v);
-              setCheckoutStep(0);
+              setPaymentDetail({ address: v, paymentMethod: undefined });
+              setCheckoutStep(2);
             }}
           />
         );
+      case 2:
+        return <PaymentMethod />;
       default:
         return <CartTable data={data} />;
     }
   };
 
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Tạo hiệu ứng cuộn mượt mà
+    });
+  }
+
   return (
     <div className="container">
       <div>
-        <Typography.Title>Checkout</Typography.Title>
+        {checkoutStep === 0 && <Typography.Title>Checkout</Typography.Title>}
 
         <div className="row">
           <div className="col-sm-12 col-md-8">
             {checkoutStep != 0 && (
               <div>
                 <Steps
-                  current={checkoutStep-1}
+                  className="mt-2"
+                  current={checkoutStep - 1}
                   labelPlacement="vertical"
                   items={[
                     {
@@ -159,7 +177,7 @@ const Checkout = () => {
                       title: "Address",
                       icon: (
                         <Button
-                          type={checkoutStep === 2 ? "primary" : "text"}
+                          type={checkoutStep === 3 ? "primary" : "text"}
                           icon={<FaRegStar size={30} />}
                           style={{ padding: "20px" }}
                           onClick={undefined}
@@ -263,7 +281,10 @@ const Checkout = () => {
 
               <div className="mt-3">
                 <Button
-                  onClick={() => setCheckoutStep(1)}
+                  onClick={() => {
+                    setCheckoutStep(1);
+                    scrollToTop();
+                  }}
                   style={{ width: "100%" }}
                   size="large"
                   type="primary"

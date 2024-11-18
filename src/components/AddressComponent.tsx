@@ -5,6 +5,7 @@ import { SelectModel } from "@/model/FormModel";
 import { replaceName } from "@/utils/replaceName";
 import {
   Button,
+  Card,
   Checkbox,
   Form,
   Input,
@@ -12,8 +13,8 @@ import {
   Select,
   Typography,
 } from "antd";
-import axios, { AxiosResponse } from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 
 interface AddressRequest {
   name: string;
@@ -37,10 +38,12 @@ export interface ProvincesResponse {
 
 interface Props {
   onAddNew: (v: AddressResponse) => void;
+  onUpdate: (v: AddressResponse) => void;
+  address?: AddressResponse;
 }
 
 const AddressComponent = (props: Props) => {
-  const { onAddNew } = props;
+  const { onAddNew, address, onUpdate } = props;
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const initLoad = useRef(true);
@@ -71,26 +74,66 @@ const AddressComponent = (props: Props) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (address) {
+      form.setFieldsValue(address);
+      setIsDefault(address.isDefault ?? false);
+      setLocationValues({
+        district: address.district,
+        province: address.province,
+        ward: address.ward,
+      });
+      const provinceCode = findCode(
+        locationData.provinces,
+        address.province
+      )?.value;
+      if (provinceCode) {
+        getDistricts(provinceCode).then((data: SelectModel[]) => {
+          if (data && data.length) {
+            const districtCode = findCode(data, address.district)?.value;
+            if (districtCode) {
+              getWards(districtCode);
+            }
+          }
+        });
+      }
+    }
+  }, [address]);
+
+  const findCode = (selects: SelectModel[], label: string) => {
+    return selects.find((e) => e.label === label);
+  };
+
   const handleSubmit = async (v: any) => {
     const items: any = { ...locationData };
     Object.entries(locationValues).forEach(([key, value]) => {
-      const selects: SelectModel[] = items[key + "s"];
-      const item = selects.find((e) => e.value === value);
-      if (item) {
-        console.log(`${key} label: ${item.label}`);
-        v[key] = item.label;
-      } else {
-        message.error("Address error. Please re-select");
-        return;
+      if (Number.parseInt(value as string)) {
+        const selects: SelectModel[] = items[key + "s"];
+        const item = selects.find((e) => e.value === value);
+        if (item) {
+          console.log(`${key} label: ${item.label}`);
+          v[key] = item.label;
+        } else {
+          message.error("Location error");
+        }
       }
     });
 
     v.isDefault = isDefault;
     setIsLoading(true);
+
+    const api = address ? `${API.ADDRESSES}/${address.id}` : API.ADDRESSES;
+
     try {
-      const res = await handleAPI(API.ADDRESSES, v, "post");
-      onAddNew(res.data.result);
+      const res = await handleAPI(api, v, address ? "put" : "post");
+      if (address) {
+        onUpdate(res.data.result);
+      } else {
+        onAddNew(res.data.result);
+      }
       form.resetFields();
+      setLocationValues({ ward: "", district: "", province: "" });
+      setLocationData((p) => ({ ...p, districts: [], wards: [] }));
     } catch (error) {
       console.log(error);
     } finally {
@@ -99,59 +142,77 @@ const AddressComponent = (props: Props) => {
   };
 
   const getProvinces = async () => {
+    setIsLoading(true);
     try {
       const res: any = await axios(
         "https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1"
       );
+      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+        label: v.name,
+        value: v.code,
+      }));
       setLocationData((pre) => ({
         ...pre,
-        provinces: res.data.data.data.map((v: ProvincesResponse) => ({
-          label: v.name,
-          value: v.code,
-        })),
+        provinces: selects,
       }));
+      return selects;
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const getDistricts = async (provinceCode: string) => {
+    setIsLoading(true);
     try {
       const res = await axios(
         `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`
       );
+      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+        label: v.name,
+        value: v.code,
+      }));
       setLocationData((pre) => ({
         ...pre,
-        districts: res.data.data.data.map((v: ProvincesResponse) => ({
-          label: v.name,
-          value: v.code,
-        })),
+        districts: selects,
       }));
+      return selects;
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const getWards = async (districtCode: string) => {
+    setIsLoading(true);
     try {
       const res = await axios(
         `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
       );
+      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+        label: v.name,
+        value: v.code,
+      }));
       setLocationData((pre) => ({
         ...pre,
-        wards: res.data.data.data.map((v: ProvincesResponse) => ({
-          label: v.name,
-          value: v.code,
-        })),
+        wards: selects,
       }));
+      return selects;
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
-      <Typography.Title level={3}>Add new address</Typography.Title>
+    <Card>
+      <Typography.Title level={3}>
+        {address ? "Update" : "Add new"}
+        {" address"}
+      </Typography.Title>
       <Form
         layout="vertical"
         disabled={isLoading}
@@ -279,9 +340,10 @@ const AddressComponent = (props: Props) => {
         </Form.Item>
       </Form>
       <Button type="primary" size="large" onClick={() => form.submit()}>
-        Add new address
+        {address ? "Update" : "Add new"}
+        {" address"}
       </Button>
-    </div>
+    </Card>
   );
 };
 

@@ -2,7 +2,7 @@ import handleAPI from "@/apis/handleAPI";
 import AddressComponent from "@/components/AddressComponent";
 import { API } from "@/configurations/configurations";
 import { AddressResponse } from "@/model/AddressModel";
-import { Button, Card, Checkbox, Empty, List, Typography } from "antd";
+import { Button, Card, Checkbox, Empty, List, message, Typography } from "antd";
 import { AxiosResponse } from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Skeleton } from "antd";
@@ -18,6 +18,7 @@ const ShippingAddress = (props: Props) => {
   const [addresses, setAddresses] = useState<AddressResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const isFirstSelected = useRef(true);
+  const [isEditAddress, setIsEditAddress] = useState<AddressResponse>();
 
   useEffect(() => {
     getAddresses();
@@ -32,6 +33,7 @@ const ShippingAddress = (props: Props) => {
           return;
         }
       });
+      setAddressSelected(addresses[0]);
     }
   }, [addresses]);
 
@@ -52,9 +54,32 @@ const ShippingAddress = (props: Props) => {
     }
   };
 
+  const removeAddress = async (item: AddressResponse) => {
+    try {
+      await handleAPI(`${API.ADDRESSES}/${item.id}`, undefined, "delete");
+      message.success("Ok");
+      const newAddresses: AddressResponse[] = addresses.filter(
+        (i) => i.id !== item.id
+      );
+      setAddresses(newAddresses);
+      newAddresses.length > 0 &&
+        item.id === addressSelected?.id &&
+        setAddressSelected(newAddresses[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleOnUpdate = (v: AddressResponse) => {
+    const newAddress = addresses.filter((i) => i.id !== v.id);
+    setAddresses([v, ...newAddress]);
+    setAddressSelected(v);
+    setIsEditAddress(undefined);
+  };
+
   return (
     <div>
-      <div>
+      <Card>
         <Typography.Title level={3}>Select deliver address</Typography.Title>
         <Typography.Paragraph type="secondary">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, culpa.
@@ -91,6 +116,7 @@ const ShippingAddress = (props: Props) => {
                           <Button
                             onClick={(e) => {
                               e.stopPropagation();
+                              setIsEditAddress(item);
                             }}
                             size="small"
                             type="link"
@@ -99,8 +125,9 @@ const ShippingAddress = (props: Props) => {
                             Edit
                           </Button>
                           <Button
-                            onClick={(e) => {
+                            onClick={async (e) => {
                               e.stopPropagation();
+                              await removeAddress(item);
                             }}
                             size="small"
                             className="text-danger"
@@ -119,6 +146,9 @@ const ShippingAddress = (props: Props) => {
                       <Typography.Paragraph>
                         {item.address}
                       </Typography.Paragraph>
+                      <Typography.Text>
+                        {item.phoneNumber}
+                      </Typography.Text>
                     </Card>
                   </a>
                 </List.Item>
@@ -126,21 +156,26 @@ const ShippingAddress = (props: Props) => {
             ></List>
           </div>
         )}
-      </div>
-      <Button
-        className="mt-2 mb-2"
-        onClick={() => addressSelected && onOk(addressSelected)}
-        type="primary"
-        size="large"
-      >
-        Deliver address
-      </Button>
-      <div>
+        <Button
+          className="mt-2 mb-3"
+          onClick={() => addressSelected && onOk(addressSelected)}
+          type="primary"
+          size="large"
+        >
+          Deliver address
+        </Button>
+      </Card>
+
+      <div className="mt-3">
         <AddressComponent
           onAddNew={(v) => {
             setAddresses((p) => [v, ...p]);
             setAddressSelected(v);
           }}
+          onUpdate={(v) => {
+            handleOnUpdate(v);
+          }}
+          address={isEditAddress}
         />
       </div>
     </div>
