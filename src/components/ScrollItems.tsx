@@ -5,14 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
-  items: SubProductResponse[];
   product?: ProductResponse;
   onClick: (value: SubProductResponse) => void;
   onPhotoSelected: (photoUrl: string) => void;
 }
 
 const ScrollItems = (props: Props) => {
-  const { items, onClick, product, onPhotoSelected } = props;
+  const { onClick, product, onPhotoSelected } = props;
   const [elements, setElements] = useState<any[]>([]);
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
@@ -43,7 +42,7 @@ const ScrollItems = (props: Props) => {
     //   // }
     // }
     setElements(groups);
-  }, [items]);
+  }, [product]);
 
   useEffect(() => {
     console.log(elements);

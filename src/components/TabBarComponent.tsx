@@ -12,7 +12,7 @@ interface Props{
 const TabBarComponent = (props : Props) => {
     const {title, titleAlign, titleLevel, titleRight, children} = props;
   return (
-    <div className='container' style={{backgroundColor: 'white'}}>
+    <div style={{backgroundColor: 'white'}}>
         <div className="row">
             <div className={`${titleRight? 'col-9' : 'col'} ${titleAlign}`}>
                 <Typography.Title level={titleLevel}>{title} </Typography.Title>

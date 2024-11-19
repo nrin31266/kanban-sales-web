@@ -24,11 +24,13 @@ import { useEffect, useRef, useState } from "react";
 import CartTable from "./component/CartTable";
 import { DISCOUNT_TYPE } from "@/constants/appInfos";
 import ShippingAddress from "./component/ShippingAddress";
-import { BiHome, BiHomeAlt } from "react-icons/bi";
+import { BiDetail, BiHome, BiHomeAlt } from "react-icons/bi";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaRegStar } from "react-icons/fa";
 import PaymentMethod from "./component/PaymentMethod";
 import { AddressResponse } from "@/model/AddressModel";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import Reviews from "./component/Reviews";
 
 interface PaymentDetail {
   address: AddressResponse;
@@ -124,7 +126,16 @@ const Checkout = () => {
           />
         );
       case 2:
-        return <PaymentMethod />;
+        return (
+          <PaymentMethod
+            onContinue={(v) => {
+              setCheckoutStep(3);
+              console.log(v);
+            }}
+          />
+        );
+      case 2:
+        return <Reviews />;
       default:
         return <CartTable data={data} />;
     }
@@ -140,7 +151,19 @@ const Checkout = () => {
   return (
     <div className="container">
       <div>
-        {checkoutStep === 0 && <Typography.Title>Checkout</Typography.Title>}
+        {checkoutStep === 0 ? (
+          <Typography.Title>Checkout</Typography.Title>
+        ) : (
+          <div>
+            <Button
+              type="link"
+              icon={<IoMdArrowRoundBack size={20} />}
+              onClick={() => setCheckoutStep((p) => p - 1)}
+            >
+              Step back
+            </Button>
+          </div>
+        )}
 
         <div className="row">
           <div className="col-sm-12 col-md-8">
@@ -174,11 +197,11 @@ const Checkout = () => {
                       ),
                     },
                     {
-                      title: "Address",
+                      title: "Reviews",
                       icon: (
                         <Button
                           type={checkoutStep === 3 ? "primary" : "text"}
-                          icon={<FaRegStar size={30} />}
+                          icon={<BiDetail size={30} />}
                           style={{ padding: "20px" }}
                           onClick={undefined}
                         />
