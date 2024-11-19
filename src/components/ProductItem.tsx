@@ -1,6 +1,7 @@
 import { ProductResponse } from "@/model/ProductModel";
 import { FormatCurrency } from "@/utils/formatNumber";
 import { Button, Typography } from "antd";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { BiTransfer } from "react-icons/bi";
@@ -24,8 +25,8 @@ const ProductItem = (props: Props) => {
   }, []);
 
   return (
-    <div
-      onClick={() => router.push(`/products/${product.id}/${product.slug}`)}
+    <Link
+      href={`/products/${product.id}/${product.slug}`}
       ref={ref}
       key={product.id}
       className="col-6 col-md-4 col-lg-3 product-item p-2"
@@ -69,10 +70,10 @@ const ProductItem = (props: Props) => {
         </div>
       )}
       <div className="title-content">
-        <Typography.Paragraph className="title" style={{ fontWeight: "bold" }}>
+        <Typography.Paragraph className="title" style={{ fontWeight: "500" }}>
           {product.title}
         </Typography.Paragraph>
-        <Typography.Paragraph style={{ fontSize: "1.1em" }}>
+        <Typography.Paragraph style={{ fontSize: "1.2em", color: '#1a73e8'}}>
           {
             product.maxPrice && product.minPrice
             ? product.maxPrice === product.minPrice
@@ -82,7 +83,7 @@ const ProductItem = (props: Props) => {
           }
         </Typography.Paragraph>
       </div>
-    </div>
+    </Link>
   );
 };
 

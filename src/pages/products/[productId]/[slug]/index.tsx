@@ -5,13 +5,26 @@ import { API, APP, PAGE } from "@/configurations/configurations";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { ProductResponse } from "@/model/ProductModel";
 import { FormatCurrency } from "@/utils/formatNumber";
-import { Breadcrumb, Empty, Image, Rate, Space, Tabs, Tag, Typography } from "antd";
+import {
+  Breadcrumb,
+  Empty,
+  Image,
+  Rate,
+  Space,
+  Skeleton,
+  Tabs,
+  Tag,
+  Typography,
+} from "antd";
 import axios from "axios";
 import Link from "next/link";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { SubProductResponse } from "./../../../../model/SubProduct";
 import TabBarComponent from "@/components/TabBarComponent";
 import Section from "@/components/Section";
+import ProductItem from "@/components/ProductItem";
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
 
 const ProductDetail = ({
   productProp,
@@ -29,11 +42,38 @@ const ProductDetail = ({
     useState<SubProductResponse>();
   const [photoSelected, setPhotoSelected] = useState<string>();
   const [relatedProducts, setRelatedProducts] = useState(relatedProductsProp);
+  const router = useRouter();
+  const { productId } = router.query;
 
-  // useMemo to avoid unnecessary re-rendering
+  // useEffect(() => {
+  //   if (!productId) return;
+
+  //   const fetchProductData = async () => {
+  //     try {
+  //       const resProduct = await axios(
+  //         `${APP.baseURL}${API.PRODUCTS}/${productId}`
+  //       );
+  //       const resProductDetail = await axios(
+  //         `${APP.baseURL}${API.PRODUCT_DETAIL(productId as string)}`
+  //       );
+  //       const resRelatedProducts = await axios(
+  //         `http://localhost:8888/api/v1/kanban/products/related/${productId}`
+  //       );
+
+  //       setProduct(resProduct.data.result);
+  //       setProductDetail(resProductDetail.data.result);
+  //       setRelatedProducts(resRelatedProducts.data.result);
+  //     } catch (error) {
+  //       console.error("Error fetching product data:", error);
+  //     }
+  //   };
+
+  //   fetchProductData();
+  // }, [productId]);
+
   const productStatus = useMemo(() => {
-    if (!subProductSelected) return "Out stock"; // Nếu không có subProductSelected, mặc định là Out stock
-    return subProductSelected.quantity > 0 ? "In stock" : "Out stock"; // Nếu có subProductSelected thì kiểm tra quantity
+    if (!subProductSelected) return "Out stock";
+    return subProductSelected.quantity > 0 ? "In stock" : "Out stock";
   }, [subProductSelected]);
 
   const handleSubProductChange = useCallback(
@@ -56,13 +96,13 @@ const ProductDetail = ({
           />
           <div className="container mt-3 product-detail">
             <div className="bg-white">
-            <Breadcrumb
-              items={[
-                { key: "home", title: <Link href={PAGE.HOME}>Home</Link> },
-                { key: "shop", title: <Link href={PAGE.SHOP}>Shop</Link> },
-                { key: "product", title: product.title },
-              ]}
-            />
+              <Breadcrumb
+                items={[
+                  { key: "home", title: <Link href={PAGE.HOME}>Home</Link> },
+                  { key: "shop", title: <Link href={PAGE.SHOP}>Shop</Link> },
+                  { key: "product", title: product.title },
+                ]}
+              />
             </div>
             <div className="row mt-3" style={{ backgroundColor: "white" }}>
               <div className="col-sm-12 col-md-4">
@@ -70,7 +110,15 @@ const ProductDetail = ({
                   className="text-center p-4"
                   style={{ backgroundColor: "#e0e0e0" }}
                 >
-                  <Image src={photoSelected} width="100%" alt="Product image" />
+                  {photoSelected ? (
+                    <Image
+                      src={photoSelected}
+                      width="100%"
+                      alt="Product image"
+                    />
+                  ) : (
+                    <Skeleton.Image active />
+                  )}
                 </div>
                 <ScrollItems
                   onClick={() => {}}
@@ -81,9 +129,11 @@ const ProductDetail = ({
               <div className="col">
                 <div className="row">
                   <div className="col-sm-12 col-md-8">
-                    <Typography.Title level={3}>
-                      {product.title}
-                    </Typography.Title>
+                    <Skeleton active loading={!product.title}>
+                      <Typography.Title level={3}>
+                        {product.title}
+                      </Typography.Title>
+                    </Skeleton>
                   </div>
                   <div className="col">
                     <Space>
@@ -157,43 +207,40 @@ const ProductDetail = ({
                         key: "tab-1",
                         label: "Description",
                         children: (
-                          <>
+                          <Skeleton active loading={!product.description}>
                             Lorem ipsum dolor sit amet consectetur adipisicing
                             elit. Possimus ducimus dolore nesciunt cupiditate
                             error adipisci minus, culpa excepturi! Quas
                             necessitatibus numquam inventore a sapiente saepe
                             dolores officiis error est reprehenderit!
-                          </>
+                          </Skeleton>
                         ),
-                        
                       },
                       {
                         key: "tab-2",
-                        label: "Additional Ifnomations",
+                        label: "Additional Information",
                         children: (
-                          <>
+                          <Skeleton active loading={!product.description}>
                             Lorem ipsum dolor sit amet consectetur adipisicing
                             elit. Possimus ducimus dolore nesciunt cupiditate
                             error adipisci minus, culpa excepturi! Quas
                             necessitatibus numquam inventore a sapiente saepe
                             dolores officiis error est reprehenderit!
-                          </>
+                          </Skeleton>
                         ),
-                        
                       },
                       {
                         key: "tab-3",
                         label: "Reviews",
                         children: (
-                          <>
+                          <Skeleton active loading={!product.description}>
                             Lorem ipsum dolor sit amet consectetur adipisicing
                             elit. Possimus ducimus dolore nesciunt cupiditate
                             error adipisci minus, culpa excepturi! Quas
                             necessitatibus numquam inventore a sapiente saepe
                             dolores officiis error est reprehenderit!
-                          </>
+                          </Skeleton>
                         ),
-                        
                       },
                     ]}
                   />
@@ -205,7 +252,15 @@ const ProductDetail = ({
                 <TabBarComponent
                   title="Related products"
                   titleLevel={5}
-                  children={"fâfafa"}
+                  children={
+                    <div className="row">
+                      {relatedProducts &&
+                        relatedProducts.length > 0 &&
+                        relatedProducts.map((item) => (
+                          <ProductItem key={item.id} product={item} />
+                        ))}
+                    </div>
+                  }
                 />
               }
             />
@@ -216,6 +271,43 @@ const ProductDetail = ({
       )}
     </div>
   );
+};
+
+// export const getServerSideProps: GetServerSideProps = async (context: any) => {
+//   try {
+//     const resProduct: CustomAxiosResponse<ProductResponse> = await axios(
+//       `${APP.baseURL}${API.PRODUCTS}/${context.params.productId}`
+//     );
+
+//     const resProductDetail: CustomAxiosResponse<SubProductResponse[]> =
+//       await axios(
+//         `${APP.baseURL}${API.PRODUCT_DETAIL(context.params.productId)}`
+//       );
+
+//     const resRelatedProducts: CustomAxiosResponse<ProductResponse[]> =
+//       await axios(
+//         `http://localhost:8888/api/v1/kanban/products/related/${context.params.productId}`
+//       );
+
+//     return {
+//       props: {
+//         productProp: resProduct.data.result,
+//         productDetailProp: resProductDetail.data.result,
+//         relatedProductsProp: resRelatedProducts.data.result,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       props: {},
+//     };
+//   }
+// };
+
+export const getStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
 };
 
 export async function getStaticProps(context: any) {
@@ -233,7 +325,6 @@ export async function getStaticProps(context: any) {
       await axios(
         `http://localhost:8888/api/v1/kanban/products/related/${context.params.productId}`
       );
-
     return {
       props: {
         productDetailProp: resProductDetail.data.result,
@@ -251,13 +342,6 @@ export async function getStaticProps(context: any) {
       },
     };
   }
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
 }
 
 export default ProductDetail;

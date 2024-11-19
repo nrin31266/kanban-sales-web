@@ -8,7 +8,7 @@ import { authSelector } from "@/reducx/reducers/authReducer";
 import { addProduct } from "@/reducx/reducers/cartReducer";
 import { isMapsOptionsEqual } from "@/utils/compare";
 import { FormatCurrency } from "@/utils/formatNumber";
-import { Button, Modal, Space, Typography } from "antd";
+import { Button, message, Modal, Space, Typography } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { IoMdHeart } from "react-icons/io";
@@ -244,6 +244,7 @@ const ChangeSubProduct = (props: Props) => {
       if (res) {
         dispatch(addProduct(res));
         setCount(1);
+        message.success('Ok');
       }
     });
   };
