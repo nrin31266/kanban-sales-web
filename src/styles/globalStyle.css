@@ -101,6 +101,7 @@
   object-fit: cover;
 }
 
+
 .product-item .title-content .title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -318,3 +319,5 @@
 .address-item .ant-card-actions li{
   margin: 5px 0px
 }
+
+

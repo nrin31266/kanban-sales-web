@@ -2,7 +2,7 @@ import { Typography } from 'antd';
 import React, { ReactNode } from 'react'
 
 interface Props{
-    titleAlign: 'text-center' | 'text-right' | 'text-left';
+    titleAlign?: 'text-center' | 'text-right' | 'text-left';
     title: string;
     titleLevel: 1 | 2 | 3 | 4 | 5 | undefined;
     titleRight?: ReactNode
@@ -13,7 +13,7 @@ const TabBarComponent = (props : Props) => {
     const {title, titleAlign, titleLevel, titleRight, children} = props;
   return (
     <div style={{backgroundColor: 'white'}}>
-        <div className="row">
+        <div className="row" style={{marginLeft: '0px !important', marginRight: '0px !important'}} >
             <div className={`${titleRight? 'col-9' : 'col'} ${titleAlign}`}>
                 <Typography.Title level={titleLevel}>{title} </Typography.Title>
             </div>

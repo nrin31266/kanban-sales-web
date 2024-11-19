@@ -58,7 +58,7 @@ const ScrollCategories = (props: Props) => {
   }, [items]);
 
   return (
-    <div className="gallery-wrap">
+    <div className="gallery-wrap p-2">
       {!isAtStart && (
         <button style={{ marginBottom: "30px" }} id="btn-back" className="btn" onClick={scrollLeft}>
           <FontAwesomeIcon icon={faAngleLeft} className="btn-icon" />

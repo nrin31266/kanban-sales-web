@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useState, useMemo, useCallback } from "react";
 import { SubProductResponse } from "./../../../../model/SubProduct";
 import TabBarComponent from "@/components/TabBarComponent";
+import Section from "@/components/Section";
 
 const ProductDetail = ({
   productProp,
@@ -145,10 +146,16 @@ const ProductDetail = ({
                 />
               </div>
             </div>
-            <div className="container mb-4"></div>
-            <div className="container mb-4">
-              <TabBarComponent  title="Related products" titleAlign="text-left" titleLevel={5} children={'fâfafa'}/>
-            </div>
+            <Section children={<>Longer content to fill space</>} />
+            <Section
+              children={
+                <TabBarComponent
+                  title="Related products"
+                  titleLevel={5}
+                  children={"fâfafa"}
+                />
+              }
+            />
           </div>
         </div>
       ) : (

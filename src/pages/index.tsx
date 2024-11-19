@@ -52,9 +52,9 @@ const HomePage = ({
   // }, []);
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 container">
       {promotions.length > 0 && (
-        <div className="container" style={{backgroundColor: '#e0e0e0'}}>
+        <div style={{backgroundColor: '#e0e0e0'}}>
           <Carousel autoplay autoplaySpeed={2000}>
             {promotions.map((item, index) => (
               <div key={index}>
@@ -98,7 +98,7 @@ const HomePage = ({
           titleAlign="text-center"
           titleLevel={2}
         >
-          <div className="row">
+          <div className="row p-3">
             {bestsellerProducts.map((product) => (
               <ProductItem key={product.id} product={product}/>
             ))}
