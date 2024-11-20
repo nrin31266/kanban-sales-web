@@ -38,7 +38,8 @@ export const PAGE = {
   FILTER_PRODUCTS: '/filter-products',
   PRODUCTS: '/products',
   CART: '/cart',
-  CHECKOUT: '/shop/checkout'
+  CHECKOUT: '/shop/checkout',
+  MY_ACCOUNT: '/account/my-account'
 }
 
 export const APP = {

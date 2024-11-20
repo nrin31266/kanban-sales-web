@@ -25,6 +25,7 @@ import Section from "@/components/Section";
 import ProductItem from "@/components/ProductItem";
 import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
+import Reviews from "@/components/Reviews";
 
 const ProductDetail = ({
   productProp,
@@ -35,15 +36,25 @@ const ProductDetail = ({
   productDetailProp: SubProductResponse[];
   relatedProductsProp: ProductResponse[];
 }) => {
-  const [product, setProduct] = useState<ProductResponse>(productProp);
+  const [product, setProduct] = useState<ProductResponse>();
   const [productDetail, setProductDetail] =
-    useState<SubProductResponse[]>(productDetailProp);
+    useState<SubProductResponse[]>();
   const [subProductSelected, setSubProductSelected] =
     useState<SubProductResponse>();
   const [photoSelected, setPhotoSelected] = useState<string>();
-  const [relatedProducts, setRelatedProducts] = useState(relatedProductsProp);
-  const router = useRouter();
-  const { productId } = router.query;
+  const [relatedProducts, setRelatedProducts] = useState<ProductResponse[]>();
+  // const router = useRouter();
+  // const { productId } = router.query;
+
+
+  useEffect(()=>{
+    if(productProp && relatedProductsProp && productDetailProp){
+      setProduct(productProp);
+      setProductDetail(productDetailProp);
+      setRelatedProducts(relatedProductsProp);
+      console.log('change')
+    }
+  },[productProp, productDetailProp, relatedProductsProp])
 
   // useEffect(() => {
   //   if (!productId) return;
@@ -86,7 +97,7 @@ const ProductDetail = ({
 
   return (
     <div>
-      {product ? (
+      {product && productDetail ? (
         <div>
           <HeadComponent
             title={product.title}
@@ -233,13 +244,7 @@ const ProductDetail = ({
                         key: "tab-3",
                         label: "Reviews",
                         children: (
-                          <Skeleton active loading={!product.description}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Possimus ducimus dolore nesciunt cupiditate
-                            error adipisci minus, culpa excepturi! Quas
-                            necessitatibus numquam inventore a sapiente saepe
-                            dolores officiis error est reprehenderit!
-                          </Skeleton>
+                          <Reviews productId={product.id} />
                         ),
                       },
                     ]}

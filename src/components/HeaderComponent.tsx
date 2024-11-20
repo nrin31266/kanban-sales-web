@@ -1,31 +1,32 @@
 import { PAGE } from "@/configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
 
+import { PageResponse } from "@/model/AppModel";
+import { CartResponse } from "@/model/CartModel";
+import { authSelector, removeAuth } from "@/reducx/reducers/authReducer";
+import { cartSelector } from "@/reducx/reducers/cartReducer";
+import { UserOutlined } from "@ant-design/icons";
 import {
-  authReducer,
-  authSelector,
-  removeAuth,
-} from "@/reducx/reducers/authReducer";
-import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Affix, Badge, Button, Drawer, Dropdown, Menu, Space } from "antd";
-import Link from "next/link";
+  Affix,
+  Avatar,
+  Badge,
+  Button,
+  Drawer,
+  Dropdown,
+  Menu,
+  Space,
+} from "antd";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { MdOutlineShoppingCart } from "react-icons/md";
+import { useEffect, useState } from "react";
 import { FcLike } from "react-icons/fc";
 import { FiSearch } from "react-icons/fi";
-import { IoNotificationsSharp } from "react-icons/io5";
+import { IoClose, IoNotificationsSharp } from "react-icons/io5";
+import { MdOutlineShoppingCart } from "react-icons/md";
 import { RiMenuUnfold3Line2 } from "react-icons/ri";
-import { IoClose } from "react-icons/io5";
-import useSelection from "antd/es/table/hooks/useSelection";
-import { cartSelector } from "@/reducx/reducers/cartReducer";
-import { SubProductResponse } from "@/model/SubProduct";
+import { useDispatch, useSelector } from "react-redux";
 import CartComponent from "./CartComponent";
-import { CartResponse } from "@/model/CartModel";
-import { PageResponse } from "@/model/AppModel";
+import DrawerDownRight from "./DrawerDownRight";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -41,6 +42,7 @@ const HeaderComponent = () => {
   const dispatch = useDispatch();
   const [current, setCurrent] = useState("home");
   const [isCartDropDown, setIsCartDropDown] = useState(false);
+  const [isVisibleDrawerRight, setIsVisibleDrawerRight] = useState(false);
 
   useEffect(() => {
     const currentPath = Array.from(pages.entries()).find(
@@ -143,15 +145,18 @@ const HeaderComponent = () => {
                       </Dropdown>
                     </Button>
                   </div>
+
                   <Button
                     type="text"
                     icon={<IoNotificationsSharp size={20} />}
                   ></Button>
-                  <Button
-                    type="text"
-                    icon={<FontAwesomeIcon icon={faRightFromBracket} />}
-                    onClick={handleLogout}
-                  />
+                  <a onClick={() => setIsVisibleDrawerRight(true)}>
+                    <Avatar
+                      size={35}
+                      style={{ backgroundColor: "#87d068" }}
+                      icon={<UserOutlined />}
+                    />
+                  </a>
                 </>
               ) : (
                 <>
@@ -183,6 +188,31 @@ const HeaderComponent = () => {
             </div>
           }
         ></Drawer>
+      </div>
+      <div>
+        <Drawer
+          title={
+            <div style={{ justifyContent: "space-between", display: "flex" }}>
+              <div>
+                <Avatar
+                  size={35}
+                  style={{ backgroundColor: "#87d068" }}
+                  icon={<UserOutlined />}
+                />
+                {auth.userInfo?.name}
+              </div>
+              <Button
+                type="text"
+                onClick={() => setIsVisibleDrawerRight(false)}
+                icon={<IoClose style={{ color: "silver" }} size={25} />}
+              />
+            </div>
+          }
+          closable={false}
+          open={isVisibleDrawerRight}
+        >
+          <DrawerDownRight onClose={()=>setIsVisibleDrawerRight(false)} />
+        </Drawer>
       </div>
     </Affix>
   );

@@ -319,3 +319,12 @@
 .address-item .ant-card-actions li{
   margin: 5px 0px
 }
+
+.drawer-right .ant-btn{
+  width: 100%;
+  justify-content: left;
+}
+
+.drawer-right-icon{
+  font-size: 20px;
+}

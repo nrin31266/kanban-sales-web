@@ -30,8 +30,6 @@ import { FaRegStar } from "react-icons/fa";
 import PaymentMethod from "./component/PaymentMethod";
 import { AddressResponse } from "@/model/AddressModel";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import Reviews from "./component/Reviews";
-
 interface PaymentDetail {
   address: AddressResponse;
   paymentMethod: any;
@@ -135,7 +133,7 @@ const Checkout = () => {
           />
         );
       case 2:
-        return <Reviews />;
+        return <></>;
       default:
         return <CartTable data={data} />;
     }
