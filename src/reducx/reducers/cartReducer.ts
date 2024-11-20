@@ -55,27 +55,3 @@ export const { addProduct, removeProduct, addAllProduct } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
 
-// const addCart = async (item: CartRequest) => {
-//   try {
-//     const res: CustomAxiosResponse<CartResponse> = await handleAPI(
-//       API.CARTS,
-//       item,
-//       "post"
-//     );
-//     return res.data.result;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// const removeCart = async (subProductId: string, createdBy: string) => {
-//   try {
-//     await handleAPI(
-//       `${API.CARTS}/${subProductId}/${createdBy}`,
-//       undefined,
-//       "delete"
-//     );
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };

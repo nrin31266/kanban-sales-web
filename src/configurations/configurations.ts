@@ -26,7 +26,9 @@ export const API = {
   ROOT_CATEGORIES: "/kanban/categories/root",
   BESTSELLER_PRODUCTS: '/kanban/products/bestseller',
   CARTS: '/kanban/carts',
-  ADDRESSES: '/profiles/addresses'
+  ADDRESSES: '/profiles/addresses',
+  PROFILES: '/profiles',
+  USER_PROFILE: '/profiles/users'
 };
 
 export const PAGE = {

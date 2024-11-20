@@ -39,3 +39,15 @@ export interface UserInfoResponse {
   emailVerified: boolean
   roles: RoleModel[]
 }
+
+export interface UserProfile {
+  id: string
+  userId: string
+  name: string
+  phone: string
+  dob: any
+  avatar: string
+  gender: number
+  createdAt: string
+  updatedAt: string
+}

@@ -10,7 +10,7 @@ import {
   LoginResponse,
 } from "@/model/AuthenticationModel";
 import { CreateUserRequest, UserInfoResponse } from "@/model/UserModel";
-import { addAuth } from "@/reducx/reducers/authReducer";
+import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
 import {
   Button,
   Checkbox,
@@ -25,7 +25,7 @@ import { NotificationPlacement } from "antd/es/notification/interface";
 import Link from "antd/es/typography/Link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Register = () => {
   const router = useRouter();
@@ -36,6 +36,7 @@ const Register = () => {
   const [loginData, setLoginData] = useState<LoginRequest>();
   const [apiNotification, contextHolder] = notification.useNotification();
   const [isCreated, setIsCreated] = useState(false);
+  const auth: AuthModel = useSelector(authSelector);
 
   const dispatch = useDispatch();
 
@@ -65,8 +66,8 @@ const Register = () => {
       const accessToken= response.result.token;
       const auth: AuthModel = { accessToken: accessToken };
       dispatch(addAuth(auth));
-      // message.success("Register successfully");
-      getUserInfo(accessToken);
+      // // message.success("Register successfully");
+      // getUserInfo(accessToken);
       setIsCreated(true);
     } catch (error: any) {
       message.error(error.message);
@@ -117,9 +118,26 @@ const Register = () => {
       setIsLoading(false);
     }
   };
-  const handleFinal = () => {
+
+  const getUserProfile= async()=>{
+    setIsLoading(true);
+    try {
+      const res =  await handleAPI(`${API.USER_PROFILE}/my-info`);
+      console.log(res.data)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
+  const handleFinal =async ()  => {
+    await getUserInfo(auth.accessToken);
+    await getUserProfile();
     router.push(PAGE.HOME);
+
   };
+
   return (
     <>
       {contextHolder}

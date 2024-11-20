@@ -7,6 +7,7 @@ import { FaBell, FaBox, FaHeart, FaMapMarkerAlt, FaRegCreditCard } from 'react-i
 import { IoSettingsSharp } from 'react-icons/io5';
 import { FiLogOut } from 'react-icons/fi';
 import { useRouter } from 'next/router';
+import { PAGE } from '@/configurations/configurations';
 
 interface Props{
     onClose: ()=> void
@@ -18,9 +19,10 @@ const DrawerDownRight = (props: Props) => {
     const dispatch = useDispatch();
 
     const handleLogout = ()=>{
+        onClose();
         localStorage.removeItem("authData");
         dispatch(removeAuth({}));
-        onClose();
+        router.push(PAGE.LOGIN);
     }
 
 

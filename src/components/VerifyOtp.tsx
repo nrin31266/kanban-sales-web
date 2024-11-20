@@ -15,6 +15,7 @@ interface Props {
   onFinish: () => void;
   onClose: () => void;
   userId?: string;
+  onVerifyAccount?: () => void
 }
 
 const VerifyOtp = (props: Props) => {
@@ -37,7 +38,7 @@ const VerifyOtp = (props: Props) => {
   const [otpCode, setOtpCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [messageError, setMessageError] = useState("");
-  const { onFinish, onClose, userId } = props;
+  const { onFinish, onClose, userId, onVerifyAccount } = props;
   const [timeReSendOtp, setTimeReSendOtp] = useState(30);
 
   useEffect(() => {
@@ -80,6 +81,7 @@ const VerifyOtp = (props: Props) => {
       const isValid = response.result.verified;
       if (isValid) {
         onFinish();
+        onVerifyAccount && onVerifyAccount();
         onClose();
         message.success("Verify email successfully");
       } else {
