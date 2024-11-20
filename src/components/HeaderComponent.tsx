@@ -188,8 +188,6 @@ const HeaderComponent = () => {
             </div>
           }
         ></Drawer>
-      </div>
-      <div>
         <Drawer
           title={
             <div style={{ justifyContent: "space-between", display: "flex" }}>
@@ -211,7 +209,7 @@ const HeaderComponent = () => {
           closable={false}
           open={isVisibleDrawerRight}
         >
-          <DrawerDownRight onClose={()=>setIsVisibleDrawerRight(false)} />
+          <DrawerDownRight onClose={() => setIsVisibleDrawerRight(false)} />
         </Drawer>
       </div>
     </Affix>

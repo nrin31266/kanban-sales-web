@@ -15,7 +15,6 @@ interface Props{
 const DrawerDownRight = (props: Props) => {
     const {onClose} = props
     const router = useRouter();
-    // const auth = useSelector(authSelector);
     const dispatch = useDispatch();
 
     const handleLogout = ()=>{
@@ -27,12 +26,14 @@ const DrawerDownRight = (props: Props) => {
 
   return (
     <div className='drawer-right'>
-        <Button onClick={()=> router.push('/account')} size='large' type='text' icon={<CgProfile className='drawer-right-icon' />}>Your profile</Button>
-        <Button onClick={()=> router.push('/account/orders')} size='large' type='text' icon={<FaBox className='drawer-right-icon' />}>My orders</Button>
+        <Button onClick={()=> {router.push('/account/profile'); onClose()}} size='large' type='text' icon={<CgProfile className='drawer-right-icon' />}>Your profile</Button>
+        <Button size='large' type='text' icon={<FaBell className='drawer-right-icon' />}>Notifications</Button>
+        <Divider/>
+        <Button onClick={()=> {router.push('/account/orders'); onClose()}} size='large' type='text' icon={<FaBox className='drawer-right-icon' />}>My orders</Button>
         <Button size='large' type='text' icon={<FaHeart className='drawer-right-icon' />}>My wishlists</Button>
         <Button size='large' type='text' icon={<FaMapMarkerAlt className='drawer-right-icon' />}>Manage addresses</Button>
         <Button size='large' type='text' icon={<FaRegCreditCard className='drawer-right-icon' />}>Saved cards</Button>
-        <Button size='large' type='text' icon={<FaBell className='drawer-right-icon' />}>Notifications</Button>
+        
         <Divider/>
         <Button size='large' type='text' icon={<IoSettingsSharp className='drawer-right-icon' />}>Settings</Button>
         <Button onClick={()=>handleLogout()} size='large' type='text' icon={<FiLogOut className='drawer-right-icon' />}>Logout</Button>
