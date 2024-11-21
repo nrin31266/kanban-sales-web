@@ -3,18 +3,21 @@ import LeftHalfPanel from "@/components/LeftHalfPanel";
 import SocialLogin from "@/components/SocialLogin";
 import { API, PAGE } from "@/configurations/configurations";
 import { ApiResponse } from "@/model/AppModel";
-import { LoginRequest, LoginResponse } from "@/model/AuthenticationModel";
-import { addAuth } from "@/reducx/reducers/authReducer";
+import {
+  AuthModel,
+  LoginRequest,
+  LoginResponse,
+} from "@/model/AuthenticationModel";
+import { UserInfoResponse } from "@/model/UserModel";
+import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
+import { addUserProfile } from "@/reducx/reducers/profileReducer";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Form, Input, Typography } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AuthModel } from './../../model/AuthenticationModel';
-import { UserInfoResponse } from "@/model/UserModel";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const login = () => {
   const dispatch = useDispatch();
@@ -22,9 +25,22 @@ const login = () => {
   const router = useRouter();
   const [form] = Form.useForm();
   const searchParam = useSearchParams();
-  const productId = searchParam.get('productId');
-  const productSlug = searchParam.get('slug');
+  const productId = searchParam.get("productId");
+  const productSlug = searchParam.get("slug");
+  const [isLogin, setIsLogin] = useState(false);
+  const auth: AuthModel = useSelector(authSelector);
 
+  useEffect(() => {
+    if (isLogin) {
+      getUserInfo();
+      getUserProfile();
+      router.push(
+        productId && productSlug
+          ? `${PAGE.PRODUCTS}/${productId}/${productSlug}`
+          : PAGE.HOME
+      );
+    }
+  }, [isLogin]);
 
   const handleLogin = async (values: LoginRequest) => {
     setIsLoading(true);
@@ -33,24 +49,35 @@ const login = () => {
       const res = await handleAPI(api, values, "post");
       const response: ApiResponse<LoginResponse> = res.data;
       const accessToken = response.result.token;
-      dispatch(addAuth({accessToken: accessToken}))
-      getUserInfo(accessToken);
-      router.push(productId && productSlug ? `${PAGE.PRODUCTS}/${productId}/${productSlug}` : PAGE.HOME);
+      dispatch(addAuth({ accessToken: accessToken }));
+      setIsLogin(true);
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const getUserInfo = async (accessToken : string) => {
+  const getUserInfo = async () => {
     setIsLoading(true);
     try {
-      //Gọi api gì đó
       const res = await handleAPI(API.USER_INFO);
       const response: ApiResponse<UserInfoResponse> = res.data;
-      dispatch(addAuth({accessToken: accessToken, userInfo: response.result}));
-      
+      dispatch(
+        addAuth({ accessToken: auth.accessToken, userInfo: response.result })
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getUserProfile = async () => {
+    setIsLoading(true);
+    try {
+      const res = await handleAPI(`${API.USER_PROFILE}/my-info`);
+      dispatch(addUserProfile(res.data.result));
     } catch (error) {
       console.log(error);
     } finally {
@@ -76,11 +103,11 @@ const login = () => {
             >
               <div
                 className="col-sm-12 col-md-12 col-lg-8 offset-lg-2"
-                style={{backgroundColor: "white" }}
+                style={{ backgroundColor: "white" }}
               >
                 <Button
                   type="text"
-                  onClick={()=> router.push(PAGE.HOME)}
+                  onClick={() => router.push(PAGE.HOME)}
                   icon={
                     <FontAwesomeIcon
                       icon={faArrowLeft}
@@ -124,13 +151,12 @@ const login = () => {
                       ]}
                     >
                       <Input.Password
-                        
                         minLength={8}
                         type="password"
                         placeholder="Enter password"
                         allowClear
                         visibilityToggle={{
-                          visible: false
+                          visible: false,
                         }}
                       />
                     </Form.Item>

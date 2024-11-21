@@ -11,6 +11,7 @@ import {
 } from "@/model/AuthenticationModel";
 import { CreateUserRequest, UserInfoResponse } from "@/model/UserModel";
 import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
+import { addUserProfile } from "@/reducx/reducers/profileReducer";
 import {
   Button,
   Checkbox,
@@ -77,14 +78,12 @@ const Register = () => {
     }
   };
 
-  const getUserInfo = async (accessToken : string) => {
+  const getUserInfo = async () => {
     setIsLoading(true);
     try {
-      //Gọi api gì đó
       const res = await handleAPI(API.USER_INFO);
       const response: ApiResponse<UserInfoResponse> = res.data;
-      dispatch(addAuth({accessToken: accessToken, userInfo: response.result}));
-      
+      dispatch(addAuth({accessToken: auth.accessToken, userInfo: response.result}));
     } catch (error) {
       console.log(error);
     } finally {
@@ -124,6 +123,7 @@ const Register = () => {
     try {
       const res =  await handleAPI(`${API.USER_PROFILE}/my-info`);
       console.log(res.data)
+      dispatch(addUserProfile(res.data.result));
     } catch (error) {
       console.log(error)
     }finally{
@@ -132,7 +132,7 @@ const Register = () => {
   }
 
   const handleFinal =async ()  => {
-    await getUserInfo(auth.accessToken);
+    await getUserInfo();
     await getUserProfile();
     router.push(PAGE.HOME);
 

@@ -27,6 +27,8 @@ import { RiMenuUnfold3Line2 } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import CartComponent from "./CartComponent";
 import DrawerDownRight from "./DrawerDownRight";
+import { userProfileSelector } from "@/reducx/reducers/profileReducer";
+import { UserProfile } from "@/model/UserModel";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -43,6 +45,7 @@ const HeaderComponent = () => {
   const [current, setCurrent] = useState("home");
   const [isCartDropDown, setIsCartDropDown] = useState(false);
   const [isVisibleDrawerRight, setIsVisibleDrawerRight] = useState(false);
+  const userProfile: UserProfile = useSelector(userProfileSelector);
 
   useEffect(() => {
     const currentPath = Array.from(pages.entries()).find(
@@ -153,7 +156,7 @@ const HeaderComponent = () => {
                   <a onClick={() => setIsVisibleDrawerRight(true)}>
                     <Avatar
                       size={35}
-                      style={{ backgroundColor: "#87d068" }}
+                      style={{ backgroundColor: "#2B8ECC" }}
                       icon={<UserOutlined />}
                     />
                   </a>
@@ -194,10 +197,10 @@ const HeaderComponent = () => {
               <div>
                 <Avatar
                   size={35}
-                  style={{ backgroundColor: "#87d068" }}
+                  style={{ backgroundColor: "#2B8ECC" }}
                   icon={<UserOutlined />}
                 />
-                {auth.userInfo?.name}
+                {userProfile && userProfile.name}
               </div>
               <Button
                 type="text"

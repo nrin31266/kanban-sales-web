@@ -1,7 +1,6 @@
 export interface UserInfo {
   id: string;
   emailVerified?: boolean;
-  name: string;
   email: string;
   roles: RoleModel[];
 }
@@ -50,4 +49,12 @@ export interface UserProfile {
   gender: number
   createdAt: string
   updatedAt: string
+}
+
+export interface UserProfileRequest {
+  name: string
+  phone: string
+  dob: any
+  avatar: string
+  gender: number
 }

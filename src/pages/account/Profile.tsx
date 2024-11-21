@@ -1,17 +1,28 @@
+import handleAPI from "@/apis/handleAPI";
+import { API } from "@/configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
+import { UserProfileRequest } from "@/model/UserModel";
 import { authSelector } from "@/reducx/reducers/authReducer";
+import { userProfileSelector } from "@/reducx/reducers/profileReducer";
+import { uploadFile } from "@/utils/uploadFile";
 import { Avatar, Button, Card } from "antd";
+import { UserProfile } from "firebase/auth";
 import React, { useRef } from "react";
 import { useSelector } from "react-redux";
 
 const Profiles = () => {
   const auth: AuthModel = useSelector(authSelector);
   const avtRef = useRef<any>(null);
+  const userProfile: UserProfile = useSelector(userProfileSelector);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange =async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("Selected file: ", file.name);
+      const photoUrl = await uploadFile(file);
+      if(photoUrl){
+        const res = await handleAPI(`${API.USER_PROFILE}/avatar`, {avatar: photoUrl}, 'put');
+        console.log(res.data);
+      }
     }
   };
 

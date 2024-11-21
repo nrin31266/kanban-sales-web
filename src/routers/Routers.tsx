@@ -12,6 +12,8 @@ import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { addAllProduct } from "@/reducx/reducers/cartReducer";
 import AccountLayout from "@/pages/account/Layout";
+import { UserProfile } from "@/model/UserModel";
+import { addUserProfile } from "@/reducx/reducers/profileReducer";
 
 const { Content, Footer } = Layout;
 
@@ -34,6 +36,15 @@ const Routers = ({ Component, pageProps }: any) => {
         authData.userInfo && getCarts();
       }
     }
+
+    const userProfileInLocal: string | null = localStorage.getItem('userProfile');
+    if (userProfileInLocal) {
+      let data: UserProfile = JSON.parse(userProfileInLocal);
+      if (data) {
+        dispatch(addUserProfile(data));
+      }
+    }
+
 
     console.log(path);
   }, []);

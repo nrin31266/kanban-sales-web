@@ -1,11 +1,21 @@
-import { Menu } from "antd";
+import { Avatar, Menu } from "antd";
 import { useRouter } from "next/router";
 import { useState, useCallback, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
-import { FaBell, FaBox, FaHeart, FaMapMarkerAlt, FaRegCreditCard } from "react-icons/fa";
-import type { MenuProps } from "antd";
+import {
+  FaBell,
+  FaBox,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaRegCreditCard,
+} from "react-icons/fa";
+import { UserOutlined } from "@ant-design/icons";
+import { UserProfile } from "@/model/UserModel";
+import { useSelector } from "react-redux";
+import { userProfileSelector } from "@/reducx/reducers/profileReducer";
 
 const MenuItem = () => {
+  const userProfile: UserProfile = useSelector(userProfileSelector);
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState<string>("");
   useEffect(() => {
@@ -20,7 +30,7 @@ const MenuItem = () => {
       // Xử lý trường hợp khác nếu cần
       setSelectedKey("");
     }
-  }, [router.pathname]); 
+  }, [router.pathname]);
 
   const menuItems = [
     {
@@ -69,15 +79,24 @@ const MenuItem = () => {
   return (
     <div>
       <div className="d-flex" style={{}}>
-        
+        <div>
+          <Avatar
+            src={userProfile.avatar && userProfile.avatar}
+            size={35}
+            style={{ backgroundColor: "#2B8ECC" }}
+            icon={<UserOutlined />}
+          />
+        </div>
+        <div>
+          {'Hello '}{userProfile.name}
+        </div>
       </div>
       <Menu
-      mode="inline"
-      style={{ width: 256 }}
-      items={renderMenuItems()} 
-      selectedKeys={[selectedKey]}
-      
-    />
+        mode="inline"
+        style={{ width: 256 }}
+        items={renderMenuItems()}
+        selectedKeys={[selectedKey]}
+      />
     </div>
   );
 };

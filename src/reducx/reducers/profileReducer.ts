@@ -1,41 +1,42 @@
-// import { createSlice } from "@reduxjs/toolkit";
-// import { AuthModel } from "@/model/AuthenticationModel";
-// import { localDataNames } from "@/constants/appInfos";
-// import { SubProductResponse } from "@/model/SubProduct";
-// import handleAPI from "@/apis/handleAPI";
-// import { API } from "@/configurations/configurations";
-// import { CartRequest, CartResponse } from "@/model/CartModel";
-// import { PageResponse } from "@/model/AppModel";
-// import { CustomAxiosResponse } from "@/model/AxiosModel";
-// import { UserProfile } from "@/model/UserModel";
+import { UserProfile } from "@/model/UserModel";
+import { syncLocalStorage } from "@/utils/localStorage";
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState: UserProfile = {
+  avatar: "",
+  createdAt: "",
+  dob: "",
+  gender: 0,
+  id: "",
+  name: "",
+  phone: "",
+  updatedAt: "",
+  userId: "",
+};
+
+const userProfileSlice = createSlice({
+  name: "user-profile",
+  initialState: { data: initialState },
+  reducers: {
+    addUserProfile: (state, action) => {
+        state.data = action.payload
+        syncLocal(state.data);
+    },
+    removeUserProfile: (state, _action) => {
+        state.data = initialState;
+        syncLocal(undefined);
+    },
+  },
+});
 
 
-// const initialState: UserProfile = {
-//     avatar: '',
-//     createdAt: '',
-//     dob: '',
-//     gender: 0,
-//     id: '',
-//     name: '',
-//     phone: '',
-//     updatedAt: '',
-//     userId: ''
-// };
+const syncLocal = (data: UserProfile | undefined) => {
+    syncLocalStorage('userProfile', data);
+};
 
-// const profileSlice = createSlice({
-//   name: "cart",
-//   initialState: { data: initialState },
-//   reducers: {
-//     addUserProfile: (state, action) => {
-      
-//     },
-//     removeUserProfile: (state, action) => {}      
-  
-//   },
-// });
+export const userProfileReducer = userProfileSlice.reducer;
+export const { addUserProfile, removeUserProfile } = userProfileSlice.actions;
 
-// export const cartReducer = cartSlice.reducer;
-// export const { addProduct, removeProduct, addAllProduct } = cartSlice.actions;
 
-// export const cartSelector = (state: any) => state.cartReducer.data;
-
+export const userProfileSelector = (state: any) =>
+  state.userProfileReducer.data;

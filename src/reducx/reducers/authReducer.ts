@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AuthModel } from '@/model/AuthenticationModel';
 import { localDataNames } from "@/constants/appInfos";
+import { syncLocalStorage } from "@/utils/localStorage";
 
 const initialState: AuthModel = {
     accessToken: '',
     userInfo: {
         id: '',
-        name: '',
         email: '',
         roles: []
     }
@@ -22,15 +22,13 @@ const authSlice = createSlice({
         },
         removeAuth: (state, _action) =>{
             state.data = initialState;
-            syncLocal({});
+            syncLocal(undefined);
         }
     },
 })
 
-const syncLocal = (data: AuthModel | {}) => {
-    if (data) {
-        localStorage.setItem(localDataNames.authData, JSON.stringify(data));
-    }
+const syncLocal = (data: AuthModel | undefined) => {
+    syncLocalStorage(localDataNames.authData, data);
 };
 
 export const authReducer = authSlice.reducer;
