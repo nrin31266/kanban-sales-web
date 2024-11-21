@@ -8,10 +8,8 @@ interface LayoutProps {
 
 const AccountLayout = ({ children }: LayoutProps) => {
   return (
-    <div className="container d-flex">
-      <div className="mr-2">
-        <MenuItem />
-      </div>
+    <div className="container p-0 d-flex">
+      <MenuItem />
       <div style={{width: '100%'}}>
         {children}
       </div>

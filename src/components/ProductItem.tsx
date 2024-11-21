@@ -26,6 +26,7 @@ const ProductItem = (props: Props) => {
 
   return (
     <Link
+      style={{textDecoration: 'none'}}
       href={`/products/${product.id}/${product.slug}`}
       ref={ref}
       key={product.id}
@@ -70,10 +71,10 @@ const ProductItem = (props: Props) => {
         </div>
       )}
       <div className="title-content">
-        <Typography.Paragraph className="title" style={{ fontWeight: "500" }}>
+        <Typography.Text className="title" style={{ fontWeight: "500" }}>
           {product.title}
-        </Typography.Paragraph>
-        <Typography.Paragraph style={{ fontSize: "1.2em", color: '#1a73e8'}}>
+        </Typography.Text>
+        <Typography.Text style={{ fontSize: "1.2em", color: '#1a73e8'}}>
           {
             product.maxPrice && product.minPrice
             ? product.maxPrice === product.minPrice
@@ -81,7 +82,7 @@ const ProductItem = (props: Props) => {
               : `${FormatCurrency.VND.format(product.minPrice)} - ${FormatCurrency.VND.format(product.maxPrice)}`
             : "N/A"
           }
-        </Typography.Paragraph>
+        </Typography.Text>
       </div>
     </Link>
   );

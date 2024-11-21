@@ -11,6 +11,7 @@ import { uploadFile } from "@/utils/uploadFile";
 import { Avatar, Button, Card, message } from "antd";
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { UserOutlined } from '@ant-design/icons';
 
 const Profiles = () => {
   const auth: AuthModel = useSelector(authSelector);
@@ -49,7 +50,14 @@ const Profiles = () => {
     <div>
       <Card>
         <div>
-          <Avatar  style={{ backgroundColor: userProfile.avatar  ? "silver":  "#2B8ECC" }} size={100} src={userProfile.avatar}></Avatar>
+          <Avatar
+            icon={<UserOutlined />}
+            style={{
+              backgroundColor: userProfile.avatar ? "silver" : "#2B8ECC",
+            }}
+            size={100}
+            src={userProfile.avatar}
+          ></Avatar>
           <Button
             disabled={isLoading}
             loading={isLoading}

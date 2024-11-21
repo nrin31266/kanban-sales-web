@@ -119,7 +119,7 @@ const ProductDetail = ({
               <div className="col-sm-12 col-md-4">
                 <div
                   className="text-center p-4"
-                  style={{ backgroundColor: "#e0e0e0" }}
+                  style={{}}
                 >
                   {photoSelected ? (
                     <Image
