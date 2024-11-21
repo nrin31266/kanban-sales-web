@@ -105,7 +105,7 @@ const ProductDetail = ({
             image={product.images[0] ?? undefined}
             url={`${APP.baseURL}/products/${product.id}/${product.slug}`}
           />
-          <div className="container mt-3 product-detail">
+          <div className="container product-detail">
             <div className="bg-white">
               <Breadcrumb
                 items={[
@@ -115,7 +115,7 @@ const ProductDetail = ({
                 ]}
               />
             </div>
-            <div className="row mt-3" style={{ backgroundColor: "white" }}>
+            <div className="row m-0" style={{ backgroundColor: "white" }}>
               <div className="col-sm-12 col-md-4">
                 <div
                   className="text-center p-4"
@@ -195,7 +195,6 @@ const ProductDetail = ({
                         {FormatCurrency.VND.format(subProductSelected.price)}
                       </Typography.Title>
                     )}
-                    <p className="mb-0">{product.description}</p>
                   </div>
                 )}
                 <ChangeSubProduct
@@ -219,29 +218,12 @@ const ProductDetail = ({
                         label: "Description",
                         children: (
                           <Skeleton active loading={!product.description}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Possimus ducimus dolore nesciunt cupiditate
-                            error adipisci minus, culpa excepturi! Quas
-                            necessitatibus numquam inventore a sapiente saepe
-                            dolores officiis error est reprehenderit!
+                            {product.description}
                           </Skeleton>
                         ),
                       },
                       {
                         key: "tab-2",
-                        label: "Additional Information",
-                        children: (
-                          <Skeleton active loading={!product.description}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Possimus ducimus dolore nesciunt cupiditate
-                            error adipisci minus, culpa excepturi! Quas
-                            necessitatibus numquam inventore a sapiente saepe
-                            dolores officiis error est reprehenderit!
-                          </Skeleton>
-                        ),
-                      },
-                      {
-                        key: "tab-3",
                         label: "Reviews",
                         children: (
                           <Reviews productId={product.id} />
@@ -258,7 +240,7 @@ const ProductDetail = ({
                   title="Related products"
                   titleLevel={5}
                   children={
-                    <div className="row">
+                    <div className="row m-0">
                       {relatedProducts &&
                         relatedProducts.length > 0 &&
                         relatedProducts.map((item) => (

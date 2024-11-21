@@ -308,6 +308,7 @@ const ChangeSubProduct = (props: Props) => {
 
                 return (
                   <Button
+                    style={{minWidth: '3rem'}}
                     type={
                       optionSelected.get(key) === value ? "primary" : "default"
                     }

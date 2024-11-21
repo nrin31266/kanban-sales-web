@@ -158,11 +158,14 @@
 }
 
 .product-item:hover {
-  box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
-  transition: 0.7s;
+  -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1); */
+  border: 1px solid orangered;
+  /* transition: 1s; */
 }
+
+
 
 .category-gallery .category-content {
   justify-content: center;
