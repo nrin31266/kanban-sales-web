@@ -328,3 +328,10 @@
 .drawer-right-icon{
   font-size: 20px;
 }
+
+.account-menu .ant-card-body{
+  padding: 10;
+}
+.account-menu .ant-card{
+  margin-bottom: 10px;
+}

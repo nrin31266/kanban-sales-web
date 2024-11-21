@@ -1,4 +1,4 @@
-import { Avatar, Menu } from "antd";
+import { Avatar, Card, Menu } from "antd";
 import { useRouter } from "next/router";
 import { useState, useCallback, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
@@ -77,20 +77,23 @@ const MenuItem = () => {
   }, [menuItems]);
 
   return (
-    <div>
-      <div className="d-flex" style={{}}>
-        <div>
-          <Avatar
-            src={userProfile.avatar && userProfile.avatar}
-            size={35}
-            style={{ backgroundColor: "#2B8ECC" }}
-            icon={<UserOutlined />}
-          />
+    <div className="account-menu">
+      <Card className="">
+        <div className="d-flex">
+          <div>
+            <Avatar
+              src={userProfile.avatar && userProfile.avatar}
+              size={50}
+              style={{ backgroundColor: userProfile.avatar ? "" : "#2B8ECC" }}
+              icon={<UserOutlined />}
+            />
+          </div>
+          <div>
+            {"Hello "}
+            {userProfile.name}
+          </div>
         </div>
-        <div>
-          {'Hello '}{userProfile.name}
-        </div>
-      </div>
+      </Card>
       <Menu
         mode="inline"
         style={{ width: 256 }}

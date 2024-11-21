@@ -155,8 +155,13 @@ const HeaderComponent = () => {
                   ></Button>
                   <a onClick={() => setIsVisibleDrawerRight(true)}>
                     <Avatar
-                      size={35}
-                      style={{ backgroundColor: "#2B8ECC" }}
+                      src={userProfile.avatar}
+                      style={{
+                        backgroundColor: userProfile.avatar
+                          ? ""
+                          : "#2B8ECC",
+                      }}
+                      size={40}
                       icon={<UserOutlined />}
                     />
                   </a>
@@ -197,7 +202,12 @@ const HeaderComponent = () => {
               <div>
                 <Avatar
                   size={35}
-                  style={{ backgroundColor: "#2B8ECC" }}
+                  src={userProfile.avatar}
+                  style={{
+                    backgroundColor: userProfile.avatar
+                      ? ""
+                      : "#2B8ECC",
+                  }}
                   icon={<UserOutlined />}
                 />
                 {userProfile && userProfile.name}

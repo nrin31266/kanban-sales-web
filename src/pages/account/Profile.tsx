@@ -1,27 +1,46 @@
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
-import { UserProfileRequest } from "@/model/UserModel";
+import { UserProfile } from "@/model/UserModel";
 import { authSelector } from "@/reducx/reducers/authReducer";
-import { userProfileSelector } from "@/reducx/reducers/profileReducer";
+import {
+  addUserProfile,
+  userProfileSelector,
+} from "@/reducx/reducers/profileReducer";
 import { uploadFile } from "@/utils/uploadFile";
-import { Avatar, Button, Card } from "antd";
-import { UserProfile } from "firebase/auth";
-import React, { useRef } from "react";
-import { useSelector } from "react-redux";
+import { Avatar, Button, Card, message } from "antd";
+import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Profiles = () => {
   const auth: AuthModel = useSelector(authSelector);
   const avtRef = useRef<any>(null);
   const userProfile: UserProfile = useSelector(userProfileSelector);
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileChange =async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const photoUrl = await uploadFile(file);
-      if(photoUrl){
-        const res = await handleAPI(`${API.USER_PROFILE}/avatar`, {avatar: photoUrl}, 'put');
-        console.log(res.data);
+      setIsLoading(true);
+
+      try {
+        const photoUrl = await uploadFile(file);
+        if (photoUrl) {
+          const res = await handleAPI(
+            `${API.USER_PROFILE}/avatar`,
+            { avatar: photoUrl },
+            "put"
+          );
+          dispatch(addUserProfile(res.data.result));
+          message.success("Ok");
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -30,8 +49,17 @@ const Profiles = () => {
     <div>
       <Card>
         <div>
-          <Avatar size={100} src={""}></Avatar>
-          <Button type="link" onClick={()=>{avtRef.current?.click()}}>Select photo</Button>
+          <Avatar  style={{ backgroundColor: userProfile.avatar  ? "silver":  "#2B8ECC" }} size={100} src={userProfile.avatar}></Avatar>
+          <Button
+            disabled={isLoading}
+            loading={isLoading}
+            type="link"
+            onClick={() => {
+              avtRef.current?.click();
+            }}
+          >
+            Select photo
+          </Button>
         </div>
       </Card>
 
