@@ -98,7 +98,7 @@ const HomePage = ({
           titleAlign="text-center"
           titleLevel={2}
         >
-          <div className="row p-3">
+          <div className="row m-0">
             {bestsellerProducts.map((product) => (
               <ProductItem key={product.id} product={product}/>
             ))}

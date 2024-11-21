@@ -60,34 +60,44 @@ const ScrollCategories = (props: Props) => {
   return (
     <div className="gallery-wrap p-2">
       {!isAtStart && (
-        <button style={{ marginBottom: "30px" }} id="btn-back" className="btn" onClick={scrollLeft}>
+        <button
+          style={{ marginBottom: "30px" }}
+          id="btn-back"
+          className="btn"
+          onClick={scrollLeft}
+        >
           <FontAwesomeIcon icon={faAngleLeft} className="btn-icon" />
         </button>
       )}
       <div className="category-gallery" ref={galleryRef}>
         {items.length > 0 &&
           items.map((item, index) => (
-            <a key={"image" + index} onClick={() => onClick(item)}>
+            <a className="category-gallery-item" key={"image" + index} onClick={() => onClick(item)}>
               <div>
-                <span>
-                  <img
-                    style={{ objectFit: "cover" }}
-                    src={
-                      item.imageUrl ??
-                      "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312"
-                    }
-                    alt=""
-                  />
-                </span>
-              </div>
-              <div className="category-content">
-                <span>{item.name}</span>
-              </div>
+                  <span>
+                    <img
+                      style={{ objectFit: "cover" }}
+                      src={
+                        item.imageUrl ??
+                        "https://assets.mycast.io/actor_images/actor-lee-ji-eun-342899_large.jpg?1641835312"
+                      }
+                      alt=""
+                    />
+                  </span>
+                </div>
+                <div className="category-content">
+                  <span>{item.name}</span>
+                </div>
             </a>
           ))}
       </div>
       {!isAtEnd && (
-        <button style={{ marginBottom: "30px" }} id="btn-next" className="btn" onClick={scrollRight}>
+        <button
+          style={{ marginBottom: "30px" }}
+          id="btn-next"
+          className="btn"
+          onClick={scrollRight}
+        >
           <FontAwesomeIcon icon={faAngleRight} className="btn-icon" />
         </button>
       )}

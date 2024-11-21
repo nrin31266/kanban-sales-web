@@ -53,9 +53,11 @@ const HeaderComponent = () => {
     )?.[0];
     if (currentPath) setCurrent(currentPath);
   });
+  
   const onClick: MenuProps["onClick"] = (e) => {
     router.push(pages.get(e.key) as string);
   };
+
   const items: MenuItem[] = [
     {
       label: "Home",
@@ -63,19 +65,11 @@ const HeaderComponent = () => {
     },
     {
       label: "Shop",
-      key: "1",
-      children: [
-        {
-          label: "All",
-          key: "shop",
-        },
-      ],
+      key: "shop",
     },
   ];
 
-  const handleLogout = async () => {
-    dispatch(removeAuth({}));
-  };
+
 
   return (
     <Affix offsetTop={0}>

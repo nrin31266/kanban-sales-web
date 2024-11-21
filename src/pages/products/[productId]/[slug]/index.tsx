@@ -37,24 +37,22 @@ const ProductDetail = ({
   relatedProductsProp: ProductResponse[];
 }) => {
   const [product, setProduct] = useState<ProductResponse>();
-  const [productDetail, setProductDetail] =
-    useState<SubProductResponse[]>();
+  const [productDetail, setProductDetail] = useState<SubProductResponse[]>();
   const [subProductSelected, setSubProductSelected] =
     useState<SubProductResponse>();
-  const [photoSelected, setPhotoSelected] = useState<string>();
+  const [photoSelected, setPhotoSelected] = useState<string | undefined>();
   const [relatedProducts, setRelatedProducts] = useState<ProductResponse[]>();
   // const router = useRouter();
   // const { productId } = router.query;
 
-
-  useEffect(()=>{
-    if(productProp && relatedProductsProp && productDetailProp){
-      setProduct(productProp);
-      setProductDetail(productDetailProp);
-      setRelatedProducts(relatedProductsProp);
-      console.log('change')
-    }
-  },[productProp, productDetailProp, relatedProductsProp])
+  useEffect(() => {
+    setProduct(productProp);
+    setProductDetail(productDetailProp);
+    setRelatedProducts(relatedProductsProp);
+    !(productDetailProp.length > 0) && setPhotoSelected(productProp.images[0]);
+    setSubProductSelected(undefined);
+    console.log("change");
+  }, [productProp, productDetailProp, relatedProductsProp]);
 
   // useEffect(() => {
   //   if (!productId) return;
@@ -97,7 +95,7 @@ const ProductDetail = ({
 
   return (
     <div>
-      {product && productDetail ? (
+      {product ? (
         <div>
           <HeadComponent
             title={product.title}
@@ -117,10 +115,7 @@ const ProductDetail = ({
             </div>
             <div className="row m-0" style={{ backgroundColor: "white" }}>
               <div className="col-sm-12 col-md-4">
-                <div
-                  className="text-center p-4"
-                  style={{}}
-                >
+                <div className="text-center p-4" style={{}}>
                   {photoSelected ? (
                     <Image
                       src={photoSelected}
@@ -197,15 +192,17 @@ const ProductDetail = ({
                     )}
                   </div>
                 )}
-                <ChangeSubProduct
-                  isVisible={true}
-                  type="main"
-                  initData={{
-                    product: product,
-                    subProducts: productDetail,
-                  }}
-                  onChangeProductDetail={handleSubProductChange}
-                />
+                {productDetail && productDetail.length>0 && (
+                  <ChangeSubProduct
+                    isVisible={true}
+                    type="main"
+                    initData={{
+                      product: product,
+                      subProducts: productDetail,
+                    }}
+                    onChangeProductDetail={handleSubProductChange}
+                  />
+                )}
               </div>
             </div>
             <Section
@@ -225,9 +222,7 @@ const ProductDetail = ({
                       {
                         key: "tab-2",
                         label: "Reviews",
-                        children: (
-                          <Reviews productId={product.id} />
-                        ),
+                        children: <Reviews productId={product.id} />,
                       },
                     ]}
                   />
