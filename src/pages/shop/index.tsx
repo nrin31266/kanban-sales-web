@@ -1,16 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Empty, Layout, Pagination, Skeleton, Spin } from "antd";
-import { useSearchParams } from "next/navigation";
+import {
+  Button,
+  Checkbox,
+  Empty,
+  Layout,
+  List,
+  Menu,
+  Pagination,
+  Skeleton,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
+import { usePathname, useSearchParams } from "next/navigation";
 import { API } from "@/configurations/configurations";
 import handleAPI from "@/apis/handleAPI";
 import { ProductResponse } from "@/model/ProductModel";
 import { PageResponse } from "@/model/AppModel";
 import { LoadingOutlined } from "@ant-design/icons";
 import ProductItem from "@/components/ProductItem";
-
-interface Req {
-  categoryIds: string | null;
-}
+import { SelectModelHasChildren } from "@/model/FormModel";
+import { CategoryResponse } from "@/model/CategoryModel";
+import { IoIosClose } from "react-icons/io";
+import { MdClose } from "react-icons/md";
+import { useRouter } from "next/router";
 
 const ShopPage = () => {
   const { Sider, Content } = Layout;
@@ -20,11 +33,31 @@ const ShopPage = () => {
   const [api, setApi] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [pageData, setPageData] = useState<PageResponse<ProductResponse>>();
-
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+  const router = useRouter();
+  const pathname = usePathname();
   const [filterValues, setFilterValues] = useState<{
     categoryIds: string[];
-  }>();
+  }>({
+    categoryIds: categoryIds ? categoryIds.split(",") : [],
+  });
   const pageRef = useRef(1);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      await getCategories();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getCategories = async () => {
+    const res = await handleAPI(API.CATEGORIES);
+    setCategories(res.data.result);
+  };
 
   // Cập nhật filterValues khi categoryIds thay đổi
   useEffect(() => {
@@ -63,9 +96,10 @@ const ShopPage = () => {
     }
     setIsLoading(true);
     try {
-      const url = api === API.PRODUCTS
-        ? `${api}?page=${pageRef.current}`
-        : `${api}&page=${pageRef.current}`;
+      const url =
+        api === API.PRODUCTS
+          ? `${api}?page=${pageRef.current}`
+          : `${api}&page=${pageRef.current}`;
       console.log(api);
       const res = await handleAPI(url);
       console.log(res.data);
@@ -76,12 +110,113 @@ const ShopPage = () => {
       setIsLoading(false);
     }
   };
+  const handleSelectCategory = (id: string) => {
+    const updatedFilter = { ...filterValues };
+
+    // Thêm hoặc xóa ID khỏi danh sách
+    const index = updatedFilter.categoryIds.indexOf(id);
+    if (index === -1) {
+      updatedFilter.categoryIds.push(id);
+    } else {
+      updatedFilter.categoryIds.splice(index, 1);
+    }
+
+    setFilterValues(updatedFilter);
+
+    // Gọi hàm updateSearchParams
+    updateSearchParams(
+      "categoryIds",
+      updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null,
+      params,
+      pathname,
+      router
+    );
+  };
+
+  const updateSearchParams = (
+    key: string,
+    value: string | string[] | null,
+    params: URLSearchParams,
+    pathname: string,
+    router: any
+  ) => {
+    const updatedParams = new URLSearchParams(params.toString());
+  
+    if (value === null || (Array.isArray(value) && value.length === 0)) {
+      updatedParams.delete(key); // Xóa key nếu value là null hoặc rỗng
+    } else if (Array.isArray(value)) {
+      updatedParams.set(key, value.join(",")); // Nếu value là array, nối thành chuỗi
+    } else {
+      updatedParams.set(key, value); // Nếu value là string
+    }
+  
+    // Cập nhật URL mà không reload
+    router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
+      shallow: true,
+    });
+  };
+  
 
   return (
     <div className="container">
       <Layout>
         <div className="d-none d-md-block">
-          <Sider theme="light">sider</Sider>
+          <Sider className="mr-2" theme="light">
+          <Typography.Title level={5}>SEARCH FILTER</Typography.Title>
+            <div>
+              <Typography.Title level={5}>Categories</Typography.Title>
+              {filterValues?.categoryIds &&
+                filterValues.categoryIds.length > 0 && (
+                  <div
+                    style={{
+                      padding: 4,
+                      border: "1px solid black",
+                      borderRadius: 8,
+                    }}
+                    className="mb-2"
+                  >
+                    {filterValues.categoryIds.map((id) => {
+                      const category = categories.find(
+                        (item) => item.id === id
+                      );
+                      return (
+                        <Space
+                          key={`select-${id}`}
+                          style={{
+                            background: "#F1EFEF",
+                            padding: "2px 6px",
+                            borderRadius: 6,
+                            marginRight: 3,
+                            marginBottom: 3
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold" }}>
+                            {category?.name}
+                          </div>
+                          <a onClick={() => {handleSelectCategory(id)}}>
+                            <MdClose size={15} />
+                          </a>
+                        </Space>
+                      );
+                    })}
+                  </div>
+                )}
+              <div className="" style={{ maxHeight: 300, overflowY: "auto", border: '1px solid silver', padding: 6 }}>
+                {categories &&
+                  categories.map((item) => (
+                    <div key={item.id}>
+                      <Checkbox
+                        style={{}}
+                        checked={filterValues?.categoryIds.includes(item.id)}
+                        onChange={() => handleSelectCategory(item.id)}
+                      >
+                        {item.name}
+                      </Checkbox>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </Sider>
         </div>
 
         <Content className="bg-white">
@@ -114,7 +249,7 @@ const ShopPage = () => {
                     defaultCurrent={pageData.currentPage}
                     total={pageData.totalElements}
                     align="end"
-                    onChange={ async(v) => {
+                    onChange={async (v) => {
                       pageRef.current = v;
                       await getProducts();
                     }}

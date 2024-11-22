@@ -28,7 +28,8 @@ export const API = {
   CARTS: '/kanban/carts',
   ADDRESSES: '/profiles/addresses',
   PROFILES: '/profiles',
-  USER_PROFILE: '/profiles/users'
+  USER_PROFILE: '/profiles/users',
+  GET_MENU_CATEGORIES_TREE: "/kanban/categories/get-menu-tree",
 };
 
 export const PAGE = {
