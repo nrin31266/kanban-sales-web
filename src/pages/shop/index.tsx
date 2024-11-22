@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Empty, Layout, Skeleton, Spin } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { Empty, Layout, Pagination, Skeleton, Spin } from "antd";
 import { useSearchParams } from "next/navigation";
 import { API } from "@/configurations/configurations";
 import handleAPI from "@/apis/handleAPI";
 import { ProductResponse } from "@/model/ProductModel";
 import { PageResponse } from "@/model/AppModel";
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from "@ant-design/icons";
+import ProductItem from "@/components/ProductItem";
 
 interface Req {
   categoryIds: string | null;
@@ -23,6 +24,7 @@ const ShopPage = () => {
   const [filterValues, setFilterValues] = useState<{
     categoryIds: string[];
   }>();
+  const pageRef = useRef(1);
 
   // Cập nhật filterValues khi categoryIds thay đổi
   useEffect(() => {
@@ -43,7 +45,6 @@ const ShopPage = () => {
         // Ví dụ, có thể thêm categoryIds vào API query params
         updatedApi += `?categoryIds=${filterValues.categoryIds.join(",")}`;
       }
-
       setApi(updatedApi);
     }
   }, [filterValues]);
@@ -62,8 +63,11 @@ const ShopPage = () => {
     }
     setIsLoading(true);
     try {
+      const url = api === API.PRODUCTS
+        ? `${api}?page=${pageRef.current}`
+        : `${api}&page=${pageRef.current}`;
       console.log(api);
-      const res = await handleAPI(api);
+      const res = await handleAPI(url);
       console.log(res.data);
       setPageData(res.data.result);
     } catch (error) {
@@ -91,14 +95,31 @@ const ShopPage = () => {
           </div>
           {isLoading ? (
             <div className="text-center">
-              <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+              <Spin
+                indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+              />
             </div>
           ) : pageData ? (
             pageData.data.length === 0 ? (
               <Empty />
             ) : (
               <div>
-                <h1>fafafa</h1>
+                <div className="row m-0">
+                  {pageData.data.map((item) => (
+                    <ProductItem product={item} key={item.id} />
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <Pagination
+                    defaultCurrent={pageData.currentPage}
+                    total={pageData.totalElements}
+                    align="end"
+                    onChange={ async(v) => {
+                      pageRef.current = v;
+                      await getProducts();
+                    }}
+                  />
+                </div>
               </div>
             )
           ) : (

@@ -116,6 +116,17 @@
   max-height: 3.5em;
 }
 
+.product-item .title-content .price{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: 3.5em;
+  margin-bottom: 5px;
+}
+
 .product-item .hover-content {
   position: absolute;
   top: 0;

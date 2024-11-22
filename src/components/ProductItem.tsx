@@ -23,6 +23,7 @@ const ProductItem = (props: Props) => {
     const width = ref.current?.offsetWidth;
     setElementWidth(width);
   }, []);
+  
 
   return (
     <div className="col-6 col-md-4 col-lg-3 product-item">
@@ -71,7 +72,7 @@ const ProductItem = (props: Props) => {
           <Typography.Text className="title" style={{ fontWeight: "500" }}>
             {product.title}
           </Typography.Text>
-          <Typography.Text style={{ fontSize: "1.2em", color: "#1a73e8" }}>
+          <Typography.Text className="price" style={{ fontSize: "1.2em", color: "#1a73e8" }}>
             {product.maxPrice && product.minPrice
               ? product.maxPrice === product.minPrice
                 ? FormatCurrency.VND.format(product.maxPrice)
