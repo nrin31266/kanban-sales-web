@@ -80,7 +80,7 @@ const Routers = ({ Component, pageProps }: any) => {
       <Content>
         <Component {...pageProps} />
       </Content>
-      <Footer />
+      <Footer >footer</Footer>
     </Layout>
   );
 };

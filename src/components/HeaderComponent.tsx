@@ -53,7 +53,7 @@ const HeaderComponent = () => {
     )?.[0];
     if (currentPath) setCurrent(currentPath);
   });
-  
+
   const onClick: MenuProps["onClick"] = (e) => {
     router.push(pages.get(e.key) as string);
   };
@@ -103,13 +103,12 @@ const HeaderComponent = () => {
                 (auth.userInfo.emailVerified === false ||
                   auth.userInfo.emailVerified === null) && (
                   <Button size="small" className="p-1" type="primary">
-                    Verify
+                    v
                   </Button>
                 )}
               {auth.accessToken ? (
                 <>
                   <Button type="text" icon={<FiSearch size={20} />}></Button>
-                  <Button type="text" icon={<FcLike size={20} />}></Button>
                   <div style={isCartDropDown ? {} : {}}>
                     <Button
                       onClick={(e) => {

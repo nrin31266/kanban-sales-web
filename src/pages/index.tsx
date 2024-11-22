@@ -89,7 +89,7 @@ const HomePage = ({
           titleAlign="text-center"
           titleLevel={2}
         >
-          <ScrollCategories items={initCategories} onClick={(v)=> console.log(v)}/>
+          <ScrollCategories items={initCategories} onClick={(v)=> router.push(`${PAGE.SHOP}?categoryIds=${v.id}`)}/>
         </TabBarComponent>
       </Section>
       <Section>

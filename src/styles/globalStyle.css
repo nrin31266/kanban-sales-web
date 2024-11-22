@@ -234,18 +234,15 @@
   left: -15;
 }
 
-.category-gallery-item{
 
-}
 
 .gallery-wrap #btn-next {
   right: -15;
 }
 
-.gallery-wrap #btn-next,
-#btn-back {
+.gallery-wrap #btn-next,#btn-back {
   position: absolute;
-  z-index: 1000;
+  z-index: 10;
   border: 1px solid silver;
 }
 
