@@ -163,62 +163,73 @@ const ShopPage = () => {
     setFilterValues(updatedFilter);
 
     // Gọi hàm updateSearchParams
-    updateSearchParams(
+    updateSearchParamsValue(
       "categoryIds",
       updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null
     );
   };
 
-  // Cập nhật `params` khi bộ lọc thay đổi
-  const updateSearchParams = (key: string, value: any) => {
-    console.log('updateParam', value)
+  const updateSearchParamsValues = (values: { key: string, value: string }[]) => {
     const updatedParams = new URLSearchParams(params.toString());
-
-    if (
-      value == null ||
-      value === "" ||
-      (Array.isArray(value) && value.length === 0)
-    ) {
-      updatedParams.delete(key);
-    } else if (Array.isArray(value)) {
-      updatedParams.set(key, value.join(","));
-    } else {
-      updatedParams.set(key, value);
+  
+    // Xử lý mảng values
+    if (values && values.length > 0) {
+      values.forEach((item) => {
+        // Kiểm tra và cập nhật tham số từ mảng values
+        if (item.value == null || item.value === "" || (Array.isArray(item.value) && item.value.length === 0)) {
+          updatedParams.delete(item.key);  // Xóa nếu giá trị không hợp lệ
+        } else if (Array.isArray(item.value)) {
+          updatedParams.set(item.key, item.value.join(","));  // Nếu là mảng, nối các giá trị lại
+        } else {
+          updatedParams.set(item.key, item.value);  // Nếu là giá trị đơn lẻ
+        }
+      });
     }
-
+  
+    // Cập nhật URL bằng router.push
     router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
-      shallow: true,
+      shallow: true,  // Cập nhật URL mà không cần reload lại trang
     });
   };
 
+  const updateSearchParamsValue = (key: string, value: any) => {
+    const updatedParams = new URLSearchParams(params.toString());
+  
+    // Kiểm tra và cập nhật tham số từ key và value đơn
+    if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) {
+      updatedParams.delete(key);  // Xóa nếu giá trị không hợp lệ
+    } else if (Array.isArray(value)) {
+      updatedParams.set(key, value.join(","));  // Nếu là mảng, nối các giá trị lại
+    } else {
+      updatedParams.set(key, value);  // Nếu là giá trị đơn lẻ
+    }
+  
+    // Cập nhật URL bằng router.push
+    router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
+      shallow: true,  // Cập nhật URL mà không cần reload lại trang
+    });
+  };
+  
+  
+  
+
   const handlePriceRange = (values: any) => {
-    console.log('Received values:', values); // Kiểm tra giá trị của min và max
+    console.log("Received values:", values); // Kiểm tra giá trị nhận vào
+    
     const { min, max } = values;
   
-    // Kiểm tra điều kiện min < max
-    if (min && max && min >= max) {
-      message.error("Min price must be less than Max price");
-      return;
-    }
+    updateSearchParamsValues([
+      { key: "min", value: min?? null },
+      { key: "max", value: max?? null },
+    ]);
+
+
   
-    // Kiểm tra và cập nhật giá trị min
-    if (min !== undefined && min !== null) {
-      console.log("Updating min:", min); // Debugging
-      updateSearchParams("min", min);
-    } else {
-      console.log("Clearing min"); // Debugging
-      updateSearchParams("min", null);
-    }
-  
-    // Kiểm tra và cập nhật giá trị max
-    if (max !== undefined && max !== null) {
-      console.log("Updating max:", max); // Debugging
-      updateSearchParams("max", max);
-    } else {
-      console.log("Clearing max"); // Debugging
-      updateSearchParams("max", null);
-    }
   };
+
+
+  
+  
   
   
 
@@ -426,7 +437,7 @@ const ShopPage = () => {
                     align="end"
                     onChange={async (v) => {
                       pageRef.current = v.toString();
-                      updateSearchParams("page", v);
+                      updateSearchParamsValue("page", v);
                     }}
                   />
                 </div>
