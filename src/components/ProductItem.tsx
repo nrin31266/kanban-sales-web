@@ -1,3 +1,4 @@
+import { colors } from "@/constants/appInfos";
 import { ProductResponse } from "@/model/ProductModel";
 import { FormatCurrency } from "@/utils/formatNumber";
 import { Button, Typography } from "antd";
@@ -72,7 +73,7 @@ const ProductItem = (props: Props) => {
           <Typography.Text className="title" style={{ fontWeight: "500" }}>
             {product.title}
           </Typography.Text>
-          <Typography.Text className="price" style={{ fontSize: "1.2em", color: "#1a73e8" }}>
+          <Typography.Text className="price" style={{ fontSize: "1.2em", color: colors[5] }}>
             {product.maxPrice && product.minPrice
               ? product.maxPrice === product.minPrice
                 ? FormatCurrency.VND.format(product.maxPrice)

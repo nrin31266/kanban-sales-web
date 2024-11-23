@@ -9,6 +9,7 @@ import { FormatCurrency } from "@/utils/formatNumber";
 import {
   Avatar,
   Button,
+  Card,
   Checkbox,
   Divider,
   List,
@@ -21,6 +22,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidDownArrow } from "react-icons/bi";
+import { IoMdArrowDropright } from "react-icons/io";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
@@ -65,6 +67,7 @@ const Cart = () => {
       loadMoreData(); // Gọi API lần đầu tiên khi component mount
     }
   }, []); // Dependency rỗng chỉ gọi lần đầu tiên
+
   const loadNextPage = () => {
     loadMoreData(); // Gọi loadMoreData khi kéo xuống dưới
   };
@@ -138,6 +141,7 @@ const Cart = () => {
     setLoading(true);
     try {
       const res = await handleAPI(API.CARTS, item, "put");
+      return res.data.result;
     } catch (error) {
       console.log(error);
     } finally {
@@ -145,68 +149,65 @@ const Cart = () => {
     }
   };
 
-  const handleChangeItem = (itemReceived: CartRequest) => {
+  const handleChangeItem = async (itemReceived: CartRequest) => {
     console.log(itemReceived);
     if (itemSelected) {
-      if (
-        itemReceived.subProductId === itemSelected.subProductId &&
-        itemReceived.count === itemSelected.count
-      ) {
-        return;
-      } else if (itemReceived.subProductId === itemSelected.subProductId) {
-        updateCart(itemReceived)
-          .then(() => {
-            const indexItem = data.findIndex(
-              (ele) => ele.subProductId === itemReceived.subProductId
-            );
-            if (indexItem != -1) {
-              const updatedData = [...data];
-              updatedData[indexItem] = {
-                ...updatedData[indexItem],
-                count: itemReceived.count,
-              };
-              setData(updatedData);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        const indexItem = data.findIndex(
-          (ele) => ele.subProductId === itemReceived.subProductId
-        );
+      setLoading(true);
+      try {
+        if (
+          itemReceived.subProductId === itemSelected.subProductId &&
+          itemReceived.count === itemSelected.count
+        ) {
+          return; // Không có gì thay đổi
+        } else if (itemReceived.subProductId === itemSelected.subProductId) {
+          // Cập nhật sản phẩm trong giỏ
+          await updateCart(itemReceived);
 
-        if (indexItem === -1) {
-          // Có thể ko có thật
-          //Hoặc có thể chưa load
-          addCart(itemReceived) // Thêm sản phẩm vào giỏ
-            .then((result: CartResponse) => {
-              setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
-              dispatch(addProduct(result));
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+          const indexItem = data.findIndex(
+            (ele) => ele.subProductId === itemReceived.subProductId
+          );
+          if (indexItem !== -1) {
+            const updatedData = [...data];
+            updatedData[indexItem] = {
+              ...updatedData[indexItem],
+              count: itemReceived.count,
+            };
+            setData(updatedData);
+          }
         } else {
-          //Có thì dễ rồi cập nhập số lượng nó thôi
-          //Và sẽ xóa nó ra theo hàm lúc trc
-          const updatedData = [...data];
-          updatedData[indexItem] = {
-            ...updatedData[indexItem],
-            count: updatedData[indexItem].count + itemReceived.count,
-          };
-          setData(updatedData);
-          addCart(itemReceived);
-          // handleRemoveItem(item);
+          // Xử lý trường hợp sản phẩm khác
+          const indexItem = data.findIndex(
+            (ele) => ele.subProductId === itemReceived.subProductId
+          );
+
+          if (indexItem === -1) {
+            // Thêm sản phẩm vào giỏ
+            const result: CartResponse = await addCart(itemReceived);
+            setData((prevData) => [result, ...prevData]); // Cập nhật danh sách giỏ hàng
+            dispatch(addProduct(result));
+          } else {
+            // Nếu đã có, cập nhật số lượng
+            const updatedData = [...data];
+            updatedData[indexItem] = {
+              ...updatedData[indexItem],
+              count: updatedData[indexItem].count + itemReceived.count,
+            };
+            setData(updatedData);
+            await addCart(itemReceived);
+          }
         }
-      }
-      if (!itemsIdSelected.has(itemReceived.subProductId)) {
-        addItemId(itemReceived.subProductId);
+
+        // Thêm ID sản phẩm vào danh sách đã chọn
+        if (!itemsIdSelected.has(itemReceived.subProductId)) {
+          addItemId(itemReceived.subProductId);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false); // Dừng trạng thái loading
       }
     }
   };
-
-  // console.log(totalElements, data.length);
 
   const changeItemsId = (id: string) => {
     setItemsIdSelected((pre) => {
@@ -228,24 +229,54 @@ const Cart = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(itemsIdSelected);
-  }, [itemsIdSelected]);
+  const buildCartRequest = (item: CartResponse) => {
+    const r: CartRequest = {
+      count: item.count,
+      createdBy: item.createdBy,
+      imageUrl: item.imageUrl,
+      productId: item.productId,
+      subProductId: item.subProductId,
+      title: item.title,
+    };
+    return r;
+  };
+
+  const updateCount = async (item: CartRequest) => {
+    setLoading(true);
+    try {
+      const res: CartResponse = await updateCart(item);
+      const indexItem = data.findIndex(
+        (ele) => ele.subProductId === res.subProductId
+      );
+      if (indexItem !== -1) {
+        const updatedData = [...data];
+        updatedData[indexItem] = {
+          ...updatedData[indexItem],
+          count: res.count,
+        };
+        setData(updatedData);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <div className="container bg-white p-0" style={{}}>
-        <div style={{ backgroundColor: "GrayText" }}>
+      <div className="container bg-white" style={{}}>
+        <div className="" style={{}}>
           <Typography.Title level={2}>Cart</Typography.Title>
         </div>
         <div
-          className="mt-3"
+          className=""
           id="scrollableDiv"
           style={{
             height: "80vh",
             overflow: "auto",
-            padding: "0 8px",
-            // border: "1px solid rgba(140, 140, 140, 0.35)",
+            padding: "8px 8px",
+            border: "1px solid rgba(140, 140, 140, 0.35)",
             width: "100%",
           }}
         >
@@ -253,8 +284,14 @@ const Cart = () => {
             dataLength={data.length}
             next={loadNextPage}
             hasMore={data.length < totalElements && !loading}
-            loader={<Skeleton avatar paragraph={{ rows: 2 }} active />}
-            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+            loader={
+              <div>
+                <Skeleton avatar paragraph={{ rows: 2 }} active />
+                <Skeleton avatar paragraph={{ rows: 2 }} active />
+                <Skeleton avatar paragraph={{ rows: 2 }} active />
+              </div>
+            }
+            endMessage={<Divider plain>It is all, nothing more</Divider>}
             scrollableTarget="scrollableDiv"
             initialScrollY={0}
             scrollThreshold={0.8}
@@ -360,51 +397,117 @@ const Cart = () => {
                       </div>
                     </div>
                   </div>
-                  <div
-                    className="col-sm-12 col-md-6 d-flex"
-                    style={{ justifyItems: "center" }}
-                  >
+                  <div className="col-sm-12 col-md-6" style={{}}>
                     <div className="row" style={{ width: "100%" }}>
-                      <div className="col-6" style={{ paddingRight: 4}}>
-                        {item.subProductResponse &&
-                        item.subProductResponse.discount &&
-                        item.subProductResponse.price ? (
-                          <Space >
-                            <Typography.Text style={{fontWeight: 'bold'}}>
-                              {FormatCurrency.VND.format(
-                                item.subProductResponse.discount
-                              )}
-                            </Typography.Text>
-                            <Typography.Text type="secondary">
-                              <del>
-                                {" "}
-                                {FormatCurrency.VND.format(
-                                  item.subProductResponse.price
-                                )}
-                              </del>
-                            </Typography.Text>
-                          </Space>
-                        ) : (
-                          item.subProductResponse && (
-                            <Typography.Text  style={{fontWeight: 'bold'}}>
-                              {FormatCurrency.VND.format(
-                                item.subProductResponse.price
-                              )}
-                            </Typography.Text>
-                          )
-                        )}
-                      </div>
-                      <div className="col-4 d-flex" style={{justifyContent: 'center'}}>
-                        <div style={{border: '1px solid silver', width: 'max-content', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6}}>
-                          <Button disabled={item.count <= 1} icon={<MdOutlineRemove size={20} />}></Button>
-                          <Typography.Text style={{ fontWeight: "bold", marginLeft: '0.5rem',marginRight: '0.5rem',}}>
+                      <div
+                        className="col-10 d-flex"
+                        style={{ alignItems: "center" }}
+                      >
+                        <div
+                          className="mr-2"
+                          style={{
+                            border: "1px solid silver",
+                            width: "max-content",
+                            display: "flex",
+                            alignItems: "center",
+                            padding: 4,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <Button
+                            disabled={loading ? loading : item.count <= 1}
+                            icon={<MdOutlineRemove size={20} />}
+                            onClick={() => {
+                              updateCount(
+                                buildCartRequest({
+                                  ...item,
+                                  count: item.count - 1,
+                                })
+                              );
+                            }}
+                          ></Button>
+                          <Typography.Text
+                            style={{
+                              fontWeight: "bold",
+                              marginLeft: "0.5rem",
+                              marginRight: "0.5rem",
+                            }}
+                          >
                             {"x"}
                             {item.count}
                           </Typography.Text>
-                          <Button disabled={item.subProductResponse&& item.subProductResponse?.quantity <= 100 ? item.count >= item.subProductResponse?.quantity  : item.count >=100} icon={<MdAdd size={20} />}></Button>
+                          <Button
+                            disabled={
+                              loading
+                                ? loading
+                                : item.subProductResponse &&
+                                  item.subProductResponse?.quantity <= 100
+                                ? item.count >=
+                                  item.subProductResponse?.quantity
+                                : item.count >= 100
+                            }
+                            icon={<MdAdd size={20} />}
+                            onClick={() => {
+                              updateCount(
+                                buildCartRequest({
+                                  ...item,
+                                  count: item.count + 1,
+                                })
+                              );
+                            }}
+                          ></Button>
                         </div>
+                        {item.subProductResponse && (
+                          <div className="" style={{ display: "" }}>
+                            {item.subProductResponse.discount &&
+                            item.subProductResponse.price ? (
+                              <div style={{}} className="d-flex">
+                                <div style={{ fontWeight: "bold" }}>
+                                  {FormatCurrency.VND.format(
+                                    item.subProductResponse.discount
+                                  )}
+                                </div>
+                                <div style={{ opacity: "0.5" }}>
+                                  &nbsp;
+                                  <del>
+                                    {FormatCurrency.VND.format(
+                                      item.subProductResponse.price
+                                    )}
+                                  </del>
+                                </div>
+                              </div>
+                            ) : (
+                              <div>
+                                <div style={{ fontWeight: "bold" }}>
+                                  {FormatCurrency.VND.format(
+                                    item.subProductResponse.price
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            <div
+                              style={{
+                                fontWeight: "bold",
+                                color: "#108ab1",
+                                alignContent: "center",
+                              }}
+                              className="d-flex"
+                            >
+                              <IoMdArrowDropright size={20} />
+                              {FormatCurrency.VND.format(
+                                item.subProductResponse.discount
+                                  ? item.subProductResponse.discount *
+                                      item.count
+                                  : item.subProductResponse.price * item.count
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="col-2">
+                      <div
+                        style={{ alignItems: "center" }}
+                        className="col-2 d-flex"
+                      >
                         <a
                           onClick={() => {
                             handleRemoveItem(item);
@@ -425,26 +528,29 @@ const Cart = () => {
         <div
           style={{
             width: "100%",
-            height: "7vh",
-            backgroundColor: "#e0e0e0",
+            padding: 8,
+            // backgroundColor: "#e7f5dc",
           }}
         >
           <div className="row">
             <div className="col"></div>
             <div className="col">
-              <Button
-                onClick={() => {
-                  if (itemsIdSelected.size > 0) {
-                    const idArray = Array.from(itemsIdSelected); // Chuyển Set thành Array
-                    const idString = idArray.join(","); // Chuyển Array thành chuỗi
-                    router.push(`/shop/checkout?ids=${idString}`);
-                  }
-                }}
-                type="primary"
-                size="large"
-              >
-                Checkout
-              </Button>
+              <div className="text-right">
+                <Button
+                  style={{ height: "100%" }}
+                  onClick={() => {
+                    if (itemsIdSelected.size > 0) {
+                      const idArray = Array.from(itemsIdSelected); // Chuyển Set thành Array
+                      const idString = idArray.join(","); // Chuyển Array thành chuỗi
+                      router.push(`/shop/checkout?ids=${idString}`);
+                    }
+                  }}
+                  type="primary"
+                  size="large"
+                >
+                  Checkout
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ export interface CartRequest {
     productId: string;
     imageUrl: string;
     title: string,
-    subProductResponse: SubProductResponse
+    subProductResponse?: SubProductResponse
 }
 
 

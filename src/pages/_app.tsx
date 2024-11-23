@@ -4,6 +4,7 @@ import { Button, ConfigProvider, App as AntdApp } from "antd";
 import Routers from "@/routers/Routers";
 import { Provider } from "react-redux";
 import store from "@/reducx/store";
+import { colors } from "@/constants/appInfos";
 
 export default function App({ Component, pageProps }: AppProps) {
   
@@ -13,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <ConfigProvider
           theme={{
             token: {
-              colorPrimary: "#131118",
+              colorPrimary: colors[2],
             },
             components: {},
           }}
