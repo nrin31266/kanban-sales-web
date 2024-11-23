@@ -18,4 +18,6 @@ export const colors ={
     3: '#06d7a0',
     4: '#ffd167',
     5: '#f78c6a',
+    6: '#f04770',
+    
 };

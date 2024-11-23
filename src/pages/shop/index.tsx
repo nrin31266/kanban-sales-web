@@ -3,11 +3,15 @@ import {
   Button,
   Checkbox,
   Empty,
+  Form,
+  Input,
   Layout,
   List,
   Menu,
+  message,
   Pagination,
   Skeleton,
+  Slider,
   Space,
   Spin,
   Typography,
@@ -21,96 +25,130 @@ import { LoadingOutlined } from "@ant-design/icons";
 import ProductItem from "@/components/ProductItem";
 import { SelectModelHasChildren } from "@/model/FormModel";
 import { CategoryResponse } from "@/model/CategoryModel";
-import { IoIosClose } from "react-icons/io";
+import { IoIosArrowForward, IoIosClose } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { useRouter } from "next/router";
+import { FormatCurrency } from "@/utils/formatNumber";
+import { colors } from "@/constants/appInfos";
 
 const ShopPage = () => {
   const { Sider, Content } = Layout;
+
   const params = useSearchParams();
-  const [api, setApi] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [pageData, setPageData] = useState<PageResponse<ProductResponse>>();
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const router = useRouter();
+  const [apiUrl, setApiUrl] = useState<string>(""); // lưu URL API đã tạo
   const pathname = usePathname();
-  const pageRef = useRef(1);
-  const categoryIds = params.get("categoryIds");
+  const pageRef = useRef("1");
+  const [formPriceRange] = Form.useForm();
+  const isInitLoad = useRef(true);
+  const [minMaxPrice, setMinMaxPrice] = useState<{
+    min: number;
+    max: number;
+  }>();
   const [filterValues, setFilterValues] = useState<{
     categoryIds: string[];
+    min?: number;
+    max?: number;
   }>({
     categoryIds: [],
   });
 
+  // Gọi API lấy dữ liệu ban đầu
   useEffect(() => {
-    getData();
-  }, []);
-
-
-  useEffect(() => {
-    setFilterValues((prev) => ({
-      ...prev,
-      categoryIds: categoryIds ? categoryIds.split(",") : [],
-    }));
-  }, [categoryIds]);
-
-  const getData = async () => {
-    try {
-      await getCategories();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getCategories = async () => {
-    const res = await handleAPI(API.CATEGORIES);
-    setCategories(res.data.result);
-  };
-
-  
-
-  // Cập nhật API endpoint khi filterValues thay đổi
-  useEffect(() => {
-    if (filterValues) {
-      // Có thể thêm logic để thay đổi API tùy theo các filter
-
-      let updatedApi = API.PRODUCTS;
-
-      if (filterValues.categoryIds.length > 0) {
-        // Ví dụ, có thể thêm categoryIds vào API query params
-        updatedApi += `?categoryIds=${filterValues.categoryIds.join(",")}`;
+    const getData = async () => {
+      try {
+        const [categoriesRes, minMaxRes] = await Promise.all([
+          handleAPI(API.CATEGORIES),
+          handleAPI(`${API.SUB_PRODUCTS}/min-max-price`),
+        ]);
+        setCategories(categoriesRes.data.result);
+        setMinMaxPrice(minMaxRes.data.result);
+      } catch (error) {
+        console.error("Failed to fetch initial data", error);
       }
-      setApi(updatedApi);
-    }
-  }, [filterValues]);
+    };
 
-  // Gửi request API khi API thay đổi
+    // Chỉ gọi 1 lần khi trang tải lần đầu
+    if (isInitLoad.current) {
+      getData();
+      isInitLoad.current = false;
+    }
+  }, []); // Không dùng dependencies để tránh lặp
+
+  // Hàm tạo URL API
+  const createApiUrl = () => {
+    const categoryIds = params.get("categoryIds");
+    const min = params.get("min");
+    const max = params.get("max");
+    const page = params.get("page") || "1"; // mặc định trang 1
+
+    let url = `${API.PRODUCTS}?page=${page}`;
+    if (categoryIds) url += `&categoryIds=${categoryIds}`;
+    if (min) url += `&min=${min}`;
+    if (max) url += `&max=${max}`;
+
+    return url;
+  };
+
   useEffect(() => {
-    if (api) {
+    const categoryIds = params.get("categoryIds")?.split(",") ?? []; // Sử dụng '??' để đảm bảo không có giá trị null
+    const min = params.get("min")
+      ? parseFloat(params.get("min") ?? "0")
+      : undefined;
+    if (min) formPriceRange.setFieldValue("min", min);
+    const max = params.get("max")
+      ? parseFloat(params.get("max") ?? "0")
+      : undefined;
+    if (max) formPriceRange.setFieldValue("max", max);
+    const page = params.get("page");
+
+    setFilterValues({
+      categoryIds,
+      min,
+      max,
+    });
+    if (page) {
+      pageRef.current = page;
+    }
+    console.log("is");
+
+    // Đồng bộ giá trị phạm vi giá với form
+    // formPriceRange.setFieldsValue({
+    //   min: min || null,
+    //   max: max || null,
+    // });
+  }, [params]);
+
+  // Gọi API mỗi khi `params` thay đổi
+  useEffect(() => {
+    const newApi = createApiUrl();
+    if (apiUrl !== newApi) setApiUrl(newApi);
+  }, [params]);
+
+  useEffect(() => {
+    if (apiUrl) {
       getProducts();
     }
-  }, [api]);
+  }, [apiUrl]);
 
-  // Hàm gọi API để lấy sản phẩm
   const getProducts = async () => {
-    if (!api) {
-      return;
-    }
+    if (isLoading) return;
+
     setIsLoading(true);
     try {
-      const url =
-        api === API.PRODUCTS
-          ? `${api}?page=${pageRef.current}`
-          : `${api}&page=${pageRef.current}`;
-      console.log(api);
-      const res = await handleAPI(url);
-      console.log(res.data);
+      const res = await handleAPI(apiUrl);
+      console.log(res.data.result);
       setPageData(res.data.result);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch products", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleSelectCategory = (id: string) => {
     const updatedFilter = { ...filterValues };
 
@@ -127,41 +165,68 @@ const ShopPage = () => {
     // Gọi hàm updateSearchParams
     updateSearchParams(
       "categoryIds",
-      updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null,
-      params,
-      pathname,
-      router
+      updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null
     );
   };
 
-  const updateSearchParams = (
-    key: string,
-    value: string | string[] | null,
-    params: URLSearchParams,
-    pathname: string,
-    router: any
-  ) => {
+  // Cập nhật `params` khi bộ lọc thay đổi
+  const updateSearchParams = (key: string, value: any) => {
+    console.log('updateParam', value)
     const updatedParams = new URLSearchParams(params.toString());
 
-    if (value === null || (Array.isArray(value) && value.length === 0)) {
-      updatedParams.delete(key); // Xóa key nếu value là null hoặc rỗng
+    if (
+      value == null ||
+      value === "" ||
+      (Array.isArray(value) && value.length === 0)
+    ) {
+      updatedParams.delete(key);
     } else if (Array.isArray(value)) {
-      updatedParams.set(key, value.join(",")); // Nếu value là array, nối thành chuỗi
+      updatedParams.set(key, value.join(","));
     } else {
-      updatedParams.set(key, value); // Nếu value là string
+      updatedParams.set(key, value);
     }
 
-    // Cập nhật URL mà không reload
     router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
       shallow: true,
     });
   };
 
+  const handlePriceRange = (values: any) => {
+    console.log('Received values:', values); // Kiểm tra giá trị của min và max
+    const { min, max } = values;
+  
+    // Kiểm tra điều kiện min < max
+    if (min && max && min >= max) {
+      message.error("Min price must be less than Max price");
+      return;
+    }
+  
+    // Kiểm tra và cập nhật giá trị min
+    if (min !== undefined && min !== null) {
+      console.log("Updating min:", min); // Debugging
+      updateSearchParams("min", min);
+    } else {
+      console.log("Clearing min"); // Debugging
+      updateSearchParams("min", null);
+    }
+  
+    // Kiểm tra và cập nhật giá trị max
+    if (max !== undefined && max !== null) {
+      console.log("Updating max:", max); // Debugging
+      updateSearchParams("max", max);
+    } else {
+      console.log("Clearing max"); // Debugging
+      updateSearchParams("max", null);
+    }
+  };
+  
+  
+
   return (
     <div className="container">
       <Layout>
-        <div className="d-none d-md-block">
-          <Sider className="mr-2" theme="light">
+        <div className="d-none d-md-block  ">
+          <Sider width={300} className="mr-2 p-2" theme="light">
             <Typography.Title level={5}>SEARCH FILTER</Typography.Title>
             <div>
               <Typography.Title level={5}>Categories</Typography.Title>
@@ -228,6 +293,104 @@ const ShopPage = () => {
                   ))}
               </div>
             </div>
+            {minMaxPrice && (
+              <>
+                <Typography.Title className="mt-2" level={5}>
+                  Price range
+                </Typography.Title>
+                <div>
+                  <div>
+                    <Typography.Text>
+                      {FormatCurrency.VND.format(0)}
+                      {"- "}
+                      {FormatCurrency.VND.format(minMaxPrice.max)}
+                    </Typography.Text>
+                  </div>
+                  <Form
+                    form={formPriceRange}
+                    onFinish={(v) => handlePriceRange(v)}
+                  >
+                    <div className="d-flex">
+                      <Form.Item
+                        name={"min"}
+                        rules={[
+                          {
+                            validator: (_, value) => {
+                              if (value == null || value === "") {
+                                return Promise.resolve();
+                              }
+                              if (isNaN(value) || Number(value) < 0) {
+                                return Promise.reject(
+                                  new Error(
+                                    "Number must be greater than or equal to 0!"
+                                  )
+                                );
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                      >
+                        <Input type="number" placeholder="MIN" />
+                      </Form.Item>
+                      <IoIosArrowForward size={30} />
+                      <Form.Item
+                        name={"max"}
+                        rules={[
+                          {
+                            validator: (_, value) => {
+                              if (value == null || value === "") {
+                                return Promise.resolve();
+                              }
+                              if (isNaN(value) || Number(value) < 0) {
+                                return Promise.reject(
+                                  new Error(
+                                    "Number must be greater than or equal to 0!"
+                                  )
+                                );
+                              }
+                              if (
+                                formPriceRange.getFieldValue("min") != null &&
+                                value <=
+                                  Number(formPriceRange.getFieldValue("min"))
+                              ) {
+                                return Promise.reject(
+                                  new Error(
+                                    "Max price must be greater than Min price!"
+                                  )
+                                );
+                              }
+                              // Kiểm tra nếu "max" không vượt quá minMaxPrice.max (giới hạn tối đa)
+                              if (value != null && value > minMaxPrice.max) {
+                                return Promise.reject(
+                                  new Error(
+                                    `Max price cannot exceed ${minMaxPrice.max}`
+                                  )
+                                );
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                      >
+                        <Input type="number" placeholder="MAX" />
+                      </Form.Item>
+                    </div>
+                    <div className="mt-1">
+                      <Button
+                        disabled={isLoading}
+                        onClick={() => formPriceRange.submit()}
+                        // htmlType="submit"
+                        size="small"
+                        style={{ width: "100%", backgroundColor: colors[2] }}
+                      >
+                        Range
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              </>
+            )}
           </Sider>
         </div>
 
@@ -262,8 +425,8 @@ const ShopPage = () => {
                     total={pageData.totalElements}
                     align="end"
                     onChange={async (v) => {
-                      pageRef.current = v;
-                      await getProducts();
+                      pageRef.current = v.toString();
+                      updateSearchParams("page", v);
                     }}
                   />
                 </div>
