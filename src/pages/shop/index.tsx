@@ -27,25 +27,32 @@ import { useRouter } from "next/router";
 
 const ShopPage = () => {
   const { Sider, Content } = Layout;
-
   const params = useSearchParams();
-  const categoryIds = params.get("categoryIds");
   const [api, setApi] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [pageData, setPageData] = useState<PageResponse<ProductResponse>>();
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const router = useRouter();
   const pathname = usePathname();
+  const pageRef = useRef(1);
+  const categoryIds = params.get("categoryIds");
   const [filterValues, setFilterValues] = useState<{
     categoryIds: string[];
   }>({
-    categoryIds: categoryIds ? categoryIds.split(",") : [],
+    categoryIds: [],
   });
-  const pageRef = useRef(1);
 
   useEffect(() => {
     getData();
   }, []);
+
+
+  useEffect(() => {
+    setFilterValues((prev) => ({
+      ...prev,
+      categoryIds: categoryIds ? categoryIds.split(",") : [],
+    }));
+  }, [categoryIds]);
 
   const getData = async () => {
     try {
@@ -59,13 +66,7 @@ const ShopPage = () => {
     setCategories(res.data.result);
   };
 
-  // Cập nhật filterValues khi categoryIds thay đổi
-  useEffect(() => {
-    setFilterValues((prev) => ({
-      ...prev,
-      categoryIds: categoryIds ? categoryIds.split(",") : [],
-    }));
-  }, [categoryIds]);
+  
 
   // Cập nhật API endpoint khi filterValues thay đổi
   useEffect(() => {
@@ -141,7 +142,7 @@ const ShopPage = () => {
     router: any
   ) => {
     const updatedParams = new URLSearchParams(params.toString());
-  
+
     if (value === null || (Array.isArray(value) && value.length === 0)) {
       updatedParams.delete(key); // Xóa key nếu value là null hoặc rỗng
     } else if (Array.isArray(value)) {
@@ -149,20 +150,19 @@ const ShopPage = () => {
     } else {
       updatedParams.set(key, value); // Nếu value là string
     }
-  
+
     // Cập nhật URL mà không reload
     router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
       shallow: true,
     });
   };
-  
 
   return (
     <div className="container">
       <Layout>
         <div className="d-none d-md-block">
           <Sider className="mr-2" theme="light">
-          <Typography.Title level={5}>SEARCH FILTER</Typography.Title>
+            <Typography.Title level={5}>SEARCH FILTER</Typography.Title>
             <div>
               <Typography.Title level={5}>Categories</Typography.Title>
               {filterValues?.categoryIds &&
@@ -187,13 +187,17 @@ const ShopPage = () => {
                             padding: "2px 6px",
                             borderRadius: 6,
                             marginRight: 3,
-                            marginBottom: 3
+                            marginBottom: 3,
                           }}
                         >
                           <div style={{ fontWeight: "bold" }}>
                             {category?.name}
                           </div>
-                          <a onClick={() => {handleSelectCategory(id)}}>
+                          <a
+                            onClick={() => {
+                              handleSelectCategory(id);
+                            }}
+                          >
                             <MdClose size={15} />
                           </a>
                         </Space>
@@ -201,7 +205,15 @@ const ShopPage = () => {
                     })}
                   </div>
                 )}
-              <div className="" style={{ maxHeight: 300, overflowY: "auto", border: '1px solid silver', padding: 6 }}>
+              <div
+                className=""
+                style={{
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  border: "1px solid silver",
+                  padding: 6,
+                }}
+              >
                 {categories &&
                   categories.map((item) => (
                     <div key={item.id}>

@@ -15,12 +15,13 @@ import {
   Skeleton,
   Space,
   Tag,
-  Typography
+  Typography,
 } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidDownArrow } from "react-icons/bi";
+import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
 
@@ -274,7 +275,7 @@ const Cart = () => {
                   className="cart row"
                 >
                   <div
-                    className="col-sm-12 col-md-7 d-flex"
+                    className="col-sm-12 col-md-6 d-flex"
                     style={{ alignItems: "center" }}
                   >
                     <div>
@@ -286,22 +287,32 @@ const Cart = () => {
                     <div className="ml-2">
                       <Avatar shape="square" size={120} src={item.imageUrl} />
                     </div>
-                    <div className="row">
-                      <div className="cart-item-title col-sm-12 col-md-8">
+                    <div>
+                      <div className="cart-item-title">
                         <Link
                           href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
                         >
                           {item.title}
                         </Link>
                       </div>
-                      <div className="col">
+                      <div>
                         <a
                           onClick={() => {
                             setItemSelected(item);
                             setIsVisibleChangeSub(true);
                           }}
                         >
-                          <Tag className="cart-item-option mt-2">
+                          <div
+                            style={{
+                              border: "1px solid silver",
+                              backgroundColor: "rgb(232, 232, 232, 0.6)",
+                              padding: 4,
+                              borderRadius: 4,
+                              width: "max-content",
+                              maxWidth: "",
+                            }}
+                            className="cart-item-option mt-2"
+                          >
                             <div>
                               {"Classification: "}
                               <BiSolidDownArrow size={10} />
@@ -316,47 +327,50 @@ const Cart = () => {
                                 ).map(([key, value]) => {
                                   return (
                                     typeof value === "string" && (
-                                      <Space key={item.id + key + value}>
-                                        <span>
+                                      <div
+                                        style={{ display: "flex" }}
+                                        key={item.id + key + value}
+                                      >
+                                        <div>
                                           {key}
-                                          {": "}
-                                        </span>
+                                          {":"}&nbsp;
+                                        </div>
                                         {key === "Color" ? (
                                           <div
                                             style={{
                                               backgroundColor: value,
                                               width: 20,
                                               height: 20,
-                                              borderRadius: 100,
+                                              borderRadius: 4,
                                               border: "1px solid silver",
                                             }}
                                           ></div>
                                         ) : (
-                                          <span style={{ opacity: 0.6 }}>
+                                          <div style={{ opacity: 0.6 }}>
                                             {value}
-                                          </span>
+                                          </div>
                                         )}
-                                      </Space>
+                                      </div>
                                     )
                                   );
                                 })}
                             </Space>
-                          </Tag>
+                          </div>
                         </a>
                       </div>
                     </div>
                   </div>
                   <div
-                    className="col-sm-12 col-md-5 d-flex"
+                    className="col-sm-12 col-md-6 d-flex"
                     style={{ justifyItems: "center" }}
                   >
                     <div className="row" style={{ width: "100%" }}>
-                      <div className="col-7" style={{ paddingRight: 0 }}>
+                      <div className="col-6" style={{ paddingRight: 4}}>
                         {item.subProductResponse &&
                         item.subProductResponse.discount &&
                         item.subProductResponse.price ? (
-                          <Space>
-                            <Typography.Text>
+                          <Space >
+                            <Typography.Text style={{fontWeight: 'bold'}}>
                               {FormatCurrency.VND.format(
                                 item.subProductResponse.discount
                               )}
@@ -372,7 +386,7 @@ const Cart = () => {
                           </Space>
                         ) : (
                           item.subProductResponse && (
-                            <Typography.Text>
+                            <Typography.Text  style={{fontWeight: 'bold'}}>
                               {FormatCurrency.VND.format(
                                 item.subProductResponse.price
                               )}
@@ -380,13 +394,17 @@ const Cart = () => {
                           )
                         )}
                       </div>
-                      <div className="col">
-                        <Typography.Text style={{ fontWeight: "bold" }}>
-                          {"x"}
-                          {item.count}
-                        </Typography.Text>
+                      <div className="col-4 d-flex" style={{justifyContent: 'center'}}>
+                        <div style={{border: '1px solid silver', width: 'max-content', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6}}>
+                          <Button disabled={item.count <= 1} icon={<MdOutlineRemove size={20} />}></Button>
+                          <Typography.Text style={{ fontWeight: "bold", marginLeft: '0.5rem',marginRight: '0.5rem',}}>
+                            {"x"}
+                            {item.count}
+                          </Typography.Text>
+                          <Button disabled={item.subProductResponse&& item.subProductResponse?.quantity <= 100 ? item.count >= item.subProductResponse?.quantity  : item.count >=100} icon={<MdAdd size={20} />}></Button>
+                        </div>
                       </div>
-                      <div className="col">
+                      <div className="col-2">
                         <a
                           onClick={() => {
                             handleRemoveItem(item);
