@@ -40,10 +40,11 @@ interface Props {
   onAddNew: (v: AddressResponse) => void;
   onUpdate: (v: AddressResponse) => void;
   address?: AddressResponse;
+  onClose: () => void;
 }
 
 const AddressComponent = (props: Props) => {
-  const { onAddNew, address, onUpdate } = props;
+  const { onAddNew, address, onUpdate, onClose } = props;
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const initLoad = useRef(true);
@@ -68,11 +69,23 @@ const AddressComponent = (props: Props) => {
   });
 
   useEffect(() => {
+    if(!address){
+      handleFinish();
+    }
+  }, [address]);
+
+  useEffect(() => {
     if (initLoad.current) {
       getProvinces();
       initLoad.current = false;
     }
   }, []);
+
+  const handleFinish = () => {
+    form.resetFields();
+    setLocationValues({ ward: "", district: "", province: "" });
+    setLocationData((p) => ({ ...p, districts: [], wards: [] }));
+  };
 
   useEffect(() => {
     if (address) {
@@ -131,9 +144,8 @@ const AddressComponent = (props: Props) => {
       } else {
         onAddNew(res.data.result);
       }
-      form.resetFields();
-      setLocationValues({ ward: "", district: "", province: "" });
-      setLocationData((p) => ({ ...p, districts: [], wards: [] }));
+      handleFinish();
+      onClose();
     } catch (error) {
       console.log(error);
     } finally {
@@ -339,6 +351,9 @@ const AddressComponent = (props: Props) => {
           </Checkbox>
         </Form.Item>
       </Form>
+      <Button className="mr-4" onClick={()=>onClose()} size="large">
+        Cancel
+      </Button>
       <Button type="primary" size="large" onClick={() => form.submit()}>
         {address ? "Update" : "Add new"}
         {" address"}

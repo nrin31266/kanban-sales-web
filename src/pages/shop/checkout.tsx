@@ -30,9 +30,17 @@ import { FaRegStar } from "react-icons/fa";
 import PaymentMethod from "./component/PaymentMethod";
 import { AddressResponse } from "@/model/AddressModel";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import BeforePlaceOrder from "./component/Reviews";
+
+
+
+
+
 interface PaymentDetail {
-  address: AddressResponse;
-  paymentMethod: any;
+  address?: AddressResponse;
+  paymentMethod?: any;
+  data?: CartResponse[];
+  discountCode? : string;
 }
 
 const Checkout = () => {
@@ -47,7 +55,7 @@ const Checkout = () => {
   const inputDiscountRef = useRef<InputRef>(null);
   const [discount, setDiscount] = useState<PromotionResponse>();
   const [checkoutStep, setCheckoutStep] = useState(0);
-  const [PaymentDetail, setPaymentDetail] = useState<PaymentDetail>();
+  const [paymentDetail, setPaymentDetail] = useState<PaymentDetail>({});
 
   useEffect(() => {
     if (isInitialLoad.current && ids) {
@@ -67,6 +75,7 @@ const Checkout = () => {
       if (response.isValid) {
         message.success(response.message);
         setDiscount(response.promotionResponse);
+        setPaymentDetail((p)=>({...p, discountCode: response.promotionResponse.code}));
       } else {
         message.error(response.message);
       }
@@ -111,6 +120,9 @@ const Checkout = () => {
       0
     );
   };
+  useEffect(() => {
+    console.log(paymentDetail)
+  }, [paymentDetail]);
 
   const renderContent = () => {
     switch (checkoutStep) {
@@ -118,7 +130,7 @@ const Checkout = () => {
         return (
           <ShippingAddress
             onOk={(v) => {
-              setPaymentDetail({ address: v, paymentMethod: undefined });
+              setPaymentDetail((p) => ({...p, address: v }));
               setCheckoutStep(2);
             }}
           />
@@ -128,12 +140,14 @@ const Checkout = () => {
           <PaymentMethod
             onContinue={(v) => {
               setCheckoutStep(3);
-              console.log(v);
+              setPaymentDetail((p) => ({...p, paymentMethod: v }));
             }}
           />
         );
-      case 2:
-        return <></>;
+      case 3:
+        {
+          return <BeforePlaceOrder paymentDetail={paymentDetail} />;
+        }
       default:
         return <CartTable data={data} />;
     }
@@ -300,19 +314,26 @@ const Checkout = () => {
                 </Space>
               </div>
 
-              <div className="mt-3">
-                <Button
-                  onClick={() => {
-                    setCheckoutStep(1);
-                    scrollToTop();
-                  }}
-                  style={{ width: "100%" }}
-                  size="large"
-                  type="primary"
-                >
-                  Process to checkout
-                </Button>
-              </div>
+              {(checkoutStep === 0 || checkoutStep === 3) && (
+                <div className="mt-3">
+                  <Button
+                    onClick={() => {
+                      if (checkoutStep === 3) {
+                        console.log("3");
+                      } else if (checkoutStep === 0) {
+                        setCheckoutStep(1);
+                        setPaymentDetail((p)=>({...p, data: data}))
+                      }
+                      scrollToTop();
+                    }}
+                    style={{ width: "100%" }}
+                    size="large"
+                    type="primary"
+                  >
+                    {checkoutStep === 0 ? 'Process to checkout' : 'Place order'}
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
         </div>

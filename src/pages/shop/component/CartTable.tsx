@@ -50,7 +50,7 @@ const CartTable = (props: Props) => {
                             backgroundColor: value,
                             width: 20,
                             height: 20,
-                            borderRadius: 100,
+                            borderRadius: 4,
                             border: "1px solid silver",
                           }}
                         ></div>

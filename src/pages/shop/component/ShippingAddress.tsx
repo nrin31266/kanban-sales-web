@@ -2,11 +2,21 @@ import handleAPI from "@/apis/handleAPI";
 import AddressComponent from "@/components/AddressComponent";
 import { API } from "@/configurations/configurations";
 import { AddressResponse } from "@/model/AddressModel";
-import { Button, Card, Checkbox, Empty, List, message, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Empty,
+  List,
+  message,
+  Modal,
+  Typography,
+} from "antd";
 import { AxiosResponse } from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Skeleton } from "antd";
 import { ApiResponse } from "@/model/AppModel";
+import { colors } from "@/constants/appInfos";
 
 interface Props {
   onOk: (v: AddressResponse) => void;
@@ -19,6 +29,7 @@ const ShippingAddress = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const isFirstSelected = useRef(true);
   const [isEditAddress, setIsEditAddress] = useState<AddressResponse>();
+  const [openAddress, setOpenAddress] = useState(false);
 
   useEffect(() => {
     getAddresses();
@@ -35,10 +46,6 @@ const ShippingAddress = (props: Props) => {
       });
       setAddressSelected(addresses[0]);
     }
-  }, [addresses]);
-
-  useEffect(() => {
-    console.log(addresses);
   }, [addresses]);
 
   const getAddresses = async () => {
@@ -62,9 +69,11 @@ const ShippingAddress = (props: Props) => {
         (i) => i.id !== item.id
       );
       setAddresses(newAddresses);
-      newAddresses.length > 0 &&
-        item.id === addressSelected?.id &&
+      if (newAddresses.length > 0 && item.id === addressSelected?.id) {
         setAddressSelected(newAddresses[0]);
+      }else{
+        setAddressSelected(undefined);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +110,7 @@ const ShippingAddress = (props: Props) => {
                   style={
                     item.id === addressSelected?.id
                       ? {
-                          border: "1px solid blue",
+                          border: `1px solid ${colors[5]}`,
                           borderRadius: 7,
                         }
                       : {}
@@ -117,6 +126,7 @@ const ShippingAddress = (props: Props) => {
                             onClick={(e) => {
                               e.stopPropagation();
                               setIsEditAddress(item);
+                              setOpenAddress(true);
                             }}
                             size="small"
                             type="link"
@@ -146,9 +156,7 @@ const ShippingAddress = (props: Props) => {
                       <Typography.Paragraph>
                         {item.address}
                       </Typography.Paragraph>
-                      <Typography.Text>
-                        {item.phoneNumber}
-                      </Typography.Text>
+                      <Typography.Text>{item.phoneNumber}</Typography.Text>
                     </Card>
                   </a>
                 </List.Item>
@@ -158,6 +166,16 @@ const ShippingAddress = (props: Props) => {
         )}
         <Button
           className="mt-2 mb-3"
+          onClick={() => {
+            setOpenAddress(true);
+            setIsEditAddress(undefined);
+          }}
+          size="large"
+        >
+          Add new
+        </Button>
+        <Button
+          className="mt-2 mb-3 ml-3"
           onClick={() => addressSelected && onOk(addressSelected)}
           type="primary"
           size="large"
@@ -166,8 +184,11 @@ const ShippingAddress = (props: Props) => {
         </Button>
       </Card>
 
-      <div className="mt-3">
+      <Modal closable={false} footer={false} open={openAddress}>
         <AddressComponent
+          onClose={() => {
+            setOpenAddress(false);
+          }}
           onAddNew={(v) => {
             setAddresses((p) => [v, ...p]);
             setAddressSelected(v);
@@ -177,7 +198,7 @@ const ShippingAddress = (props: Props) => {
           }}
           address={isEditAddress}
         />
-      </div>
+      </Modal>
     </div>
   );
 };

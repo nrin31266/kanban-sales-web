@@ -1,23 +1,27 @@
 import { Button, Card, List, Modal, Radio, Typography } from "antd";
 import React, { useState } from "react";
 import CreditCardPayment from "./CreditCardPayment";
+import { PayMethod } from "@/model/PaymentModel";
+
+
+
 
 const methods: { key: string; title: string }[] = [
   {
-    key: "cod",
+    key: PayMethod.CASH_ON_DELIVERY, // Sử dụng PaymentMethod.CREDIT_CARD
     title: "Cash on delivery",
   },
   {
-    key: "debit",
+    key: PayMethod.PAYPAL, // Sử dụng PaymentMethod.PAYPAL
+    title: "Paypal",
+  },
+  {
+    key: "debit",  // Nếu bạn muốn thêm phương thức không có trong PaymentMethod
     title: "Debit/Credit card",
   },
   {
-    key: "google-pay",
+    key: "google-pay",  // Tương tự cho Google Pay
     title: "Google pay",
-  },
-  {
-    key: "paypal",
-    title: "Paypal",
   },
 ];
 
@@ -26,7 +30,8 @@ interface Props {
 }
 
 const PaymentMethod = (props: Props) => {
-  const [paymentMethodSelected, setPaymentMethodSelected] = useState("cod");
+
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState<string>(PayMethod.CASH_ON_DELIVERY);
   const { onContinue } = props;
   const [isVisibleModalPayment, setIsVisibleModalPayment] = useState(false);
 
@@ -36,12 +41,17 @@ const PaymentMethod = (props: Props) => {
         return <CreditCardPayment onPayment={(v)=>{console.log(v)}}/>
     }
 
-    return <div>d</div>;
+    return (
+      <div>
+        <p>{`Selected Payment Method: ${paymentMethodSelected}`}</p>
+      </div>
+    );
+    
   };
 
   const handlePayment = () => {
-    if (paymentMethodSelected === "cod") {
-      onContinue({ paymentMethodSelected });
+    if (paymentMethodSelected === PayMethod.CASH_ON_DELIVERY) {
+      onContinue(paymentMethodSelected);
     } else {
       setIsVisibleModalPayment(true);
     }
