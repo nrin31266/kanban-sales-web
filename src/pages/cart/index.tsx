@@ -266,9 +266,6 @@ const Cart = () => {
   return (
     <>
       <div className="container bg-white" style={{}}>
-        <div className="" style={{}}>
-          <Typography.Title level={2}>Cart</Typography.Title>
-        </div>
         <div
           className=""
           id="scrollableDiv"
@@ -276,7 +273,7 @@ const Cart = () => {
             height: "80vh",
             overflow: "auto",
             padding: "8px 8px",
-            border: "1px solid rgba(140, 140, 140, 0.35)",
+            // border: "1px solid rgba(140, 140, 140, 0.35)",
             width: "100%",
           }}
         >

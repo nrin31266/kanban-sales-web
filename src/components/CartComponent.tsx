@@ -88,24 +88,24 @@ const CartComponent = (props: Props) => {
                 />
               }
               title={<a>{item.title}</a>}
-              description={
-                <Space>
-                  {item.subProductResponse &&
-                    item.subProductResponse.options &&
-                    Object.keys(item.subProductResponse.options).length > 0 &&
-                    Object.entries(item.subProductResponse.options).map(
-                      ([key, value]) => (
-                        <span key={item.subProductId + key + value}>
-                          <Typography.Text style={{ fontWeight: "400" }}>
-                            {key}
-                            {": "}
-                          </Typography.Text>
-                          {value as string}
-                        </span>
-                      )
-                    )}
-                </Space>
-              }
+              // description={
+              //   <Space>
+              //     {item.subProductResponse &&
+              //       item.subProductResponse.options &&
+              //       Object.keys(item.subProductResponse.options).length > 0 &&
+              //       Object.entries(item.subProductResponse.options).map(
+              //         ([key, value]) => (
+              //           <span key={item.subProductId + key + value}>
+              //             <Typography.Text style={{ fontWeight: "400" }}>
+              //               {key}
+              //               {": "}
+              //             </Typography.Text>
+              //             {value as string}
+              //           </span>
+              //         )
+              //       )}
+              //   </Space>
+              // }
             />
           </List.Item>
         )}

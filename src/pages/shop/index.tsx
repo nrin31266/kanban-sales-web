@@ -438,6 +438,7 @@ const ShopPage = () => {
                       pageRef.current = v.toString();
                       updateSearchParamsValue("page", v);
                     }}
+                    pageSize={12}
                   />
                 </div>
               </div>

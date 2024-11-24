@@ -61,7 +61,6 @@ const ScrollCategories = (props: Props) => {
     <div className="gallery-wrap p-2">
       {!isAtStart && (
         <button
-          style={{ marginBottom: "30px" }}
           id="btn-back"
           className="btn"
           onClick={scrollLeft}
@@ -93,7 +92,6 @@ const ScrollCategories = (props: Props) => {
       </div>
       {!isAtEnd && (
         <button
-          style={{ marginBottom: "30px" }}
           id="btn-next"
           className="btn"
           onClick={scrollRight}

@@ -72,6 +72,9 @@
 .header .ant-menu-horizontal {
   height: 30px; /* Điều chỉnh chiều cao tổng thể */
 }
+.header{
+  z-index: 100;
+}
 
 
 .title-danger {
@@ -257,24 +260,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  /* overflow-x: hidden;
-  overflow-y: hidden; */
+  position: relative; /* Giới hạn phạm vi của các nút */
+  overflow: visible;
 }
 
 .gallery-wrap #btn-back {
-  left: -15;
+  left: -15px; /* Đảm bảo sử dụng giá trị px */
+  top: 50%; /* Đưa nút lên giữa theo chiều dọc */
+  transform: translateY(-50%); /* Đảm bảo căn chỉnh giữa */
 }
 
 .gallery-wrap #btn-next {
-  right: -15;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.gallery-wrap #btn-next,
-#btn-back {
+.gallery-wrap #btn-next, #btn-back {
   position: absolute;
-  z-index: 10;
   border: 1px solid silver;
+  z-index: 5;
 }
 
 .gallery-wrap .btn {
@@ -294,6 +299,7 @@
 .gallery-wrap .btn .btn-icon {
   display: flex;
   justify-content: center;
+  
 }
 
 .gallery-wrap .btn:hover .btn-icon {

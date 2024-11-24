@@ -1,16 +1,16 @@
 import { PAGE } from "@/configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
 
+import { colors } from "@/constants/appInfos";
 import { PageResponse } from "@/model/AppModel";
 import { CartResponse } from "@/model/CartModel";
-import { authSelector, removeAuth } from "@/reducx/reducers/authReducer";
+import { UserProfile } from "@/model/UserModel";
+import { authSelector } from "@/reducx/reducers/authReducer";
 import { cartSelector } from "@/reducx/reducers/cartReducer";
+import { userProfileSelector } from "@/reducx/reducers/profileReducer";
 import {
-  AudioMutedOutlined,
-  AudioOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -24,23 +24,17 @@ import {
   Menu,
   Space,
 } from "antd";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { MenuProps } from "rc-menu";
 import { useEffect, useState } from "react";
-import { FcLike } from "react-icons/fc";
-import { FiSearch } from "react-icons/fi";
 import { IoClose, IoNotificationsSharp } from "react-icons/io5";
 import { MdOutlineShoppingCart } from "react-icons/md";
-import { RiMenuUnfold3Line2 } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import CartComponent from "./CartComponent";
-import DrawerDownRight from "./DrawerDownRight";
-import { userProfileSelector } from "@/reducx/reducers/profileReducer";
-import { UserProfile } from "@/model/UserModel";
-import { colors } from "@/constants/appInfos";
-import { Header } from "antd/es/layout/layout";
-import Link from "next/link";
 import DrawerDownLeft from "./DrawerDownLeft";
+import DrawerDownRight from "./DrawerDownRight";
+import MainSearch from "./MainSearch";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -49,6 +43,7 @@ const HeaderComponent = () => {
   const pages = new Map<string, string>([
     ["home", PAGE.HOME],
     ["shop", PAGE.SHOP],
+    ["cart", PAGE.CART],
   ]);
   const router = useRouter();
   const [isVisibleDrawer, setIsVisibleDrawer] = useState(false);
@@ -80,6 +75,10 @@ const HeaderComponent = () => {
     {
       label: "Shop",
       key: "shop",
+    },
+    {
+      label: "Cart",
+      key: "cart",
     },
   ];
 
@@ -124,24 +123,10 @@ const HeaderComponent = () => {
               </Link>
             </div>
             <div
-              className="col-6 d-none d-md-flex"
-              style={{ display: "flex", alignItems: "center" }}
+              className="col-6 d-none d-md-block"
+              
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              >
-                <Search
-                  style={{ width: "90%", padding: "10px 0" }}
-                  size="large"
-                  placeholder="Search products"
-                  enterButton="Search"
-                />
-              </div>
+              <MainSearch />
             </div>
 
             <div
@@ -225,12 +210,13 @@ const HeaderComponent = () => {
           </div>
           <div className="row d-block d-md-none">
             <div className="col text-center">
-              <Search
+            <MainSearch />
+              {/* <Search
                 style={{ width: "90%", padding: "10px 0" }}
                 size="middle"
                 placeholder="Search products"
                 enterButton="Search"
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -302,7 +288,7 @@ const HeaderComponent = () => {
           onClose={() => setCollapsed(false)}
           placement="left"
         >
-          <DrawerDownLeft onClose={()=>setCollapsed(false)}/>
+          <DrawerDownLeft onClose={() => setCollapsed(false)} />
         </Drawer>
       </div>
     </Affix>
