@@ -98,11 +98,9 @@ const ShopPage = () => {
     const min = params.get("min")
       ? parseFloat(params.get("min") ?? "0")
       : undefined;
-    if (min) formPriceRange.setFieldValue("min", min);
     const max = params.get("max")
       ? parseFloat(params.get("max") ?? "0")
       : undefined;
-    if (max) formPriceRange.setFieldValue("max", max);
     const page = params.get("page");
 
     setFilterValues({
@@ -114,13 +112,12 @@ const ShopPage = () => {
       pageRef.current = page;
     }
     console.log("is");
-
-    // Đồng bộ giá trị phạm vi giá với form
-    // formPriceRange.setFieldsValue({
-    //   min: min || null,
-    //   max: max || null,
-    // });
   }, [params]);
+
+  useEffect(() => {
+    formPriceRange.setFieldValue("min", filterValues.min ?? "");
+    formPriceRange.setFieldValue("max", filterValues.max ?? "");
+  }, [filterValues]);
 
   // Gọi API mỗi khi `params` thay đổi
   useEffect(() => {
@@ -163,75 +160,73 @@ const ShopPage = () => {
     setFilterValues(updatedFilter);
 
     // Gọi hàm updateSearchParams
-    updateSearchParamsValue(
-      "categoryIds",
-      updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null
-    );
+    updateSearchParamsValues([{key: "categoryIds", value: updatedFilter.categoryIds.length > 0 ? updatedFilter.categoryIds : null},
+      {key: 'page', value: "1"}
+    ]);
   };
 
-  const updateSearchParamsValues = (values: { key: string, value: string }[]) => {
+  const updateSearchParamsValues = (
+    values: { key: string; value: any }[]
+  ) => {
     const updatedParams = new URLSearchParams(params.toString());
-  
+
     // Xử lý mảng values
     if (values && values.length > 0) {
       values.forEach((item) => {
         // Kiểm tra và cập nhật tham số từ mảng values
-        if (item.value == null || item.value === "" || (Array.isArray(item.value) && item.value.length === 0)) {
-          updatedParams.delete(item.key);  // Xóa nếu giá trị không hợp lệ
+        if (
+          item.value == null ||
+          item.value === "" ||
+          (Array.isArray(item.value) && item.value.length === 0)
+        ) {
+          updatedParams.delete(item.key); // Xóa nếu giá trị không hợp lệ
         } else if (Array.isArray(item.value)) {
-          updatedParams.set(item.key, item.value.join(","));  // Nếu là mảng, nối các giá trị lại
+          updatedParams.set(item.key, item.value.join(",")); // Nếu là mảng, nối các giá trị lại
         } else {
-          updatedParams.set(item.key, item.value);  // Nếu là giá trị đơn lẻ
+          updatedParams.set(item.key, item.value); // Nếu là giá trị đơn lẻ
         }
       });
     }
-  
+
     // Cập nhật URL bằng router.push
     router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
-      shallow: true,  // Cập nhật URL mà không cần reload lại trang
+      shallow: true, // Cập nhật URL mà không cần reload lại trang
     });
   };
 
   const updateSearchParamsValue = (key: string, value: any) => {
     const updatedParams = new URLSearchParams(params.toString());
-  
+
     // Kiểm tra và cập nhật tham số từ key và value đơn
-    if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) {
-      updatedParams.delete(key);  // Xóa nếu giá trị không hợp lệ
+    if (
+      value == null ||
+      value === "" ||
+      (Array.isArray(value) && value.length === 0)
+    ) {
+      updatedParams.delete(key); // Xóa nếu giá trị không hợp lệ
     } else if (Array.isArray(value)) {
-      updatedParams.set(key, value.join(","));  // Nếu là mảng, nối các giá trị lại
+      updatedParams.set(key, value.join(",")); // Nếu là mảng, nối các giá trị lại
     } else {
-      updatedParams.set(key, value);  // Nếu là giá trị đơn lẻ
+      updatedParams.set(key, value); // Nếu là giá trị đơn lẻ
     }
-  
+
     // Cập nhật URL bằng router.push
     router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
-      shallow: true,  // Cập nhật URL mà không cần reload lại trang
+      shallow: true, // Cập nhật URL mà không cần reload lại trang
     });
   };
-  
-  
-  
 
   const handlePriceRange = (values: any) => {
     console.log("Received values:", values); // Kiểm tra giá trị nhận vào
-    
+
     const { min, max } = values;
-  
+
     updateSearchParamsValues([
-      { key: "min", value: min?? null },
-      { key: "max", value: max?? null },
+      { key: "min", value: min ?? null },
+      { key: "max", value: max ?? null },
+      { key: "page", value: 1 },
     ]);
-
-
-  
   };
-
-
-  
-  
-  
-  
 
   return (
     <div className="container">
@@ -427,7 +422,11 @@ const ShopPage = () => {
               <div>
                 <div className="row m-0">
                   {pageData.data.map((item) => (
-                    <ProductItem product={item} key={item.id} />
+                    <ProductItem
+                      reSize="col-6 col-lg-4 product-item"
+                      product={item}
+                      key={item.id}
+                    />
                   ))}
                 </div>
                 <div className="mt-4">

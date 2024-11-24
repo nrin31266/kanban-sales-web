@@ -2,21 +2,19 @@ import { colors } from "@/constants/appInfos";
 import { ProductResponse } from "@/model/ProductModel";
 import { FormatCurrency } from "@/utils/formatNumber";
 import { Button, Typography } from "antd";
-import Link from "next/link";
+
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import { BiTransfer } from "react-icons/bi";
-import { FaEye } from "react-icons/fa";
-import { FcLike } from "react-icons/fc";
-import { IoMdAdd } from "react-icons/io";
+
 import { MdImage } from "react-icons/md";
 
 interface Props {
   product: ProductResponse;
+  reSize?: string
 }
 
 const ProductItem = (props: Props) => {
-  const { product } = props;
+  const { product, reSize } = props;
   const [elementWidth, setElementWidth] = useState();
   const router = useRouter();
   const ref = useRef<any>();
@@ -27,7 +25,7 @@ const ProductItem = (props: Props) => {
   
 
   return (
-    <div className="col-6 col-md-4 col-lg-3 product-item">
+    <div className={reSize?? 'col-6 col-md-4 col-lg-3 product-item'}>
       <a
         onClick={() => router.push(`/products/${product.id}/${product.slug}`)}
         ref={ref}
