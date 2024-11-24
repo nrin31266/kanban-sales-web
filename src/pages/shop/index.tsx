@@ -52,6 +52,7 @@ const ShopPage = () => {
     categoryIds: string[];
     min?: number;
     max?: number;
+    search?: string;
   }>({
     categoryIds: [],
   });
@@ -84,17 +85,19 @@ const ShopPage = () => {
     const min = params.get("min");
     const max = params.get("max");
     const page = params.get("page") || "1"; // mặc định trang 1
+    const search = params.get("search");
 
     let url = `${API.PRODUCTS}?page=${page}`;
     if (categoryIds) url += `&categoryIds=${categoryIds}`;
     if (min) url += `&min=${min}`;
     if (max) url += `&max=${max}`;
+    if (search) url+= `&search=${search}`
 
     return url;
   };
 
   useEffect(() => {
-    const categoryIds = params.get("categoryIds")?.split(",") ?? []; // Sử dụng '??' để đảm bảo không có giá trị null
+    const categoryIds = params.get("categoryIds")?.split(",") ?? []; 
     const min = params.get("min")
       ? parseFloat(params.get("min") ?? "0")
       : undefined;
@@ -102,11 +105,13 @@ const ShopPage = () => {
       ? parseFloat(params.get("max") ?? "0")
       : undefined;
     const page = params.get("page");
+    const search = params.get("search");
 
     setFilterValues({
       categoryIds,
       min,
       max,
+      search: search?? undefined,
     });
     if (page) {
       pageRef.current = page;
