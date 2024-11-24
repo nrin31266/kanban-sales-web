@@ -10,11 +10,14 @@
     height: 100;
     width: 80;
   }
-  .cart{
+  .cart {
     min-width: 360px;
   }
-  .account-menu{
+  .account-menu {
     display: none;
+  }
+  .container {
+    max-width: 100%;
   }
 }
 
@@ -26,7 +29,7 @@
     height: 100;
     width: 80;
   }
-  .cart{
+  .cart {
     min-width: 380px;
   }
 }
@@ -39,7 +42,7 @@
     height: 175;
     width: 160;
   }
-  .cart{
+  .cart {
     min-width: 500px;
   }
 }
@@ -52,14 +55,24 @@
     height: 200;
     width: 180;
   }
-  .cart{
+  .cart {
     min-width: 500px;
   }
 }
 
-.header{
-  height: 60px;
+/* Giảm padding trên và dưới của các item */
+.header .ant-menu-horizontal .ant-menu-item,
+.ant-menu-horizontal .ant-menu-submenu-title {
+  padding-top: 2px; /* Giảm phần trên */
+  padding-bottom: 2px; /* Giảm phần dưới */
+  line-height: 30px; /* Điều chỉnh chiều cao dòng */
 }
+
+/* Nếu muốn chỉnh toàn bộ chiều cao menu */
+.header .ant-menu-horizontal {
+  height: 30px; /* Điều chỉnh chiều cao tổng thể */
+}
+
 
 .title-danger {
   color: orangered;
@@ -88,13 +101,25 @@
   cursor: pointer;
 }
 
-
 .product-item .ant-typography {
   margin-bottom: 0px;
 }
 
 .product-item {
-  position: relative;
+  padding: 0.4rem;
+}
+
+.product-item-layout {
+  padding: 0.2rem;
+  border: 1px solid rgb(232, 232, 232);
+}
+
+.product-item:hover .product-item-layout {
+  /* box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1); */
+  border: 1px solid #f78c6a;
+  /* transition: 1s; */
 }
 
 .product-item .image {
@@ -104,7 +129,6 @@
 .product-item .image .img {
   object-fit: cover;
 }
-
 
 .product-item .title-content .title {
   display: -webkit-box;
@@ -116,7 +140,7 @@
   max-height: 3.5em;
 }
 
-.product-item .title-content .price{
+.product-item .title-content .price {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -126,7 +150,6 @@
   max-height: 3.5em;
   margin-bottom: 5px;
 }
-
 
 .product-item .hover-content {
   position: absolute;
@@ -170,16 +193,6 @@
   border-radius: 5px;
 }
 
-.product-item:hover {
-  /* box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 1px 0px 35px 18px rgba(0, 0, 0, 0.1); */
-  border: 1px solid orangered;
-  /* transition: 1s; */
-}
-
-
-
 .category-gallery .category-content {
   text-align: center;
   margin-bottom: 20px;
@@ -192,7 +205,7 @@
   max-height: 3.5em;
 }
 
-.cart-item-title{
+.cart-item-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -202,8 +215,8 @@
   max-height: 3.5em;
 }
 
-
-.product-detail #btn-asc, #btn-des {
+.product-detail #btn-asc,
+#btn-des {
   border-radius: 10;
 }
 
@@ -225,7 +238,7 @@
 .category-gallery div {
   width: 100%;
   display: grid;
-  grid-template-columns: auto ;
+  grid-template-columns: auto;
   margin: 10px 10px;
 }
 
@@ -234,8 +247,6 @@
   border-radius: 6;
   border: 1px solid silver;
 }
-
-
 
 .sub-product-gallery::-webkit-scrollbar,
 .category-gallery::-webkit-scrollbar {
@@ -255,13 +266,12 @@
   left: -15;
 }
 
-
-
 .gallery-wrap #btn-next {
   right: -15;
 }
 
-.gallery-wrap #btn-next,#btn-back {
+.gallery-wrap #btn-next,
+#btn-back {
   position: absolute;
   z-index: 10;
   border: 1px solid silver;
@@ -309,7 +319,7 @@
   max-height: 3.5em;
 }
 
-.cart .cart-item .ant-space-item{
+.cart .cart-item .ant-space-item {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
@@ -319,45 +329,45 @@
   max-height: 3.5em;
 }
 
-.cart .ant-checkbox-inner{
+.cart .ant-checkbox-inner {
   height: 25px;
   width: 25px;
 }
 
-.ant-steps-item-content{
+.ant-steps-item-content {
   margin-top: 0 !important;
 }
-.address-item .ant-card-head{
+.address-item .ant-card-head {
   min-height: auto;
   padding: 5px 10px;
   margin-left: 10px;
 }
-.address-item .ant-card-body{
+.address-item .ant-card-body {
   padding: 5px 10px;
   margin-left: 10px;
-
 }
 
-.address-item .ant-card-actions li{
-  margin: 5px 0px
+.address-item .ant-card-actions li {
+  margin: 5px 0px;
 }
 
-.drawer-right .ant-btn{
+.drawer-right .ant-btn {
   width: 100%;
   justify-content: left;
 }
 
-.drawer-right-icon{
+.drawer-right-icon {
   font-size: 20px;
 }
 
-.account-menu .ant-card-body{
+.account-menu .ant-card-body {
   padding: 10;
 }
-.account-menu .ant-card{
+.account-menu .ant-card {
   margin-bottom: 10px;
 }
 
-.menu-select .ant-menu-item-selected{
+.menu-select .ant-menu-item-selected {
   background-color: transparent;
 }
+

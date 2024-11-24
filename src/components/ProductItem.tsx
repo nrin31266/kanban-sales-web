@@ -26,6 +26,7 @@ const ProductItem = (props: Props) => {
 
   return (
     <div className={reSize?? 'col-6 col-md-4 col-lg-3 product-item'}>
+      <div className="product-item-layout">
       <a
         onClick={() => router.push(`/products/${product.id}/${product.slug}`)}
         ref={ref}
@@ -82,6 +83,7 @@ const ProductItem = (props: Props) => {
           </Typography.Text>
         </div>
       </a>
+      </div>
     </div>
   );
 };

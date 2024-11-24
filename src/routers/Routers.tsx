@@ -3,7 +3,7 @@
 import HeaderComponent from "@/components/HeaderComponent";
 import { AuthModel } from "@/model/AuthenticationModel";
 import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
-import { Layout, Spin } from "antd";
+import { Affix, Layout, Spin } from "antd";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +15,7 @@ import AccountLayout from "@/pages/account/Layout";
 import { UserProfile } from "@/model/UserModel";
 import { addUserProfile } from "@/reducx/reducers/profileReducer";
 
-const { Content, Footer } = Layout;
+const { Content, Footer, Sider } = Layout;
 
 const Routers = ({ Component, pageProps }: any) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,14 +37,14 @@ const Routers = ({ Component, pageProps }: any) => {
       }
     }
 
-    const userProfileInLocal: string | null = localStorage.getItem('userProfile');
+    const userProfileInLocal: string | null =
+      localStorage.getItem("userProfile");
     if (userProfileInLocal) {
       let data: UserProfile = JSON.parse(userProfileInLocal);
       if (data) {
         dispatch(addUserProfile(data));
       }
     }
-
 
     console.log(path);
   }, []);
@@ -77,10 +77,10 @@ const Routers = ({ Component, pageProps }: any) => {
     // Giao diện mặc định
     <Layout>
       <HeaderComponent />
-      <Content>
+      <Content >
         <Component {...pageProps} />
       </Content>
-      <Footer >footer</Footer>
+      <Footer>footer</Footer>
     </Layout>
   );
 };
