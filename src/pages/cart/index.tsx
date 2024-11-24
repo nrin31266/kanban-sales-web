@@ -1,6 +1,7 @@
 import handleAPI from "@/apis/handleAPI";
 import ChangeSubProduct from "@/components/ChangeSubProduct";
 import { API, PAGE } from "@/configurations/configurations";
+import { colors } from "@/constants/appInfos";
 import { PageResponse } from "@/model/AppModel";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
 import { CartRequest, CartResponse } from "@/model/CartModel";
@@ -39,6 +40,7 @@ const Cart = () => {
   const [itemsIdSelected, setItemsIdSelected] = useState<Set<string>>(
     new Set()
   );
+  const [pageData, setPageData] = useState<PageResponse<CartResponse>>();
   const router = useRouter();
 
   const loadMoreData = async () => {
@@ -52,7 +54,7 @@ const Cart = () => {
 
       setTotalElements(res.data.result.totalElements); // Cập nhật tổng số phần tử
       setData((prevData) => [...prevData, ...res.data.result.data]); // Thêm dữ liệu mới vào state
-
+      setPageData(res.data.result);
       page.current += 1; // Tăng page sau mỗi lần tải
     } catch (error) {
       console.log(error);
@@ -263,6 +265,19 @@ const Cart = () => {
     }
   };
 
+  const getTotalProductsSelected = () => {
+    let sum = 0;
+    itemsIdSelected.forEach((id) => {
+      const item = data.find((item) => item.subProductId === id);
+      if (item && item.subProductResponse) {
+        sum +=
+          (item.subProductResponse.discount ?? item.subProductResponse.price) *
+          item.count;
+      }
+    });
+    return sum;
+  };
+
   return (
     <>
       <div className="container bg-white" style={{}}>
@@ -459,7 +474,7 @@ const Cart = () => {
                             {item.subProductResponse.discount &&
                             item.subProductResponse.price ? (
                               <div style={{}} className="d-flex">
-                                <div style={{ fontWeight: "bold" }}>
+                                <div>
                                   {FormatCurrency.VND.format(
                                     item.subProductResponse.discount
                                   )}
@@ -475,7 +490,7 @@ const Cart = () => {
                               </div>
                             ) : (
                               <div>
-                                <div style={{ fontWeight: "bold" }}>
+                                <div>
                                   {FormatCurrency.VND.format(
                                     item.subProductResponse.price
                                   )}
@@ -484,8 +499,8 @@ const Cart = () => {
                             )}
                             <div
                               style={{
-                                fontWeight: "bold",
-                                color: "#108ab1",
+                                // fontWeight: "bold",
+                                color: colors[5],
                                 alignContent: "center",
                               }}
                               className="d-flex"
@@ -530,10 +545,23 @@ const Cart = () => {
           }}
         >
           <div className="row">
-            <div className="col"></div>
             <div className="col">
-              <div className="text-right">
+              <div
+                className="d-flex"
+                style={{ justifyContent: "end", alignItems: "center" }}
+              >
+                <div>
+                  <Typography.Text style={{ fontSize: "1.2rem" }}>
+                    <span>{`Total (${itemsIdSelected.size ?? 0} ${
+                      itemsIdSelected.size > 1 ? "items" : "item"
+                    }): `}</span>
+                    <span style={{ color: colors[5] }}>
+                      {FormatCurrency.VND.format(getTotalProductsSelected())}
+                    </span>
+                  </Typography.Text>
+                </div>
                 <Button
+                  className="ml-3"
                   style={{ height: "100%" }}
                   onClick={() => {
                     if (itemsIdSelected.size > 0) {
