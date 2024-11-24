@@ -40,6 +40,7 @@ import { UserProfile } from "@/model/UserModel";
 import { colors } from "@/constants/appInfos";
 import { Header } from "antd/es/layout/layout";
 import Link from "next/link";
+import DrawerDownLeft from "./DrawerDownLeft";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -300,7 +301,9 @@ const HeaderComponent = () => {
           open={collapsed}
           onClose={() => setCollapsed(false)}
           placement="left"
-        ></Drawer>
+        >
+          <DrawerDownLeft onClose={()=>setCollapsed(false)}/>
+        </Drawer>
       </div>
     </Affix>
   );
