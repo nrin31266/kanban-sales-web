@@ -31,16 +31,18 @@ import PaymentMethod from "./component/PaymentMethod";
 import { AddressResponse } from "@/model/AddressModel";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import BeforePlaceOrder from "./component/Reviews";
-
-
-
-
+import { OrderRequest, ProductRequest, Status } from "@/model/PaymentModel";
+import { AuthModel } from "@/model/AuthenticationModel";
+import { useDispatch, useSelector } from "react-redux";
+import { authSelector } from "@/reducx/reducers/authReducer";
+import AfterOrder from "./component/AfterOrder";
+import { addAllProduct } from "@/reducx/reducers/cartReducer";
 
 interface PaymentDetail {
   address?: AddressResponse;
   paymentMethod?: any;
   data?: CartResponse[];
-  discountCode? : string;
+  discountCode?: string;
 }
 
 const Checkout = () => {
@@ -56,10 +58,14 @@ const Checkout = () => {
   const [discount, setDiscount] = useState<PromotionResponse>();
   const [checkoutStep, setCheckoutStep] = useState(0);
   const [paymentDetail, setPaymentDetail] = useState<PaymentDetail>({});
+  const [isPlaceOrder, setIsPlaceOrder] = useState(false);
+  const auth: AuthModel = useSelector(authSelector);
+  const [isOrdered, setIsOrdered] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isInitialLoad.current && ids) {
-      getCarts();
+      getDataCarts();
       isInitialLoad.current = false;
     }
   }, [ids]);
@@ -75,18 +81,26 @@ const Checkout = () => {
       if (response.isValid) {
         message.success(response.message);
         setDiscount(response.promotionResponse);
-        setPaymentDetail((p)=>({...p, discountCode: response.promotionResponse.code}));
-      } else {
-        message.error(response.message);
+        setPaymentDetail((p) => ({
+          ...p,
+          discountCode: response.promotionResponse.code,
+        }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      message.error(error.message);
+      setDiscount(undefined); // Xóa thông tin mã giảm giá
+      setPaymentDetail((p) => ({
+        ...p,
+        discountCode: "", // Xóa mã giảm giá trong giỏ hàng
+      }));
+      setDiscountValue(0);
     } finally {
       setIsCheckDiscountLoading(false);
     }
   };
 
-  const getCarts = async () => {
+  const getDataCarts = async () => {
     setIsLoading(true);
     try {
       const res = await handleAPI(`${API.CARTS}/to-payment?ids=${ids}`);
@@ -97,6 +111,8 @@ const Checkout = () => {
       setIsLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     if (discount) {
@@ -121,7 +137,7 @@ const Checkout = () => {
     );
   };
   useEffect(() => {
-    console.log(paymentDetail)
+    console.log(paymentDetail);
   }, [paymentDetail]);
 
   const renderContent = () => {
@@ -130,7 +146,7 @@ const Checkout = () => {
         return (
           <ShippingAddress
             onOk={(v) => {
-              setPaymentDetail((p) => ({...p, address: v }));
+              setPaymentDetail((p) => ({ ...p, address: v }));
               setCheckoutStep(2);
             }}
           />
@@ -140,14 +156,13 @@ const Checkout = () => {
           <PaymentMethod
             onContinue={(v) => {
               setCheckoutStep(3);
-              setPaymentDetail((p) => ({...p, paymentMethod: v }));
+              setPaymentDetail((p) => ({ ...p, paymentMethod: v }));
             }}
           />
         );
-      case 3:
-        {
-          return <BeforePlaceOrder paymentDetail={paymentDetail} />;
-        }
+      case 3: {
+        return <BeforePlaceOrder paymentDetail={paymentDetail} />;
+      }
       default:
         return <CartTable data={data} />;
     }
@@ -159,6 +174,72 @@ const Checkout = () => {
       behavior: "smooth", // Tạo hiệu ứng cuộn mượt mà
     });
   }
+  function buildOrderRequest(rawData: any): OrderRequest {
+    const { data, address, paymentMethod, discountCode } = rawData;
+
+    // Lấy thông tin từ địa chỉ
+    const {
+      name: customerName,
+      phoneNumber: customerPhone,
+      address: customerAddress,
+    } = address;
+
+    // Chuyển đổi danh sách sản phẩm
+    const productRequests: ProductRequest[] = data.map((item: any) => {
+      const { title: name, subProductId, productId, imageUrl, count } = item;
+      const { discount, price, options } = item.subProductResponse;
+
+      return {
+        name,
+        subProductId,
+        productId,
+        price: discount ?? price,
+        count,
+        options, // Chỉ giữ `options`
+        imageUrl,
+      };
+    });
+
+    // Xây dựng yêu cầu đơn hàng
+    return {
+      customerAddress: customerAddress,
+      customerName: customerName,
+      customerPhone: customerPhone,
+      paymentMethod: paymentMethod,
+      orderProductRequests: productRequests,
+      
+      discountCode: discountCode ?? undefined,
+      customerEmail: auth.userInfo?.email ?? undefined,
+    };
+  }
+
+  const handlePlaceOrder =async () => {
+    const req: OrderRequest = buildOrderRequest(paymentDetail);
+    console.log(req);
+    setIsPlaceOrder(true);
+    try {
+      const res = await handleAPI(API.ORDERS, req, 'post');
+      console.log(res.data)
+      await getCarts();
+      setIsOrdered(true);
+    } catch (error:any) {
+      message.error(error.message);
+      console.log(error)
+    }finally{
+      setIsPlaceOrder(false);
+    }
+
+  };
+
+  const getCarts = async () => {
+    try {
+      const res = await handleAPI(`${API.CARTS}`);
+      dispatch(addAllProduct(res.data.result));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   return (
     <div className="container">
@@ -319,18 +400,26 @@ const Checkout = () => {
                   <Button
                     onClick={() => {
                       if (checkoutStep === 3) {
-                        console.log("3");
+                        if (
+                          paymentDetail.address ||
+                          (paymentDetail.data &&
+                            paymentDetail.data.length > 0) ||
+                          !paymentDetail.paymentMethod
+                        ) {
+                          handlePlaceOrder();
+                        }
                       } else if (checkoutStep === 0) {
                         setCheckoutStep(1);
-                        setPaymentDetail((p)=>({...p, data: data}))
+                        setPaymentDetail((p) => ({ ...p, data: data }));
                       }
                       scrollToTop();
                     }}
+                    loading={checkoutStep===3 && isPlaceOrder}
                     style={{ width: "100%" }}
                     size="large"
                     type="primary"
                   >
-                    {checkoutStep === 0 ? 'Process to checkout' : 'Place order'}
+                    {checkoutStep === 0 ? "Process to checkout" : "Place order"}
                   </Button>
                 </div>
               )}
@@ -338,6 +427,8 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      <AfterOrder visible={isOrdered} onHandle={()=>{}} />
     </div>
   );
 };

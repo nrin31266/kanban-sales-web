@@ -15,6 +15,8 @@ interface PaymentDetail {
   discountCode? : string
 }
 
+
+
 const BeforePlaceOrder = (props: Props) => {
   const { address, data, paymentMethod } = props.paymentDetail;
   return data && address && paymentMethod ? (

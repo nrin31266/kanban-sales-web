@@ -12,15 +12,23 @@ export const PayMethodLabel = {
 
 // Import Status and PaymentMethod
 
+export const Status = {
+    PENDING: "PENDING",
+    CONFIRMED: "CONFIRMED",
+    SHIPPING: "SHIPPING",
+    DELIVERED: "DELIVERED",
+    COMPLETED: "COMPLETED",
+} as const;
+
 export interface OrderRequest {
-    userId: string;  // ID người dùng
+    
     customerName: string;  // Tên khách hàng
     customerPhone: string;  // Số điện thoại khách hàng
-    customerEmail: string;  // Email khách hàng
+    discountCode?: string
     customerAddress: string;  // Địa chỉ khách hàng
-    status: String;  // Trạng thái đơn hàng
+    customerEmail?: string
     paymentMethod: String;  // Phương thức thanh toán
-    productRequests: ProductRequest[];  // Danh sách các sản phẩm trong đơn hàng
+    orderProductRequests: ProductRequest[];  // Danh sách các sản phẩm trong đơn hàng
 }
 
 export interface ProductRequest {
@@ -29,7 +37,6 @@ export interface ProductRequest {
     productId: string;  // ID sản phẩm chính
     price: number;  // Giá sản phẩm
     count: number;  // Số lượng sản phẩm
-    option: string;  // Các lựa chọn như màu sắc, kích thước, v.v.
     imageUrl: string;  // URL hình ảnh sản phẩm
     options: any;
 }
