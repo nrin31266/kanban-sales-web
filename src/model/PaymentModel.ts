@@ -88,6 +88,8 @@ export interface ProductRequest {
 
 export interface OrderResponse {
   id: string;
+  created: string,
+  updated: string,
   userId: string;
   customerName: string;
   customerPhone: string;

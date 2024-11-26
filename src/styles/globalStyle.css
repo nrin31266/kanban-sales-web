@@ -72,10 +72,9 @@
 .header .ant-menu-horizontal {
   height: 30px; /* Điều chỉnh chiều cao tổng thể */
 }
-.header{
+.header {
   z-index: 100;
 }
-
 
 .title-danger {
   color: orangered;
@@ -208,7 +207,8 @@
   max-height: 3.5em;
 }
 
-.cart-item-title, .order-body-title {
+.cart-item-title,
+.order-body-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -276,7 +276,8 @@
   transform: translateY(-50%);
 }
 
-.gallery-wrap #btn-next, #btn-back {
+.gallery-wrap #btn-next,
+#btn-back {
   position: absolute;
   border: 1px solid silver;
   z-index: 5;
@@ -299,7 +300,6 @@
 .gallery-wrap .btn .btn-icon {
   display: flex;
   justify-content: center;
-  
 }
 
 .gallery-wrap .btn:hover .btn-icon {
@@ -377,14 +377,40 @@
   background-color: transparent;
 }
 
-.ant-modal-mask{
+.ant-modal-mask {
   background-color: rgba(0, 0, 0, 0.7) !important;
 }
-.order-item .ant-card{
-  
+.order-item .ant-card {
   margin: 0;
 }
 
-.order-item .ant-card-body{
+.order-item .ant-card-body {
   padding: 0.5rem;
 }
+
+/* .custom-tabs {
+  display: flex;
+  overflow-x: scroll;
+  overflow: auto;
+
+  white-space: nowrap;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+  
+}
+
+.custom-tab-item {
+  flex: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.custom-tab-item.active {
+  color: #1890ff;
+  border-bottom: 3px solid #1890ff;
+}
+
+.custom-tab-item:hover {
+  color: #40a9ff;
+} */

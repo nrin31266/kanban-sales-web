@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import OrderItems from "./componets/OrderItems";
 import { LoadingOutlined } from "@ant-design/icons";
 import handleAPI from "@/apis/handleAPI";
+import { TabsPosition } from "antd/es/tabs";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState<string>(Status.PENDING);
@@ -65,11 +66,12 @@ const Order = () => {
       setIsLoading(false);
     }
   };
-
+  const [mode, setMode] = useState<TabsPosition>('top');
   return (
     <div>
       <Card>
-        <Tabs
+        <Tabs 
+          type="card"
           defaultActiveKey={Status.PENDING}
           items={items}
           onChange={onChange}

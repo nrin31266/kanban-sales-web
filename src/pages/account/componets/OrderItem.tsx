@@ -1,7 +1,8 @@
 import { colors } from "@/constants/appInfos";
-import { OrderResponse, StatusDetails } from "@/model/PaymentModel";
+import { OrderResponse, Status, StatusDetails } from "@/model/PaymentModel";
 import { formatDateDMY } from "@/utils/dateTime";
-import { Card, Divider, Typography } from "antd";
+import { FormatCurrency } from "@/utils/formatNumber";
+import { Button, Card, Divider, Typography } from "antd";
 import React from "react";
 import { FaBox } from "react-icons/fa";
 
@@ -42,7 +43,7 @@ const OrderItem = (props: Props) => {
           </div>
           <div className="col text-right">
             <span>{"Created:"}&nbsp;</span>
-            <span>{formatDateDMY(item.createdAt)}</span>
+            <span style={{fontWeight: '500'}}>{item.created}</span>
           </div>
         </div>
       </div>
@@ -51,7 +52,7 @@ const OrderItem = (props: Props) => {
         <div className="col-2 d-flex" style={{alignItems: 'center', justifyContent: 'center'}}>
           <div className="ml-3"><FaBox size={50} color={StatusDetails[tabKey].color}/>
               <div>
-                <Typography.Text style={{fontWeight: 'bold', fontSize: '1'}}>{item.orderProductResponses.length}{item.orderProductResponses.length>1?' items': 'item'}</Typography.Text>
+                <Typography.Text style={{fontWeight: 'bold', fontSize: '1rem'}}>{item.orderProductResponses.length}{item.orderProductResponses.length>1?' items': 'item'}</Typography.Text>
               </div>
           </div>
         </div>
@@ -61,12 +62,24 @@ const OrderItem = (props: Props) => {
               return `${item.name}, `;
             })}
           </Typography.Text>
-          <div>
-
+          <div className="text-right">
+          <Typography.Text style={{fontWeight: '500', fontSize: '1rem'}}>{'Total: '}</Typography.Text>
+            {
+              item.reduction &&
+              <Typography.Text type="secondary" style={{fontSize: '1rem', fontWeight: '500', marginRight: '0.5rem'}}><del>{FormatCurrency.VND.format(item.amount + item.reduction)}</del></Typography.Text>
+            }
+            <Typography.Text style={{fontWeight: 'bold', fontSize: '1.2rem'}}>{FormatCurrency.VND.format(item.amount)}</Typography.Text>
           </div>
         </div>
       </div>
-      <div className="order-footer"></div>
+      <Divider className="" style={{margin: '0.5rem 0 '}}/>
+      <div className="order-footer d-flex" style={{justifyContent: 'end'}}>
+          {
+            (item.status === Status.PENDING || item.status === Status.COMPLETED) &&
+            <Button className="btn-danger mr-2">Cancel</Button>
+          }
+          <Button type="primary">Detail</Button>
+      </div>
     </Card>
   );
 };
