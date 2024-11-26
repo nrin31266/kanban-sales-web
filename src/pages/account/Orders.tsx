@@ -1,5 +1,5 @@
 import { API } from "@/configurations/configurations";
-import { Status } from "@/model/PaymentModel";
+import { OrderResponse, Status } from "@/model/PaymentModel";
 import { Affix, Card, Empty, message, Spin, Tabs, TabsProps } from "antd";
 import React, { useEffect, useState } from "react";
 import OrderItems from "./componets/OrderItems";
@@ -9,7 +9,7 @@ import { TabsPosition } from "antd/es/tabs";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState<string>(Status.PENDING);
-  const [orders, setOrders] = useState<[]>([]);
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const items: TabsProps["items"] = [
     {
@@ -20,6 +20,11 @@ const Order = () => {
       key: Status.CONFIRMED,
       label: "Confirmed",
     },
+    {
+      key: Status.DENY,
+      label: "Denied",
+    },
+
     {
       key: Status.SHIPPING,
       label: "Shipping",
@@ -66,11 +71,16 @@ const Order = () => {
       setIsLoading(false);
     }
   };
-  const [mode, setMode] = useState<TabsPosition>('top');
+
+  const handleUpdateOrderStatus = (orderId: string) => {
+    const newData = orders.filter((item) => item.id !== orderId);
+    setOrders(newData);
+  };
+
   return (
     <div>
       <Card>
-        <Tabs 
+        <Tabs
           type="card"
           defaultActiveKey={Status.PENDING}
           items={items}
@@ -85,7 +95,11 @@ const Order = () => {
         ) : (
           <div>
             {orders.length > 0 ? (
-              <OrderItems data={orders} tabKey={activeTab} />
+              <OrderItems
+                onUpdateStatus={(orderId) => handleUpdateOrderStatus(orderId)}
+                data={orders}
+                tabKey={activeTab}
+              />
             ) : (
               <Empty />
             )}

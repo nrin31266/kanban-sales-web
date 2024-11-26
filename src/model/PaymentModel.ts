@@ -20,6 +20,7 @@ export const Status = {
   COMPLETED: "COMPLETED",
   CANCELLED: "CANCELLED",
   RETURNS: "RETURNS",
+  DENY: "DENY"
 } as const;
 
 export const StatusDetails: Record<
@@ -63,6 +64,12 @@ export const StatusDetails: Record<
     color: "#FF5733", // Orange
     description:
       "The order has been returned and is waiting for further processing.",
+  },
+  DENY: {
+    label: "Deny",
+    color: "#000000", // Orange
+    description:
+      "Deny",
   },
 };
 

@@ -6,10 +6,11 @@ import OrderItem from "./OrderItem";
 interface Props {
   data: OrderResponse[];
   tabKey: string;
+  onUpdateStatus: (orderId: string)=> void;
 }
 
 const OrderItems = (props: Props) => {
-  const { data, tabKey } = props;
+  const { data, tabKey, onUpdateStatus } = props;
   return (
     <div>
       <List
@@ -17,7 +18,7 @@ const OrderItems = (props: Props) => {
         dataSource={data}
         renderItem={(item, index) => (
           <List.Item>
-            <OrderItem key={item.id} item={item} tabKey={tabKey}/>
+            <OrderItem onUpdateStatus={(id)=>onUpdateStatus(id)} key={item.id} item={item} tabKey={tabKey}/>
           </List.Item>
         )}
       />
