@@ -16,6 +16,7 @@ import {
   List,
   Skeleton,
   Space,
+  Spin,
   Tag,
   Typography,
 } from "antd";
@@ -27,6 +28,7 @@ import { IoMdArrowDropright } from "react-icons/io";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
+import { LoadingOutlined } from '@ant-design/icons';
 
 const Cart = () => {
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ const Cart = () => {
   const [itemSelected, setItemSelected] = useState<CartResponse>();
   const dispatch = useDispatch();
   const isInitialLoad = useRef(true); // Biến kiểm tra lần đầu tải
+  const [isInitLoading, setIsInitLoading] = useState(false);
   const [itemsIdSelected, setItemsIdSelected] = useState<Set<string>>(
     new Set()
   );
@@ -47,7 +50,7 @@ const Cart = () => {
     if (loading) return;
 
     setLoading(true); // Bắt đầu tải dữ liệu
-    const api = `${API.CARTS}?page=${page.current}&size=9`;
+    const api = `${API.CARTS}?page=${page.current}&size=8`;
     try {
       const res: CustomAxiosResponse<PageResponse<CartResponse>> =
         await handleAPI(api);
@@ -55,6 +58,7 @@ const Cart = () => {
       setTotalElements(res.data.result.totalElements); // Cập nhật tổng số phần tử
       setData((prevData) => [...prevData, ...res.data.result.data]); // Thêm dữ liệu mới vào state
       setPageData(res.data.result);
+      console.log(res.data.result)
       page.current += 1; // Tăng page sau mỗi lần tải
     } catch (error) {
       console.log(error);
@@ -66,9 +70,15 @@ const Cart = () => {
   useEffect(() => {
     if (isInitialLoad.current) {
       isInitialLoad.current = false; // Đảm bảo chỉ gọi một lần khi component mount
-      loadMoreData(); // Gọi API lần đầu tiên khi component mount
+      getData();
     }
   }, []); // Dependency rỗng chỉ gọi lần đầu tiên
+
+  const getData = async ()=>{
+    setIsInitLoading(true);
+    await loadMoreData();
+    setIsInitLoading(false);
+  }
 
   const loadNextPage = () => {
     loadMoreData(); // Gọi loadMoreData khi kéo xuống dưới
@@ -78,7 +88,7 @@ const Cart = () => {
     setLoading(true);
     try {
       const res: CustomAxiosResponse<CartResponse> = await handleAPI(
-        `${API.CARTS}/additional?page=${page.current - 1}&size=${9}`
+        `${API.CARTS}/additional?page=${page.current - 1}&size=${8}`
       );
       setData((pre) => [...pre, res.data.result]);
     } catch (error) {
@@ -281,7 +291,12 @@ const Cart = () => {
   return (
     <>
       <div className="container bg-white" style={{}}>
-        <div
+        {
+          isInitLoading ? <div className="text-center">
+          <Spin
+            indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+          />
+        </div>:<div
           className=""
           id="scrollableDiv"
           style={{
@@ -296,14 +311,12 @@ const Cart = () => {
             dataLength={data.length}
             next={loadNextPage}
             hasMore={data.length < totalElements && !loading}
-            loader={
-              <div>
-                <Skeleton avatar paragraph={{ rows: 2 }} active />
-                <Skeleton avatar paragraph={{ rows: 2 }} active />
-                <Skeleton avatar paragraph={{ rows: 2 }} active />
-              </div>
-            }
-            endMessage={<Divider plain>It is all, nothing more</Divider>}
+            loader={''}
+            endMessage={data.length < totalElements ?<div>
+              <Skeleton active />
+              <Skeleton active />
+              <Skeleton active />
+            </div>: 'End'}
             scrollableTarget="scrollableDiv"
             initialScrollY={0}
             scrollThreshold={0.8}
@@ -537,6 +550,8 @@ const Cart = () => {
             />
           </InfiniteScroll>
         </div>
+        }
+        
         <div
           style={{
             width: "100%",
