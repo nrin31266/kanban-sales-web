@@ -1,6 +1,9 @@
+import { colors } from "@/constants/appInfos";
 import { OrderResponse, StatusDetails } from "@/model/PaymentModel";
 import { formatDateDMY } from "@/utils/dateTime";
+import { Card, Divider, Typography } from "antd";
 import React from "react";
+import { FaBox } from "react-icons/fa";
 
 interface Props {
   item: OrderResponse;
@@ -10,7 +13,9 @@ interface Props {
 const OrderItem = (props: Props) => {
   const { item, tabKey } = props;
   return (
-    <div style={{ width: "100%" }}>
+    <Card 
+    
+    className="order-item" style={{ width: "100%"}}>
       <div className="order-header">
         <div className="row">
           <div className="col">
@@ -41,11 +46,28 @@ const OrderItem = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className="order-body">
+      <Divider className="" style={{margin: '0.5rem 0 '}}/>
+      <div className="order-body mt-2 mb-2 d-flex row">
+        <div className="col-2 d-flex" style={{alignItems: 'center', justifyContent: 'center'}}>
+          <div className="ml-3"><FaBox size={50} color={StatusDetails[tabKey].color}/>
+              <div>
+                <Typography.Text style={{fontWeight: 'bold', fontSize: '1'}}>{item.orderProductResponses.length}{item.orderProductResponses.length>1?' items': 'item'}</Typography.Text>
+              </div>
+          </div>
+        </div>
+        <div className="col">
+          <Typography.Text className="order-body-title">
+            {item.orderProductResponses.map((item)=>{
+              return `${item.name}, `;
+            })}
+          </Typography.Text>
+          <div>
 
+          </div>
+        </div>
       </div>
       <div className="order-footer"></div>
-    </div>
+    </Card>
   );
 };
 

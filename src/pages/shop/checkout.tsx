@@ -16,6 +16,7 @@ import {
   InputRef,
   message,
   Space,
+  Spin,
   Steps,
   Typography,
 } from "antd";
@@ -37,6 +38,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "@/reducx/reducers/authReducer";
 import AfterOrder from "./component/AfterOrder";
 import { addAllProduct } from "@/reducx/reducers/cartReducer";
+import { LoadingOutlined } from '@ant-design/icons';
 
 interface PaymentDetail {
   address?: AddressResponse;
@@ -112,8 +114,6 @@ const Checkout = () => {
     }
   };
 
-
-
   useEffect(() => {
     if (discount) {
       if (discount.discountType === DISCOUNT_TYPE.PERCENTAGE) {
@@ -164,7 +164,15 @@ const Checkout = () => {
         return <BeforePlaceOrder paymentDetail={paymentDetail} />;
       }
       default:
-        return <CartTable data={data} />;
+        return isLoading ? (
+          <div className="text-center">
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+            />
+          </div>
+        ) : (
+          <CartTable data={data} />
+        );
     }
   };
 
@@ -207,28 +215,27 @@ const Checkout = () => {
       customerPhone: customerPhone,
       paymentMethod: paymentMethod,
       orderProductRequests: productRequests,
-      
+
       discountCode: discountCode ?? undefined,
       customerEmail: auth.userInfo?.email ?? undefined,
     };
   }
 
-  const handlePlaceOrder =async () => {
+  const handlePlaceOrder = async () => {
     const req: OrderRequest = buildOrderRequest(paymentDetail);
     console.log(req);
     setIsPlaceOrder(true);
     try {
-      const res = await handleAPI(API.ORDERS, req, 'post');
-      console.log(res.data)
+      const res = await handleAPI(API.ORDERS, req, "post");
+      console.log(res.data);
       await getCarts();
       setIsOrdered(true);
-    } catch (error:any) {
+    } catch (error: any) {
       message.error(error.message);
-      console.log(error)
-    }finally{
+      console.log(error);
+    } finally {
       setIsPlaceOrder(false);
     }
-
   };
 
   const getCarts = async () => {
@@ -239,7 +246,6 @@ const Checkout = () => {
       console.error(error);
     }
   };
-
 
   return (
     <div className="container">
@@ -414,7 +420,7 @@ const Checkout = () => {
                       }
                       scrollToTop();
                     }}
-                    loading={checkoutStep===3 && isPlaceOrder}
+                    loading={checkoutStep === 3 && isPlaceOrder}
                     style={{ width: "100%" }}
                     size="large"
                     type="primary"
@@ -428,7 +434,7 @@ const Checkout = () => {
         </div>
       </div>
 
-      <AfterOrder visible={isOrdered} onHandle={()=>{}} />
+      <AfterOrder visible={isOrdered} onHandle={() => {}} />
     </div>
   );
 };

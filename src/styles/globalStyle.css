@@ -208,7 +208,7 @@
   max-height: 3.5em;
 }
 
-.cart-item-title {
+.cart-item-title, .order-body-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -379,4 +379,12 @@
 
 .ant-modal-mask{
   background-color: rgba(0, 0, 0, 0.7) !important;
+}
+.order-item .ant-card{
+  
+  margin: 0;
+}
+
+.order-item .ant-card-body{
+  padding: 0.5rem;
 }

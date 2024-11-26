@@ -28,7 +28,7 @@ import { IoMdArrowDropright } from "react-icons/io";
 import { MdAdd, MdOutlineRemove } from "react-icons/md";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useDispatch } from "react-redux";
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from "@ant-design/icons";
 
 const Cart = () => {
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ const Cart = () => {
       setTotalElements(res.data.result.totalElements); // Cập nhật tổng số phần tử
       setData((prevData) => [...prevData, ...res.data.result.data]); // Thêm dữ liệu mới vào state
       setPageData(res.data.result);
-      console.log(res.data.result)
+      console.log(res.data.result);
       page.current += 1; // Tăng page sau mỗi lần tải
     } catch (error) {
       console.log(error);
@@ -74,11 +74,11 @@ const Cart = () => {
     }
   }, []); // Dependency rỗng chỉ gọi lần đầu tiên
 
-  const getData = async ()=>{
+  const getData = async () => {
     setIsInitLoading(true);
     await loadMoreData();
     setIsInitLoading(false);
-  }
+  };
 
   const loadNextPage = () => {
     loadMoreData(); // Gọi loadMoreData khi kéo xuống dưới
@@ -291,267 +291,275 @@ const Cart = () => {
   return (
     <>
       <div className="container bg-white" style={{}}>
-        {
-          isInitLoading ? <div className="text-center">
-          <Spin
-            indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
-          />
-        </div>:<div
-          className=""
-          id="scrollableDiv"
-          style={{
-            height: "80vh",
-            overflow: "auto",
-            padding: "8px 8px",
-            // border: "1px solid rgba(140, 140, 140, 0.35)",
-            width: "100%",
-          }}
-        >
-          <InfiniteScroll
-            dataLength={data.length}
-            next={loadNextPage}
-            hasMore={data.length < totalElements && !loading}
-            loader={''}
-            endMessage={data.length < totalElements ?<div>
-              <Skeleton active />
-              <Skeleton active />
-              <Skeleton active />
-            </div>: 'End'}
-            scrollableTarget="scrollableDiv"
-            initialScrollY={0}
-            scrollThreshold={0.8}
+        {isInitLoading ? (
+          <div className="text-center">
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+            />
+          </div>
+        ) : (
+          <div
+            className=""
+            id="scrollableDiv"
+            style={{
+              height: "80vh",
+              overflow: "auto",
+              padding: "8px 8px",
+              // border: "1px solid rgba(140, 140, 140, 0.35)",
+              width: "100%",
+            }}
           >
-            <List
-              style={{ overflowX: "hidden" }}
-              dataSource={data}
-              renderItem={(item) => (
-                <List.Item
-                  style={
-                    {
-                      // backgroundColor: itemsIdSelected.has(item.subProductId)
-                      //   ? "rgb(106, 219, 185, 0.1)"
-                      //   : "",
+            <InfiniteScroll
+              dataLength={data.length}
+              next={loadNextPage}
+              hasMore={data.length < totalElements && !loading}
+              loader={""}
+              endMessage={
+                data.length < totalElements ? (
+                  <div>
+                    <Skeleton active />
+                    <Skeleton active />
+                    <Skeleton active />
+                  </div>
+                ) : (
+                  "End"
+                )
+              }
+              scrollableTarget="scrollableDiv"
+              initialScrollY={0}
+              scrollThreshold={0.8}
+            >
+              <List
+                style={{ overflowX: "hidden" }}
+                dataSource={data}
+                renderItem={(item) => (
+                  <List.Item
+                    style={
+                      {
+                        // backgroundColor: itemsIdSelected.has(item.subProductId)
+                        //   ? "rgb(106, 219, 185, 0.1)"
+                        //   : "",
+                      }
                     }
-                  }
-                  key={item.id}
-                  className="cart row"
-                >
-                  <div
-                    className="col-sm-12 col-md-6 d-flex"
-                    style={{ alignItems: "center" }}
+                    key={item.id}
+                    className="cart row"
                   >
-                    <div>
-                      <Checkbox
-                        checked={itemsIdSelected.has(item.subProductId)}
-                        onClick={() => changeItemsId(item.subProductId)}
-                      />
-                    </div>
-                    <div className="ml-2">
-                      <Avatar shape="square" size={120} src={item.imageUrl} />
-                    </div>
-                    <div>
-                      <div className="cart-item-title">
-                        <Link
-                          href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
-                        >
-                          {item.title}
-                        </Link>
+                    <div
+                      className="col-sm-12 col-md-6 d-flex"
+                      style={{ alignItems: "center" }}
+                    >
+                      <div>
+                        <Checkbox
+                          checked={itemsIdSelected.has(item.subProductId)}
+                          onClick={() => changeItemsId(item.subProductId)}
+                        />
+                      </div>
+                      <div className="ml-2">
+                        <Avatar shape="square" size={120} src={item.imageUrl} />
                       </div>
                       <div>
-                        <a
-                          onClick={() => {
-                            setItemSelected(item);
-                            setIsVisibleChangeSub(true);
-                          }}
-                        >
-                          <div
-                            style={{
-                              border: "1px solid silver",
-                              backgroundColor: "rgb(232, 232, 232, 0.6)",
-                              padding: 4,
-                              borderRadius: 4,
-                              width: "max-content",
-                              maxWidth: "",
-                            }}
-                            className="cart-item-option mt-2"
+                        <div className="cart-item-title">
+                          <Link
+                            href={`${PAGE.PRODUCTS}/${item.productId}/${item.productResponse?.slug}`}
                           >
-                            <div>
-                              {"Classification: "}
-                              <BiSolidDownArrow size={10} />
-                            </div>
-                            <Space>
-                              {item.subProductResponse &&
-                                item.subProductResponse.options &&
-                                Object.keys(item.subProductResponse.options)
-                                  .length > 0 &&
-                                Object.entries(
-                                  item.subProductResponse.options
-                                ).map(([key, value]) => {
-                                  return (
-                                    typeof value === "string" && (
-                                      <div
-                                        style={{ display: "flex" }}
-                                        key={item.id + key + value}
-                                      >
-                                        <div>
-                                          {key}
-                                          {":"}&nbsp;
-                                        </div>
-                                        {key === "Color" ? (
-                                          <div
-                                            style={{
-                                              backgroundColor: value,
-                                              width: 20,
-                                              height: 20,
-                                              borderRadius: 4,
-                                              border: "1px solid silver",
-                                            }}
-                                          ></div>
-                                        ) : (
-                                          <div style={{ opacity: 0.6 }}>
-                                            {value}
+                            {item.title}
+                          </Link>
+                        </div>
+                        <div>
+                          <a
+                            onClick={() => {
+                              setItemSelected(item);
+                              setIsVisibleChangeSub(true);
+                            }}
+                          >
+                            <div
+                              style={{
+                                border: "1px solid silver",
+                                backgroundColor: "rgb(232, 232, 232, 0.6)",
+                                padding: 4,
+                                borderRadius: 4,
+                                width: "max-content",
+                                maxWidth: "",
+                              }}
+                              className="cart-item-option mt-2"
+                            >
+                              <div>
+                                {"Classification: "}
+                                <BiSolidDownArrow size={10} />
+                              </div>
+                              <Space>
+                                {item.subProductResponse &&
+                                  item.subProductResponse.options &&
+                                  Object.keys(item.subProductResponse.options)
+                                    .length > 0 &&
+                                  Object.entries(
+                                    item.subProductResponse.options
+                                  ).map(([key, value]) => {
+                                    return (
+                                      typeof value === "string" && (
+                                        <div
+                                          style={{ display: "flex" }}
+                                          key={item.id + key + value}
+                                        >
+                                          <div>
+                                            {key}
+                                            {":"}&nbsp;
                                           </div>
-                                        )}
-                                      </div>
-                                    )
-                                  );
-                                })}
-                            </Space>
-                          </div>
-                        </a>
+                                          {key === "Color" ? (
+                                            <div
+                                              style={{
+                                                backgroundColor: value,
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: 4,
+                                                border: "1px solid silver",
+                                              }}
+                                            ></div>
+                                          ) : (
+                                            <div style={{ opacity: 0.6 }}>
+                                              {value}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    );
+                                  })}
+                              </Space>
+                            </div>
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-sm-12 col-md-6" style={{}}>
-                    <div className="row" style={{ width: "100%" }}>
-                      <div
-                        className="col-10 d-flex"
-                        style={{ alignItems: "center" }}
-                      >
+                    <div className="col-sm-12 col-md-6" style={{}}>
+                      <div className="row" style={{ width: "100%" }}>
                         <div
-                          className="mr-2"
-                          style={{
-                            border: "1px solid silver",
-                            width: "max-content",
-                            display: "flex",
-                            alignItems: "center",
-                            padding: 4,
-                            borderRadius: 6,
-                          }}
+                          className="col-10 d-flex"
+                          style={{ alignItems: "center" }}
                         >
-                          <Button
-                            disabled={loading ? loading : item.count <= 1}
-                            icon={<MdOutlineRemove size={20} />}
-                            onClick={() => {
-                              updateCount(
-                                buildCartRequest({
-                                  ...item,
-                                  count: item.count - 1,
-                                })
-                              );
-                            }}
-                          ></Button>
-                          <Typography.Text
+                          <div
+                            className="mr-2"
                             style={{
-                              fontWeight: "bold",
-                              marginLeft: "0.5rem",
-                              marginRight: "0.5rem",
+                              border: "1px solid silver",
+                              width: "max-content",
+                              display: "flex",
+                              alignItems: "center",
+                              padding: 4,
+                              borderRadius: 6,
                             }}
                           >
-                            {"x"}
-                            {item.count}
-                          </Typography.Text>
-                          <Button
-                            disabled={
-                              loading
-                                ? loading
-                                : item.subProductResponse &&
-                                  item.subProductResponse?.quantity <= 100
-                                ? item.count >=
-                                  item.subProductResponse?.quantity
-                                : item.count >= 100
-                            }
-                            icon={<MdAdd size={20} />}
-                            onClick={() => {
-                              updateCount(
-                                buildCartRequest({
-                                  ...item,
-                                  count: item.count + 1,
-                                })
-                              );
-                            }}
-                          ></Button>
-                        </div>
-                        {item.subProductResponse && (
-                          <div className="" style={{ display: "" }}>
-                            {item.subProductResponse.discount &&
-                            item.subProductResponse.price ? (
-                              <div style={{}} className="d-flex">
-                                <div>
-                                  {FormatCurrency.VND.format(
-                                    item.subProductResponse.discount
-                                  )}
+                            <Button
+                              disabled={loading ? loading : item.count <= 1}
+                              icon={<MdOutlineRemove size={20} />}
+                              onClick={() => {
+                                updateCount(
+                                  buildCartRequest({
+                                    ...item,
+                                    count: item.count - 1,
+                                  })
+                                );
+                              }}
+                            ></Button>
+                            <Typography.Text
+                              style={{
+                                fontWeight: "bold",
+                                marginLeft: "0.5rem",
+                                marginRight: "0.5rem",
+                              }}
+                            >
+                              {"x"}
+                              {item.count}
+                            </Typography.Text>
+                            <Button
+                              disabled={
+                                loading
+                                  ? loading
+                                  : item.subProductResponse &&
+                                    item.subProductResponse?.quantity <= 100
+                                  ? item.count >=
+                                    item.subProductResponse?.quantity
+                                  : item.count >= 100
+                              }
+                              icon={<MdAdd size={20} />}
+                              onClick={() => {
+                                updateCount(
+                                  buildCartRequest({
+                                    ...item,
+                                    count: item.count + 1,
+                                  })
+                                );
+                              }}
+                            ></Button>
+                          </div>
+                          {item.subProductResponse && (
+                            <div className="" style={{ display: "" }}>
+                              {item.subProductResponse.discount &&
+                              item.subProductResponse.price ? (
+                                <div style={{}} className="d-flex">
+                                  <div>
+                                    {FormatCurrency.VND.format(
+                                      item.subProductResponse.discount
+                                    )}
+                                  </div>
+                                  <div style={{ opacity: "0.5" }}>
+                                    &nbsp;
+                                    <del>
+                                      {FormatCurrency.VND.format(
+                                        item.subProductResponse.price
+                                      )}
+                                    </del>
+                                  </div>
                                 </div>
-                                <div style={{ opacity: "0.5" }}>
-                                  &nbsp;
-                                  <del>
+                              ) : (
+                                <div>
+                                  <div>
                                     {FormatCurrency.VND.format(
                                       item.subProductResponse.price
                                     )}
-                                  </del>
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
-                              <div>
-                                <div>
-                                  {FormatCurrency.VND.format(
-                                    item.subProductResponse.price
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                            <div
-                              style={{
-                                // fontWeight: "bold",
-                                color: colors[5],
-                                alignContent: "center",
-                              }}
-                              className="d-flex"
-                            >
-                              <IoMdArrowDropright size={20} />
-                              {FormatCurrency.VND.format(
-                                item.subProductResponse.discount
-                                  ? item.subProductResponse.discount *
-                                      item.count
-                                  : item.subProductResponse.price * item.count
                               )}
+                              <div
+                                style={{
+                                  // fontWeight: "bold",
+                                  color: colors[5],
+                                  alignContent: "center",
+                                }}
+                                className="d-flex"
+                              >
+                                <IoMdArrowDropright size={20} />
+                                {FormatCurrency.VND.format(
+                                  item.subProductResponse.discount
+                                    ? item.subProductResponse.discount *
+                                        item.count
+                                    : item.subProductResponse.price * item.count
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        style={{ alignItems: "center" }}
-                        className="col-2 d-flex"
-                      >
-                        <a
-                          onClick={() => {
-                            handleRemoveItem(item);
-                          }}
+                          )}
+                        </div>
+                        <div
+                          style={{ alignItems: "center" }}
+                          className="col-2 d-flex"
                         >
-                          <span className="text-danger">
-                            <u>Remove</u>
-                          </span>
-                        </a>
+                          <a
+                            onClick={() => {
+                              handleRemoveItem(item);
+                            }}
+                          >
+                            <span className="text-danger">
+                              <u>Remove</u>
+                            </span>
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </List.Item>
-              )}
-            />
-          </InfiniteScroll>
-        </div>
-        }
-        
+                  </List.Item>
+                )}
+              />
+            </InfiniteScroll>
+          </div>
+        )}
+
         <div
           style={{
             width: "100%",
