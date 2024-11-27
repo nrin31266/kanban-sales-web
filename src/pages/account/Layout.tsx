@@ -1,5 +1,5 @@
 // components/Layout.tsx
-import { Avatar, Card, Menu } from "antd";
+import { Avatar, Card, Layout, Menu } from "antd";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
@@ -15,18 +15,20 @@ import { UserProfile } from "@/model/UserModel";
 import { useSelector } from "react-redux";
 import { userProfileSelector } from "@/reducx/reducers/profileReducer";
 import Link from "next/link";
+import Sider from "antd/es/layout/Sider";
 
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const userProfile: UserProfile = useSelector(userProfileSelector);
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState<string>("");
+  // const [collapsed, setCollapsed] = useState(false);
 
   // Cập nhật selectedKey khi pathname thay đổi
   useEffect(() => {
     const { pathname } = router;
     if (pathname === "/account/profile") {
       setSelectedKey("profile");
-    } else if (pathname === "/account/orders") {
+    } else if (pathname.startsWith("/account/orders")) {
       setSelectedKey("orders");
     } else if (pathname === "/account/notifications") {
       setSelectedKey("notifications");
@@ -34,6 +36,18 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       setSelectedKey("");
     }
   }, [router.pathname]);
+
+  //   useEffect(() => {
+  //   const handleResize = () => {
+  //     const width = window.innerWidth;
+  //     const collapsed = width < 768 ? true : false;
+  //     setCollapsed(collapsed);
+      
+  //   };
+  //   window.addEventListener("resize", handleResize);
+  //   handleResize();
+  //   return () => window.removeEventListener("resize", () => {});
+  // }, []);
 
   const menuItems = [
     {
@@ -76,9 +90,12 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="container">
-      <div style={{ display: "flex" }}>
+      <Layout>
         {/* Menu bên trái */}
-        <div style={{ width: 256 }}>
+        {/* <Sider trigger={null} collapsible collapsed={collapsed}>
+          
+        </Sider> */}
+        <div className="d-none d-md-block" style={{ width: 256 }}>
           <Card>
             <div className="d-flex">
               <Avatar
@@ -105,8 +122,8 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Phần nội dung bên phải */}
-        <div style={{ flex: 1, }}>{children}</div>
-      </div>
+        <div style={{ flex: 1 }}>{children}</div>
+      </Layout>
     </div>
   );
 };

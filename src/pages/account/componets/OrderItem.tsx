@@ -5,8 +5,10 @@ import { OrderResponse, Status, StatusDetails } from "@/model/PaymentModel";
 import { formatDateDMY } from "@/utils/dateTime";
 import { FormatCurrency } from "@/utils/formatNumber";
 import { Button, Card, Divider, message, Typography } from "antd";
+import Link from "next/link";
 import React, { useState } from "react";
 import { FaBox } from "react-icons/fa";
+import OrderStatusTag from "./OrderStatusTag";
 
 interface Props {
   item: OrderResponse;
@@ -37,39 +39,19 @@ const OrderItem = (props: Props) => {
       <div className="order-header">
         <div className="row">
           <div className="col">
-            <div
-              style={{
-                background: `rgba(${parseInt(
-                  StatusDetails[tabKey].color.slice(1, 3),
-                  16
-                )}, ${parseInt(
-                  StatusDetails[tabKey].color.slice(3, 5),
-                  16
-                )}, ${parseInt(
-                  StatusDetails[tabKey].color.slice(5, 7),
-                  16
-                )}, 0.1)`,
-                border: `1px solid ${StatusDetails[tabKey].color}`, // Giữ nguyên màu viền
-                width: "max-content",
-                padding: "0 0.3rem",
-                borderRadius: "4px", // Tùy chọn, để các góc mềm mại
-              }}
-            >
-              <span>{StatusDetails[tabKey].label}</span>
-            </div>
+            <OrderStatusTag tabKey={tabKey}/>
           </div>
-          <div  className="col d-flex" style={{ justifyContent: "end" }}>
+          <div className="col d-flex" style={{ justifyContent: "end" }}>
             <div className="m-1">
               <span>{"Created:"}&nbsp;</span>
               <span style={{ fontWeight: "500" }}>{item.created}</span>
             </div>
-            {
-              item.status !== Status.PENDING 
-              && <div className="m-1">
-              <span>{"Modified:"}&nbsp;</span>
-              <span style={{ fontWeight: "500" }}>{item.updated}</span>
-            </div>
-            }
+            {item.status !== Status.PENDING && (
+              <div className="m-1">
+                <span>{"Modified:"}&nbsp;</span>
+                <span style={{ fontWeight: "500" }}>{item.updated}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -129,6 +111,7 @@ const OrderItem = (props: Props) => {
               onUpdateStatus(item.id);
             }}
             disabled={isLoading}
+            loading={isLoading}
             className="btn-danger mr-2"
           >
             Cancel
@@ -147,16 +130,19 @@ const OrderItem = (props: Props) => {
           </Button>
         )} */}
         {item.status === Status.COMPLETED && (
-          <Button disabled={isLoading} className="btn-warning mr-2">
+          <Button loading={isLoading} disabled={isLoading} className="btn-warning mr-2">
             Rate now
           </Button>
         )}
 
-        <Button disabled={isLoading}>Detail</Button>
+        <Link href={`/account/orders?id=${item.id}`}>
+          <Button  disabled={isLoading}>Detail</Button>
+        </Link>
         {item.status === Status.DELIVERED && (
           <Button
-            onClick={() => {
-              updateOrderStatus(Status.COMPLETED, item.id);
+            loading={isLoading}
+            onClick={async () => {
+              await updateOrderStatus(Status.COMPLETED, item.id);
               onUpdateStatus(item.id);
             }}
             disabled={isLoading}

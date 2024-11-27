@@ -96,6 +96,7 @@ const HeaderComponent = () => {
               }}
             >
               <Button
+                className="d-block d-md-none"
                 type="text"
                 icon={
                   collapsed ? (
@@ -115,11 +116,10 @@ const HeaderComponent = () => {
                 }}
               />
               <Link className="ml-2" href={PAGE.HOME}>
-                <img
-                  style={{ borderRadius: 4 }}
-                  width={40}
-                  src="https://firebasestorage.googleapis.com/v0/b/kanban-ac9c5.appspot.com/o/gkUYBNilMA_small.jpg?alt=media&token=cebaaa46-4662-41ef-9012-b14e9fe54b45"
-                />
+                <div  style={{fontSize: '1.5rem', fontWeight: 'bold', background: 'white', padding: '0 9px', borderRadius: '4px'}}>
+                  <span style={{color: colors[2]}} className="mr-1">R</span>
+                  <span style={{color: colors[2]}}>T</span>
+                </div>
               </Link>
             </div>
             <div
