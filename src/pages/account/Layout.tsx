@@ -1,5 +1,5 @@
 // components/Layout.tsx
-import { Avatar, Card, Layout, Menu } from "antd";
+import { Affix, Avatar, Card, Divider, Layout, Menu } from "antd";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { userProfileSelector } from "@/reducx/reducers/profileReducer";
 import Link from "next/link";
 import Sider from "antd/es/layout/Sider";
+import { Content } from "antd/es/layout/layout";
 
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const userProfile: UserProfile = useSelector(userProfileSelector);
@@ -42,7 +43,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   //     const width = window.innerWidth;
   //     const collapsed = width < 768 ? true : false;
   //     setCollapsed(collapsed);
-      
+
   //   };
   //   window.addEventListener("resize", handleResize);
   //   handleResize();
@@ -95,34 +96,34 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         {/* <Sider trigger={null} collapsible collapsed={collapsed}>
           
         </Sider> */}
-        <div className="d-none d-md-block" style={{ width: 256 }}>
-          <Card>
-            <div className="d-flex">
+         <Sider width={"250px"} className="d-none d-md-block" theme="light">
+          <div>
+            <div className="d-flex mt-3" style={{alignItems:'center', justifyContent: 'center'}}>
               <Avatar
                 src={userProfile.avatar && userProfile.avatar}
                 size={50}
-                style={{ backgroundColor: userProfile.avatar ? "" : "#2B8ECC" }}
+                style={{
+                  backgroundColor: userProfile.avatar ? "" : "#2B8ECC",
+                }}
                 icon={<UserOutlined />}
               />
               <div>{`Hello ${userProfile.name}`}</div>
             </div>
-          </Card>
+            <Divider/>
+            <Menu
+              mode="inline"
+              selectedKeys={[selectedKey]}
+            >
+              {menuItems.map((item) => (
+                <Menu.Item key={item.key} icon={item.icon}>
+                  <Link href={item.link}>{item.label}</Link>
+                </Menu.Item>
+              ))}
+            </Menu>
+          </div>
+        </Sider>
 
-          <Menu
-            mode="inline"
-            selectedKeys={[selectedKey]}
-            style={{ width: 256 }}
-          >
-            {menuItems.map((item) => (
-              <Menu.Item key={item.key} icon={item.icon}>
-                <Link href={item.link}>{item.label}</Link>
-              </Menu.Item>
-            ))}
-          </Menu>
-        </div>
-
-        {/* Phần nội dung bên phải */}
-        <div style={{ flex: 1 }}>{children}</div>
+        <Content>{children}</Content>
       </Layout>
     </div>
   );

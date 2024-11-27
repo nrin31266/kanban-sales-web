@@ -39,7 +39,7 @@ const OrderItem = (props: Props) => {
       <div className="order-header">
         <div className="row">
           <div className="col">
-            <OrderStatusTag tabKey={tabKey}/>
+            <OrderStatusTag tabKey={tabKey} />
           </div>
           <div className="col d-flex" style={{ justifyContent: "end" }}>
             <div className="m-1">
@@ -130,13 +130,17 @@ const OrderItem = (props: Props) => {
           </Button>
         )} */}
         {item.status === Status.COMPLETED && (
-          <Button loading={isLoading} disabled={isLoading} className="btn-warning mr-2">
+          <Button
+            loading={isLoading}
+            disabled={isLoading}
+            className="btn-warning mr-2"
+          >
             Rate now
           </Button>
         )}
 
         <Link href={`/account/orders?id=${item.id}`}>
-          <Button  disabled={isLoading}>Detail</Button>
+          <Button disabled={isLoading}>Detail</Button>
         </Link>
         {item.status === Status.DELIVERED && (
           <Button

@@ -69,7 +69,7 @@ const Order = () => {
     try {
       const res = await handleAPI(api);
       setOrders(res.data.result);
-      console.log(res.data)
+      console.log(res.data);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -121,7 +121,9 @@ const Order = () => {
 
   const renderContent = () => {
     if (orderId) {
-      return <OrderDetail  onClose={()=>setOrderId(undefined)}/>;
+      return (
+        <OrderDetail id={orderId} onClose={() => setOrderId(undefined)} />
+      );
     } else {
       return (
         <div>
@@ -131,7 +133,7 @@ const Order = () => {
             items={items.map((item) => ({
               ...item,
               disabled: isLoading, // Vô hiệu hóa tab nếu đang tải
-            }))}  
+            }))}
             onChange={onChange}
           />
           {isLoading ? (
