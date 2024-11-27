@@ -10,6 +10,8 @@ export const PayMethodLabel = {
   CASH_ON_DELIVERY: "Cash on Delivery",
 } as const;
 
+// type PayMethodKey = keyof typeof PayMethodLabel;
+
 // Import Status and PaymentMethod
 
 export const Status = {
@@ -23,9 +25,7 @@ export const Status = {
   DENY: "DENY"
 } as const;
 
-export const StatusDetails: Record<
-  string,
-  { label: string; color: string; description: string }
+export const StatusDetails: Record<string,{ label: string; color: string; description: string }
 > = {
   PENDING: {
     label: "Pending",
@@ -108,6 +108,8 @@ export interface OrderResponse {
   reduction: any;
   amount: number;
   createdAt: string;
+  isComplete: boolean,
+  
   updatedAt: string;
   orderProductResponses: OrderProductResponse[];
 }
@@ -118,6 +120,7 @@ export interface OrderProductResponse {
   name: string;
   subProductId: string;
   productId: string;
+  isRating: boolean
   price: number;
   count: number;
   options: Record<string, string>;
