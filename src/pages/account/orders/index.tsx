@@ -22,6 +22,7 @@ const Order = () => {
 
   useEffect(() => {
     setOrderId(params.get("id") ?? undefined);
+    // setActiveTab(params.get("status") ??undefined);
   }, [params]);
 
   const items: TabsProps["items"] = [
@@ -60,6 +61,12 @@ const Order = () => {
     },
   ];
   const onChange = (key: string) => {
+    // updateSearchParamsValues([
+    //   {
+    //     key: "status",
+    //     value: key,
+    //   },
+    // ]);
     setActiveTab(key);
   };
 
@@ -87,43 +94,41 @@ const Order = () => {
   // }, []);
 
   useEffect(() => {
-    getOrders();
+    if(activeTab){
+      getOrders();
+    }
   }, [activeTab]);
 
-  // const updateSearchParamsValues = (
-  //   values: { key: string; value: any }[]
-  // ) => {
-  //   const updatedParams = new URLSearchParams(params.toString());
+  const updateSearchParamsValues = (values: { key: string; value: any }[]) => {
+    const updatedParams = new URLSearchParams(params.toString());
 
-  //   // Xử lý mảng values
-  //   if (values && values.length > 0) {
-  //     values.forEach((item) => {
-  //       // Kiểm tra và cập nhật tham số từ mảng values
-  //       if (
-  //         item.value == null ||
-  //         item.value === "" ||
-  //         (Array.isArray(item.value) && item.value.length === 0)
-  //       ) {
-  //         updatedParams.delete(item.key); // Xóa nếu giá trị không hợp lệ
-  //       } else if (Array.isArray(item.value)) {
-  //         updatedParams.set(item.key, item.value.join(",")); // Nếu là mảng, nối các giá trị lại
-  //       } else {
-  //         updatedParams.set(item.key, item.value); // Nếu là giá trị đơn lẻ
-  //       }
-  //     });
-  //   }
+    // Xử lý mảng values
+    if (values && values.length > 0) {
+      values.forEach((item) => {
+        // Kiểm tra và cập nhật tham số từ mảng values
+        if (
+          item.value == null ||
+          item.value === "" ||
+          (Array.isArray(item.value) && item.value.length === 0)
+        ) {
+          updatedParams.delete(item.key); // Xóa nếu giá trị không hợp lệ
+        } else if (Array.isArray(item.value)) {
+          updatedParams.set(item.key, item.value.join(",")); // Nếu là mảng, nối các giá trị lại
+        } else {
+          updatedParams.set(item.key, item.value); // Nếu là giá trị đơn lẻ
+        }
+      });
+    }
 
-  //   // Cập nhật URL bằng router.push
-  //   router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
-  //     shallow: true, // Cập nhật URL mà không cần reload lại trang
-  //   });
-  // };
+    // Cập nhật URL bằng router.push
+    router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
+      shallow: true, // Cập nhật URL mà không cần reload lại trang
+    });
+  };
 
   const renderContent = () => {
     if (orderId) {
-      return (
-        <OrderDetail id={orderId} onClose={() => setOrderId(undefined)} />
-      );
+      return <OrderDetail onClose={() => setOrderId(undefined)} />;
     } else {
       return (
         <div>
@@ -148,7 +153,7 @@ const Order = () => {
                 <OrderItems
                   onUpdateStatus={(orderId) => handleUpdateOrderStatus(orderId)}
                   data={orders}
-                  tabKey={activeTab}
+                  tabKey={activeTab?? Status.PENDING}
                 />
               ) : (
                 <Empty />

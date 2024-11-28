@@ -9,19 +9,21 @@ import OrderTable from "./OrderTable";
 import LoadingComponent from "@/components/LoadingComponent";
 import handleAPI from "@/apis/handleAPI";
 import { FormatCurrency } from "@/utils/formatNumber";
+import RatingModal from "@/modal/RatingModal";
 type PaymentKey = keyof typeof PayMethodLabel;
 
 interface Props {
   onClose: () => void;
-  id: string;
+  // id: string;
 }
 
 const OrderDetail = (props: Props) => {
-  const { onClose, id } = props;
+  const { onClose} = props;
   const params = useSearchParams();
   const [orderId, setOrderId] = useState<string>();
   const [item, setItem] = useState<OrderResponse>();
   const [isLoading, setIsLoading] = useState(false);
+
   // useEffect(() => {
   //   if(id){
 
@@ -33,10 +35,10 @@ const OrderDetail = (props: Props) => {
   }, [params]);
 
   useEffect(() => {
-    if (id) {
-      getOrderDetail(id);
+    if (orderId) {
+      getOrderDetail(orderId);
     }
-  }, [id]);
+  }, [orderId]);
 
   const getOrderDetail = async (orderId: string) => {
     setIsLoading(true);
@@ -90,6 +92,7 @@ const OrderDetail = (props: Props) => {
         ) : (
           <Empty />
         )}
+
       </>
     );
   };
@@ -127,12 +130,12 @@ const OrderDetail = (props: Props) => {
         item &&
         <div>
         <div className="d-flex" style={{ justifyContent: "end", alignItems: 'center' }}>
-          <Typography.Text style={{fontSize: '1.5rem', fontWeight: '500'}}>{'Total:'}&nbsp;</Typography.Text>
+          <Typography.Text style={{fontSize: '1rem', fontWeight: '500'}}>{'Total:'}&nbsp;</Typography.Text>
           {
             item.reduction &&
-            <span style={{fontSize: '1.7rem', opacity: '0.6'}}><del>{FormatCurrency.VND.format(item.reduction + item.amount)}</del></span>
+            <span style={{fontSize: '1.3rem', opacity: '0.6'}}><del>{FormatCurrency.VND.format(item.reduction + item.amount)}</del></span>
           }
-          <span style={{fontSize: '2rem', fontWeight: 'bold'}}>{FormatCurrency.VND.format(item.amount)}</span>
+          <span style={{fontSize: '1.2rem', fontWeight: 'bold'}}>{FormatCurrency.VND.format(item.amount)}</span>
         </div>
       </div>
       }

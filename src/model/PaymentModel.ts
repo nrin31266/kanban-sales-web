@@ -25,53 +25,55 @@ export const Status = {
   DENY: "DENY"
 } as const;
 
-export const StatusDetails: Record<string,{ label: string; color: string; description: string }
+export const StatusDetails: Record<
+  string,
+  { label: string; color: string; description: string }
 > = {
   PENDING: {
     label: "Pending",
-    color: "#FFC107", // Yellow
+    color: "#FFAA00", // Sáng hơn và đậm nét hơn Yellow
     description: "The order is waiting to be processed.",
   },
   CONFIRMED: {
     label: "Confirmed",
-    color: "#17A2B8", // Blue
+    color: "#1CA7EC", // Xanh biển tươi
     description:
       "The order has been confirmed and is preparing for processing.",
   },
   SHIPPING: {
     label: "Shipping",
-    color: "#007BFF", // Blue
+    color: "#0056D2", // Xanh biển đậm để tạo cảm giác mạnh mẽ
     description: "The order is being shipped to your address.",
   },
   DELIVERED: {
     label: "Delivered",
-    color: "#28A745", // Green
+    color: "#34D058", // Xanh lá sáng tươi hơn
     description: "The order has been successfully delivered.",
   },
   COMPLETED: {
     label: "Completed",
-    color: "#6C757D", // Gray
+    color: "#ADB5BD", // Xám nhạt hơn, phù hợp trạng thái hoàn thành
     description: "The order is completed and has no issues.",
   },
   CANCELLED: {
     label: "Cancelled",
-    color: "#DC3545", // Red
+    color: "#E63946", // Đỏ hồng sáng để nổi bật hơn
     description:
       "The order has been cancelled and cannot be processed further.",
   },
   RETURNS: {
     label: "Returned",
-    color: "#FF5733", // Orange
+    color: "#FF6F61", // Cam đỏ tạo cảm giác cảnh báo nhưng không quá gắt
     description:
       "The order has been returned and is waiting for further processing.",
   },
   DENY: {
     label: "Deny",
-    color: "#000000", // Orange
-    description:
-      "Deny",
+    color: "#4B0082", // Tím đậm để tạo cảm giác bị từ chối
+    description: "The order has been denied and is not accepted.",
   },
 };
+
 
 export interface OrderRequest {
   customerName: string; // Tên khách hàng

@@ -38,7 +38,7 @@ const OrderItem = (props: Props) => {
     <Card className="order-item" style={{ width: "100%" }}>
       <div className="order-header">
         <div className="row">
-          <div className="col">
+          <div className="col-3">
             <OrderStatusTag tabKey={tabKey} />
           </div>
           <div className="col d-flex" style={{ justifyContent: "end" }}>
@@ -58,11 +58,11 @@ const OrderItem = (props: Props) => {
       <Divider className="" style={{ margin: "0.5rem 0 " }} />
       <div className="order-body mt-2 mb-2 d-flex row">
         <div
-          className="col-2 d-flex"
+          className="col-3 d-flex"
           style={{ alignItems: "center", justifyContent: "center" }}
         >
           <div className="ml-3">
-            <FaBox size={50} color={StatusDetails[tabKey].color} />
+            <FaBox size={70} color={StatusDetails[tabKey].color} />
             <div>
               <Typography.Text style={{ fontWeight: "bold", fontSize: "1rem" }}>
                 {item.orderProductResponses.length}
@@ -70,6 +70,7 @@ const OrderItem = (props: Props) => {
               </Typography.Text>
             </div>
           </div>
+          
         </div>
         <div className="col">
           <Typography.Text className="order-body-title">
@@ -103,6 +104,7 @@ const OrderItem = (props: Props) => {
       </div>
       <Divider className="" style={{ margin: "0.5rem 0 " }} />
       <div className="order-footer d-flex" style={{ justifyContent: "end" }}>
+        
         {(item.status === Status.PENDING ||
           item.status === Status.CONFIRMED) && (
           <Button
@@ -129,7 +131,7 @@ const OrderItem = (props: Props) => {
             Return
           </Button>
         )} */}
-        {item.status === Status.COMPLETED && (
+        {/* {item.status === Status.COMPLETED && (
           <Button
             loading={isLoading}
             disabled={isLoading}
@@ -137,7 +139,7 @@ const OrderItem = (props: Props) => {
           >
             Rate now
           </Button>
-        )}
+        )} */}
 
         <Link href={`/account/orders?id=${item.id}`}>
           <Button disabled={isLoading}>Detail</Button>
