@@ -2,7 +2,17 @@ import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
 import { PageResponse } from "@/model/AppModel";
 import { authSelector } from "@/reducx/reducers/authReducer";
-import { Avatar, Empty, Form, List, Pagination, Rate, Typography } from "antd";
+import {
+  Avatar,
+  Empty,
+  Form,
+  Image,
+  List,
+  Pagination,
+  Rate,
+  Space,
+  Typography,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import LoadingComponent from "./LoadingComponent";
@@ -52,13 +62,13 @@ const Reviews = (props: Props) => {
 
       if (item && item.options && Object.keys(item.options).length > 0) {
         return Object.entries(item.options).map(([key, value]) => (
-          <div key={`${key}-${value}`}>
+          <Space key={`${key}-${value}`}>
             <div
               className="mr-1"
               style={{ display: "flex", alignItems: "center" }}
             >
               {key}:&nbsp;
-              <span style={{ opacity: 0.7 }}>
+              <span style={{ opacity: 0.9 }}>
                 {key === "Color" ? (
                   <div
                     style={{
@@ -74,7 +84,7 @@ const Reviews = (props: Props) => {
                 )}
               </span>
             </div>
-          </div>
+          </Space>
         ));
       } else {
         return <div>No options available</div>; // Hiển thị khi không có options
@@ -105,7 +115,7 @@ const Reviews = (props: Props) => {
                     </>
                   }
                   description={
-                    <>
+                    <div className="mr-1">
                       <div>
                         <Rate
                           disabled
@@ -114,24 +124,35 @@ const Reviews = (props: Props) => {
                         />
                       </div>
                       {renderOption(item.subProductId)}
-
                       {item.comment && (
                         <div>
-                          <Typography.Text>
+                          <Typography.Text  style={{fontWeight: '500'}}>
                             {"Buyer feedback: "}
                           </Typography.Text>
                           <Typography.Text>{item.comment}</Typography.Text>
                         </div>
                       )}
-                      {item.reply && (
+                      {item.imageUrls && item.imageUrls.length > 0 && (
                         <div>
-                          <Typography.Text>
+                          {item.imageUrls.map((imgUrl) => (
+                            <Image
+                              key={item.id + imgUrl}
+                              src={imgUrl}
+                              width={100}
+                              height={100}
+                            />
+                          ))}
+                        </div>
+                      )}{" "}
+                      {item.reply && (
+                        <div className="mt-1" style={{border: '1px solid silver', padding: '0.4rem', borderRadius: 6, backgroundColor: 'rgb(206, 206, 206, 0.1)'}}>
+                          <Typography.Text  style={{opacity: 0.8, fontWeight: '500'}}>
                             {"Seller feedback: "}
                           </Typography.Text>
-                          <Typography.Text>{item.reply}</Typography.Text>
+                          <Typography.Text style={{opacity: 0.8}}>{item.reply}</Typography.Text>
                         </div>
                       )}
-                    </>
+                    </div>
                   }
                 />
               </List.Item>
