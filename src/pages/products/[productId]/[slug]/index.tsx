@@ -216,7 +216,7 @@ const ProductDetail = () => {
                       {
                         key: "tab-2",
                         label: "Reviews",
-                        children: <Reviews productId={product.id} />,
+                        children: <Reviews subProducts={productDetail} productId={product.id} />,
                       },
                     ]}
                   />

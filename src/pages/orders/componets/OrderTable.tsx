@@ -54,7 +54,13 @@ const OrderList = (props: Props) => {
           >
             <List.Item.Meta
               avatar={<Avatar shape="square" size={70} src={item.imageUrl} />}
-              title={<Link href={`/products/${item.productId}/${replaceName(item.name)}`}>{item.name}</Link>}
+              title={
+                <Link
+                  href={`/products/${item.productId}/${replaceName(item.name)}`}
+                >
+                  {item.name}
+                </Link>
+              }
               description={
                 <div>
                   <Space direction="vertical">
@@ -112,29 +118,21 @@ const OrderList = (props: Props) => {
             setIsRatingModal(false);
           }}
           onFinish={(v) => {
-            const index = data.orderProductResponses.findIndex((i) => i.id === orderProductSelected.id);
-            if (index !== -1) {
-              // Tạo bản sao của mảng để đảm bảo không thay đổi trực tiếp
-              const newOrderProducts = [...data.orderProductResponses];
-          
-              // Cập nhật phần tử ở vị trí tìm được
-              newOrderProducts[index] = {
-                ...newOrderProducts[index], // Giữ nguyên các giá trị cũ
-                isRating: true, // Thay đổi giá trị của `isRating`
-              };
-          
-              // Cập nhật lại data hoặc thực hiện hành động cần thiết
-              const newData = {
-                ...data,
-                orderProductResponses: newOrderProducts,
-              };
+            // Cập nhật chỉ sản phẩm được đánh giá, không ảnh hưởng đến các sản phẩm khác
+            const updatedProducts = order.orderProductResponses.map((item) =>
+              item.id === orderProductSelected.id
+                ? { ...item, isRating: true } // Cập nhật trạng thái sản phẩm được đánh giá
+                : item // Giữ nguyên các sản phẩm còn lại
+            );
 
-              setOrder(newData);
-          
-              console.log(newData); // Debug hoặc gọi hàm để cập nhật trạng thái
-            }
+            // Tạo lại object đơn hàng với các sản phẩm đã được cập nhật
+            const updatedOrder = { ...order, orderProductResponses: updatedProducts };
+
+            // Cập nhật lại state
+            setOrder(updatedOrder);
+
+            console.log(updatedOrder); // Debug hoặc gọi hàm để cập nhật trạng thái
           }}
-          
         />
       )}
     </>

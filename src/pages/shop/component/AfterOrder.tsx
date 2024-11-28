@@ -37,7 +37,7 @@ const AfterOrder = (props: Props) => {
       </div>
       <Button
         onClick={ () => {
-          router.push("/account/orders")
+          router.push("/orders")
         }}
         style={{ width: "100%" }}
         size="large"
