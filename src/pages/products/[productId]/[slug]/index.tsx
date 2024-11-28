@@ -26,59 +26,65 @@ import ProductItem from "@/components/ProductItem";
 import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import Reviews from "@/components/Reviews";
+import LoadingComponent from "@/components/LoadingComponent";
 
-const ProductDetail = ({
-  productProp,
-  productDetailProp,
-  relatedProductsProp,
-}: {
-  productProp: ProductResponse;
-  productDetailProp: SubProductResponse[];
-  relatedProductsProp: ProductResponse[];
-}) => {
+// {
+//   productProp,
+//   productDetailProp,
+//   relatedProductsProp,
+// }: {
+//   productProp: ProductResponse;
+//   productDetailProp: SubProductResponse[];
+//   relatedProductsProp: ProductResponse[];
+// }
+const ProductDetail = () => {
   const [product, setProduct] = useState<ProductResponse>();
   const [productDetail, setProductDetail] = useState<SubProductResponse[]>();
   const [subProductSelected, setSubProductSelected] =
     useState<SubProductResponse>();
   const [photoSelected, setPhotoSelected] = useState<string | undefined>();
   const [relatedProducts, setRelatedProducts] = useState<ProductResponse[]>();
-  // const router = useRouter();
-  // const { productId } = router.query;
-
-  useEffect(() => {
-    setProduct(productProp);
-    setProductDetail(productDetailProp);
-    setRelatedProducts(relatedProductsProp);
-    !(productDetailProp.length > 0) && setPhotoSelected(productProp.images[0]);
-    setSubProductSelected(undefined);
-    console.log("change");
-  }, [productProp, productDetailProp, relatedProductsProp]);
+  const router = useRouter();
+  const { productId } = router.query;
+  const [isLoading, setIsLoading] = useState(false);
 
   // useEffect(() => {
-  //   if (!productId) return;
+  //   setProduct(productProp);
+  //   setProductDetail(productDetailProp);
+  //   setRelatedProducts(relatedProductsProp);
+  //   !(productDetailProp.length > 0) && setPhotoSelected(productProp.images[0]);
+  //   setSubProductSelected(undefined);
+  //   console.log("change");
+  // }, [productProp, productDetailProp, relatedProductsProp]);
 
-  //   const fetchProductData = async () => {
-  //     try {
-  //       const resProduct = await axios(
-  //         `${APP.baseURL}${API.PRODUCTS}/${productId}`
-  //       );
-  //       const resProductDetail = await axios(
-  //         `${APP.baseURL}${API.PRODUCT_DETAIL(productId as string)}`
-  //       );
-  //       const resRelatedProducts = await axios(
-  //         `http://localhost:8888/api/v1/kanban/products/related/${productId}`
-  //       );
+  useEffect(() => {
+    if (!productId) return;
 
-  //       setProduct(resProduct.data.result);
-  //       setProductDetail(resProductDetail.data.result);
-  //       setRelatedProducts(resRelatedProducts.data.result);
-  //     } catch (error) {
-  //       console.error("Error fetching product data:", error);
-  //     }
-  //   };
+    const fetchProductData = async () => {
+      setIsLoading(true);
+      try {
+        const resProduct = await axios(
+          `${APP.baseURL}${API.PRODUCTS}/${productId}`
+        );
+        const resProductDetail = await axios(
+          `${APP.baseURL}${API.PRODUCT_DETAIL(productId as string)}`
+        );
+        const resRelatedProducts = await axios(
+          `http://localhost:8888/api/v1/kanban/products/related/${productId}`
+        );
 
-  //   fetchProductData();
-  // }, [productId]);
+        setProduct(resProduct.data.result);
+        setProductDetail(resProductDetail.data.result);
+        setRelatedProducts(resRelatedProducts.data.result);
+      } catch (error) {
+        console.error("Error fetching product data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProductData();
+  }, [productId]);
 
   const productStatus = useMemo(() => {
     if (!subProductSelected) return "Out stock";
@@ -93,7 +99,9 @@ const ProductDetail = ({
     []
   );
 
-  return (
+  return isLoading ? (
+    <LoadingComponent />
+  ) : (
     <div>
       {product ? (
         <div>
@@ -115,16 +123,8 @@ const ProductDetail = ({
             </div>
             <div className="row m-0" style={{ backgroundColor: "white" }}>
               <div className="col-sm-12 col-md-4">
-                <div className="text-center p-4" style={{}}>
-                  {photoSelected ? (
-                    <Image
-                      src={photoSelected}
-                      width="100%"
-                      alt="Product image"
-                    />
-                  ) : (
-                    <Skeleton.Image active />
-                  )}
+                <div className="text-center p-4">
+                  <Image src={productDetail&&productDetail?.length> 0? photoSelected : product.images[0]} width="100%" alt="Product image" />
                 </div>
                 <ScrollItems
                   onClick={() => {}}
@@ -135,11 +135,9 @@ const ProductDetail = ({
               <div className="col">
                 <div className="row">
                   <div className="col-sm-12 col-md-8">
-                    <Skeleton active loading={!product.title}>
-                      <Typography.Title level={3}>
-                        {product.title}
-                      </Typography.Title>
-                    </Skeleton>
+                    <Typography.Title level={3}>
+                      {product.title}
+                    </Typography.Title>
                   </div>
                   <div className="col">
                     <Space>
@@ -192,7 +190,7 @@ const ProductDetail = ({
                     )}
                   </div>
                 )}
-                {productDetail && productDetail.length>0 && (
+                {productDetail && productDetail.length > 0 && (
                   <ChangeSubProduct
                     isVisible={true}
                     type="main"
@@ -213,11 +211,7 @@ const ProductDetail = ({
                       {
                         key: "tab-1",
                         label: "Description",
-                        children: (
-                          <Skeleton active loading={!product.description}>
-                            {product.description}
-                          </Skeleton>
-                        ),
+                        children: product.description,
                       },
                       {
                         key: "tab-2",
@@ -285,45 +279,45 @@ const ProductDetail = ({
 //   }
 // };
 
-export const getStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: "blocking",
-  };
-};
+// export const getStaticPaths = async () => {
+//   return {
+//     paths: [],
+//     fallback: "blocking",
+//   };
+// };
 
-export async function getStaticProps(context: any) {
-  try {
-    const resProduct: CustomAxiosResponse<ProductResponse> = await axios(
-      `${APP.baseURL}${API.PRODUCTS}/${context.params.productId}`
-    );
+// export async function getStaticProps(context: any) {
+//   try {
+//     const resProduct: CustomAxiosResponse<ProductResponse> = await axios(
+//       `${APP.baseURL}${API.PRODUCTS}/${context.params.productId}`
+//     );
 
-    const resProductDetail: CustomAxiosResponse<SubProductResponse[]> =
-      await axios(
-        `${APP.baseURL}${API.PRODUCT_DETAIL(context.params.productId)}`
-      );
+//     const resProductDetail: CustomAxiosResponse<SubProductResponse[]> =
+//       await axios(
+//         `${APP.baseURL}${API.PRODUCT_DETAIL(context.params.productId)}`
+//       );
 
-    const resRelatedProducts: CustomAxiosResponse<ProductResponse[]> =
-      await axios(
-        `http://localhost:8888/api/v1/kanban/products/related/${context.params.productId}`
-      );
-    return {
-      props: {
-        productDetailProp: resProductDetail.data.result,
-        productProp: resProduct.data.result,
-        relatedProductsProp: resRelatedProducts.data.result,
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        productDetailProp: [],
-        productProp: null,
-        relatedProductsProp: [],
-      },
-    };
-  }
-}
+//     const resRelatedProducts: CustomAxiosResponse<ProductResponse[]> =
+//       await axios(
+//         `http://localhost:8888/api/v1/kanban/products/related/${context.params.productId}`
+//       );
+//     return {
+//       props: {
+//         productDetailProp: resProductDetail.data.result,
+//         productProp: resProduct.data.result,
+//         relatedProductsProp: resRelatedProducts.data.result,
+//       },
+//     };
+//   } catch (error) {
+//     console.error(error);
+//     return {
+//       props: {
+//         productDetailProp: [],
+//         productProp: null,
+//         relatedProductsProp: [],
+//       },
+//     };
+//   }
+// }
 
 export default ProductDetail;

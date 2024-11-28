@@ -108,8 +108,8 @@ const OrderItem = (props: Props) => {
         {(item.status === Status.PENDING ||
           item.status === Status.CONFIRMED) && (
           <Button
-            onClick={() => {
-              updateOrderStatus(Status.CANCELLED, item.id);
+            onClick={async() => {
+              await updateOrderStatus(Status.CANCELLED, item.id);
               onUpdateStatus(item.id);
             }}
             disabled={isLoading}

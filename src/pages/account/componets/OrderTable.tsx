@@ -2,7 +2,9 @@ import { colors } from "@/constants/appInfos";
 import RatingModal from "@/modal/RatingModal";
 import { OrderProductResponse, OrderResponse } from "@/model/PaymentModel";
 import { FormatCurrency } from "@/utils/formatNumber";
+import { replaceName } from "@/utils/replaceName";
 import { Avatar, Space, List, Typography, Button } from "antd";
+import Link from "next/link";
 import React, { useState } from "react";
 
 interface Props {
@@ -11,6 +13,7 @@ interface Props {
 
 const OrderList = (props: Props) => {
   const { data } = props;
+  const [order, setOrder] = useState<OrderResponse>(data);
   const [isRatingModal, setIsRatingModal] = useState(false);
   const [orderProductSelected, setOrderProductSelected] =
     useState<OrderProductResponse>();
@@ -19,7 +22,7 @@ const OrderList = (props: Props) => {
     <>
       <List
         itemLayout="horizontal"
-        dataSource={data.orderProductResponses}
+        dataSource={order.orderProductResponses}
         renderItem={(item, index) => (
           <List.Item
             key={item.id}
@@ -29,7 +32,7 @@ const OrderList = (props: Props) => {
             }}
             extra={
               <>
-                {data.isComplete && (
+                {order.isComplete && (
                   <div>
                     {item.isRating ? (
                       <Button>{"View rating"}</Button>
@@ -51,7 +54,7 @@ const OrderList = (props: Props) => {
           >
             <List.Item.Meta
               avatar={<Avatar shape="square" size={70} src={item.imageUrl} />}
-              title={<Typography.Text strong>{item.name}</Typography.Text>}
+              title={<Link href={`/products/${item.productId}/${replaceName(item.name)}`}>{item.name}</Link>}
               description={
                 <div>
                   <Space direction="vertical">
@@ -125,6 +128,8 @@ const OrderList = (props: Props) => {
                 ...data,
                 orderProductResponses: newOrderProducts,
               };
+
+              setOrder(newData);
           
               console.log(newData); // Debug hoặc gọi hàm để cập nhật trạng thái
             }

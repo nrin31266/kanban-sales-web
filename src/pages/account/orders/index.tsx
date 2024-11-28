@@ -5,17 +5,23 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import handleAPI from "@/apis/handleAPI";
-import OrderItems from "../componets/OrderItems";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 
-const Order = () => {
-  const [activeTab, setActiveTab] = useState<string>(); // Mặc định là "pending"
+import { GetServerSideProps } from "next";
+import OrderItems from "../componets/OrderItems";
+import LoadingComponent from "@/components/LoadingComponent";
+
+const Order = ({ initialStatus }: { initialStatus: string }) => {
+  const [activeTab, setActiveTab] = useState<string>(initialStatus); 
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const params = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    console.log(initialStatus)
+  }, [initialStatus]);
 
   const items: TabsProps["items"] = [
     { key: Status.PENDING, label: "Pending" },
@@ -31,29 +37,19 @@ const Order = () => {
   const isFetching = useRef(false);
 
   useEffect(() => {
-    const status = params.get("status");
-    if (status !== activeTab) {
-      setActiveTab(status ?? Status.PENDING); // Chỉ cập nhật nếu giá trị khác
-    }
-  }, [params]);
-  
-  useEffect(() => {
-    if (activeTab) {
-      getOrders();
-    }
+    getOrders();
   }, [activeTab]);
-  
+
   const getOrders = async () => {
-    if (isFetching.current || !activeTab) return; 
+    if (isFetching.current || !activeTab) return;
     isFetching.current = true;
-  
-    let api = `${API.ORDERS}?status=${activeTab}`;
-  
+
+    const api = `${API.ORDERS}?status=${activeTab}`;
+
     setIsLoading(true);
     try {
       const res = await handleAPI(api);
       setOrders(res.data.result);
-      console.log(res.data);
     } catch (error: any) {
       console.error(error);
       message.error(error.message);
@@ -62,24 +58,10 @@ const Order = () => {
       isFetching.current = false;
     }
   };
-  
 
   const onChange = (key: string) => {
-    updateSearchParamsValues([{ key: "status", value: key }]);
-  };
-
-  const updateSearchParamsValues = (values: { key: string; value: any }[]) => {
-    const updatedParams = new URLSearchParams(params.toString());
-    values.forEach((item) => {
-      if (!item.value) {
-        updatedParams.delete(item.key);
-      } else {
-        updatedParams.set(item.key, item.value);
-      }
-    });
-    router.push(`${pathname}?${updatedParams.toString()}`, undefined, {
-      shallow: true,
-    });
+    setActiveTab(key);
+    router.push(`${pathname}?status=${key}`, undefined, { shallow: true });
   };
 
   const handleUpdateOrderStatus = (orderId: string) => {
@@ -87,44 +69,37 @@ const Order = () => {
     setOrders(newData);
   };
 
-  const renderContent = () => (
-    <div>
-      <Tabs
-        type="card"
-        activeKey={activeTab}
-        items={items.map((item) => ({
-          ...item,
-          disabled: isLoading,
-        }))}
-        onChange={onChange}
-      />
-      {isLoading ? (
-        <div className="text-center">
-          <Spin
-            indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
-          />
-        </div>
-      ) : (
-        <div>
-          {orders.length > 0 ? (
-            <OrderItems
-              onUpdateStatus={(orderId) => handleUpdateOrderStatus(orderId)}
-              data={orders}
-              tabKey={activeTab ?? Status.PENDING}
-            />
-          ) : (
-            <Empty />
-          )}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div>
-      <Card>{renderContent()}</Card>
+      <Card>
+        <Tabs
+          type="card"
+          activeKey={activeTab}
+          items={items.map((item) => ({
+            ...item,
+            disabled: isLoading,
+          }))}
+          onChange={onChange}
+        />
+        {isLoading ? (
+          <LoadingComponent/>
+        ) : orders.length > 0 ? (
+          <OrderItems onUpdateStatus={(v)=>{handleUpdateOrderStatus(v)}} data={orders} tabKey={activeTab} />
+        ) : (
+          <Empty />
+        )}
+      </Card>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  const initialStatus = query.status || Status.PENDING; 
+  return {
+    props: {
+      initialStatus,
+    },
+  };
 };
 
 export default Order;

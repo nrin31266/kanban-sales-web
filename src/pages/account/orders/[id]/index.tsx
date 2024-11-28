@@ -9,6 +9,7 @@ import handleAPI from "@/apis/handleAPI";
 import { FormatCurrency } from "@/utils/formatNumber";
 import OrderStatusTag from "../../componets/OrderStatusTag";
 import OrderTable from "../../componets/OrderTable";
+import { GetServerSideProps } from "next";
 
 type PaymentKey = keyof typeof PayMethodLabel;
 
@@ -120,3 +121,4 @@ const OrderDetail: React.FC = () => {
 };
 
 export default OrderDetail;
+
