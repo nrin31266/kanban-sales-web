@@ -15,7 +15,9 @@ const Reviews = (props: Props) => {
 
 
   return (
-    <div>Reviews</div>
+    <div>
+      
+    </div>
   )
 }
 

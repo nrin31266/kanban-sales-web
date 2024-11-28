@@ -7,9 +7,10 @@ import { OrderResponse, PayMethodLabel } from "@/model/PaymentModel";
 import LoadingComponent from "@/components/LoadingComponent";
 import handleAPI from "@/apis/handleAPI";
 import { FormatCurrency } from "@/utils/formatNumber";
-import OrderStatusTag from "../../componets/OrderStatusTag";
-import OrderTable from "../../componets/OrderTable";
+
 import { GetServerSideProps } from "next";
+import OrderStatusTag from "../componets/OrderStatusTag";
+import OrderTable from "../componets/OrderTable";
 
 type PaymentKey = keyof typeof PayMethodLabel;
 
@@ -75,7 +76,7 @@ const OrderDetail: React.FC = () => {
     <Card>
       <div className="row">
         <div className="col">
-          <Link href={`/account/orders?status=${item?.status}`}>
+          <Link href={`/orders?status=${item?.status}`}>
             <Button>Back</Button>
           </Link>
         </div>

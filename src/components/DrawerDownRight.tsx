@@ -38,7 +38,7 @@ const DrawerDownRight = (props: Props) => {
     <div className="drawer-right">
       <Button
         onClick={() => {
-          router.push("/account/profile");
+          router.push("/account");
           onClose();
         }}
         size="large"

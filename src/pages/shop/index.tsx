@@ -1,4 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import handleAPI from "@/apis/handleAPI";
+import ProductItem from "@/components/ProductItem";
+import { API } from "@/configurations/configurations";
+import { colors } from "@/constants/appInfos";
+import { PageResponse } from "@/model/AppModel";
+import { CategoryResponse } from "@/model/CategoryModel";
+import { ProductResponse } from "@/model/ProductModel";
+import { FormatCurrency } from "@/utils/formatNumber";
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   Button,
   Checkbox,
@@ -6,34 +14,21 @@ import {
   Form,
   Input,
   Layout,
-  List,
-  Menu,
-  message,
   Pagination,
-  Skeleton,
-  Slider,
   Space,
   Spin,
-  Typography,
+  Typography
 } from "antd";
 import { usePathname, useSearchParams } from "next/navigation";
-import { API } from "@/configurations/configurations";
-import handleAPI from "@/apis/handleAPI";
-import { ProductResponse } from "@/model/ProductModel";
-import { PageResponse } from "@/model/AppModel";
-import { LoadingOutlined } from "@ant-design/icons";
-import ProductItem from "@/components/ProductItem";
-import { SelectModelHasChildren } from "@/model/FormModel";
-import { CategoryResponse } from "@/model/CategoryModel";
-import { IoIosArrowForward, IoIosClose } from "react-icons/io";
-import { MdClose } from "react-icons/md";
 import { useRouter } from "next/router";
-import { FormatCurrency } from "@/utils/formatNumber";
-import { colors } from "@/constants/appInfos";
+import { useEffect, useRef, useState } from "react";
+import { IoIosArrowForward } from "react-icons/io";
+import { MdClose } from "react-icons/md";
+
+// interface Props{ categoryIds: [], page: string, search: string }
 
 const ShopPage = () => {
   const { Sider, Content } = Layout;
-
   const params = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [pageData, setPageData] = useState<PageResponse<ProductResponse>>();
@@ -71,13 +66,11 @@ const ShopPage = () => {
         console.error("Failed to fetch initial data", error);
       }
     };
-
-    // Chỉ gọi 1 lần khi trang tải lần đầu
     if (isInitLoad.current) {
       getData();
       isInitLoad.current = false;
     }
-  }, []); // Không dùng dependencies để tránh lặp
+  }, []); 
 
   // Hàm tạo URL API
   const createApiUrl = () => {
@@ -458,3 +451,18 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
+
+// export async function getServerSideProps(context: any) {
+//   const { categoryIds, page, search } = context.query;
+
+//   // Chuyển categoryIds thành mảng nếu cần
+//   const categoryIdsArray = categoryIds ? categoryIds.split(',') : [];
+
+//   return {
+//     props: {
+//       categoryIds: categoryIdsArray,
+//       page: page || '1', // Dự phòng nếu không có page
+//       search: search || ''
+//     }
+//   };
+// }

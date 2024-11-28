@@ -1,19 +1,19 @@
 /** @format */
 
+import handleAPI from "@/apis/handleAPI";
 import HeaderComponent from "@/components/HeaderComponent";
+import { API } from "@/configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
+import { UserProfile } from "@/model/UserModel";
+import AccountLayout from "@/pages/account/AccountLayout";
 import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
-import { Affix, Layout, Spin } from "antd";
+import { addAllProduct } from "@/reducx/reducers/cartReducer";
+import { addUserProfile } from "@/reducx/reducers/profileReducer";
+import { Layout, Spin } from "antd";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { localDataNames } from "../constants/appInfos";
-import handleAPI from "@/apis/handleAPI";
-import { API } from "@/configurations/configurations";
-import { addAllProduct } from "@/reducx/reducers/cartReducer";
-import AccountLayout from "@/pages/account/Layout";
-import { UserProfile } from "@/model/UserModel";
-import { addUserProfile } from "@/reducx/reducers/profileReducer";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -66,7 +66,7 @@ const Routers = ({ Component, pageProps }: any) => {
         <Component {...pageProps} />
       </Content>
     </Layout>
-  ) : path && path.includes("/account") ? ( // Kiểm tra nếu thuộc "/account"
+  ) : path && (path.includes("/account") || path.includes("/orders")) ? ( // Kiểm tra nếu thuộc "/account"
     <Layout>
       <HeaderComponent />
       <AccountLayout>
@@ -77,7 +77,7 @@ const Routers = ({ Component, pageProps }: any) => {
     // Giao diện mặc định
     <Layout>
       <HeaderComponent />
-      <Content >
+      <Content>
         <Component {...pageProps} />
       </Content>
       <Footer>footer</Footer>

@@ -9,8 +9,9 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 
 import { GetServerSideProps } from "next";
-import OrderItems from "../componets/OrderItems";
+
 import LoadingComponent from "@/components/LoadingComponent";
+import OrderItems from "./componets/OrderItems";
 
 const Order = ({ initialStatus }: { initialStatus: string }) => {
   const [activeTab, setActiveTab] = useState<string>(initialStatus); 

@@ -27,9 +27,9 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   // Cập nhật selectedKey khi pathname thay đổi
   useEffect(() => {
     const { pathname } = router;
-    if (pathname === "/account/profile") {
+    if (pathname === "/account") {
       setSelectedKey("profile");
-    } else if (pathname.startsWith("/account/orders")) {
+    } else if (pathname.startsWith("/orders")) {
       setSelectedKey("orders");
     } else if (pathname === "/account/notifications") {
       setSelectedKey("notifications");
@@ -55,13 +55,13 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       key: "profile",
       label: "Your Profile",
       icon: <CgProfile size={25} />,
-      link: "/account/profile",
+      link: "/account",
     },
     {
       key: "orders",
       label: "My Orders",
       icon: <FaBox size={25} />,
-      link: "/account/orders",
+      link: "/orders",
     },
     {
       key: "notifications",
