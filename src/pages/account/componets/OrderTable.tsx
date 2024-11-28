@@ -108,7 +108,28 @@ const OrderList = (props: Props) => {
           onClose={() => {
             setIsRatingModal(false);
           }}
-          onFinish={(v) => console.log(v)}
+          onFinish={(v) => {
+            const index = data.orderProductResponses.findIndex((i) => i.id === orderProductSelected.id);
+            if (index !== -1) {
+              // Tạo bản sao của mảng để đảm bảo không thay đổi trực tiếp
+              const newOrderProducts = [...data.orderProductResponses];
+          
+              // Cập nhật phần tử ở vị trí tìm được
+              newOrderProducts[index] = {
+                ...newOrderProducts[index], // Giữ nguyên các giá trị cũ
+                isRating: true, // Thay đổi giá trị của `isRating`
+              };
+          
+              // Cập nhật lại data hoặc thực hiện hành động cần thiết
+              const newData = {
+                ...data,
+                orderProductResponses: newOrderProducts,
+              };
+          
+              console.log(newData); // Debug hoặc gọi hàm để cập nhật trạng thái
+            }
+          }}
+          
         />
       )}
     </>

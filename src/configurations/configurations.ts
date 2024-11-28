@@ -30,7 +30,8 @@ export const API = {
   PROFILES: '/profiles',
   USER_PROFILE: '/profiles/users',
   GET_MENU_CATEGORIES_TREE: "/kanban/categories/get-menu-tree",
-  ORDERS: 'kanban/orders'
+  ORDERS: 'kanban/orders',
+  RATING: 'kanban/rating'
 };
 
 export const PAGE = {

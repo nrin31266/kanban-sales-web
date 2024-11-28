@@ -85,12 +85,8 @@
   color: orangered;
 }
 
-:where(.css-dev-only-do-not-override-dz3jpi).ant-form-item
-  .ant-form-item-label
-  > label.ant-form-item-required:not(
-    .ant-form-item-required-mark-optional
-  )::before {
-  content: "***";
+:where(.css-dev-only-do-not-override-104y1e5).ant-form-item .ant-form-item-label >label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  content: "*";
   color: silver;
 }
 

@@ -141,7 +141,7 @@ const OrderItem = (props: Props) => {
           </Button>
         )} */}
 
-        <Link href={`/account/orders?id=${item.id}`}>
+        <Link href={`/account/orders/${item.id}`}>
           <Button disabled={isLoading}>Detail</Button>
         </Link>
         {item.status === Status.DELIVERED && (
