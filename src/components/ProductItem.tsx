@@ -5,8 +5,10 @@ import { Button, Typography } from "antd";
 
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
+import { GoStarFill } from "react-icons/go";
 
 import { MdImage } from "react-icons/md";
+import { TfiLayoutLineSolid } from "react-icons/tfi";
 
 interface Props {
   product: ProductResponse;
@@ -81,7 +83,23 @@ const ProductItem = (props: Props) => {
                   )} - ${FormatCurrency.VND.format(product.maxPrice)}`
               : "N/A"}
           </Typography.Text>
+          
         </div>
+        {
+            product.totalSold > 0 && <div className="d-flex" style={{alignItems: 'center'}}>
+              <div style={{backgroundColor: 'rgb(252, 234, 164,0.1)', border: '1px solid rgb(252, 234, 164)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 5px'}} className="p-1">
+                <GoStarFill color={colors[4]} size={15}/>
+                <Typography.Text>{product.averageRating.toFixed(1)}</Typography.Text>
+              </div>
+              <div className="ml-1 mr-1">
+                <span><TfiLayoutLineSolid style={{transform: 'rotate(90deg)'}} /></span>
+              </div>
+              <div>
+                <Typography.Text>{product.totalSold}</Typography.Text>
+                <span>{' sold'}</span>
+              </div>
+            </div>
+          }
       </a>
       </div>
     </div>

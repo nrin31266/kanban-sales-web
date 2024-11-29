@@ -31,7 +31,13 @@ const ShopPage = () => {
   const { Sider, Content } = Layout;
   const params = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [pageData, setPageData] = useState<PageResponse<ProductResponse>>();
+  const [pageData, setPageData] = useState<PageResponse<ProductResponse>>({
+    data: [],
+    currentPage: 0,
+    pageSize: 0,
+    totalElements: 0,
+    totalPages: 0,
+  });
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const router = useRouter();
   const [apiUrl, setApiUrl] = useState<string>(""); // lưu URL API đã tạo
@@ -399,13 +405,24 @@ const ShopPage = () => {
         </div>
 
         <Content className="bg-white">
+          <div className="ml-2 mr-2">
           <div className="d-flex" style={{ justifyContent: "space-between" }}>
-            <div>a</div>
-            <div className="d-block d-md-none">filter</div>
+            <div></div>
+            <div className="d-block d-md-none"><Button size="small">Filter</Button></div>
           </div>
           <div className="d-flex" style={{ justifyContent: "space-between" }}>
-            <div>c</div>
-            <div>d</div>
+            <div>
+              <span>Showing page {pageData.currentPage}</span>
+              <span>{'-'}</span>
+              <span>{pageData.totalPages}</span>
+              <span>{' of '}</span>
+              <span>{pageData.totalElements}</span>
+              <span>{pageData.totalElements>1? ' results': ' result'}</span>
+            </div>
+            <div>
+              <span>Sort by laster</span>
+            </div>
+          </div>
           </div>
           {isLoading ? (
             <div className="text-center">

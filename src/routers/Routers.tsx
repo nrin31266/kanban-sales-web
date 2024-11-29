@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { localDataNames } from "../constants/appInfos";
+import FooterComponent from "@/components/FooterComponent";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -72,6 +73,7 @@ const Routers = ({ Component, pageProps }: any) => {
       <AccountLayout>
         <Component {...pageProps} />
       </AccountLayout>
+      <FooterComponent/>
     </Layout>
   ) : (
     // Giao diện mặc định
@@ -80,7 +82,7 @@ const Routers = ({ Component, pageProps }: any) => {
       <Content>
         <Component {...pageProps} />
       </Content>
-      <Footer>footer</Footer>
+      <FooterComponent/>
     </Layout>
   );
 };
