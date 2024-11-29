@@ -57,7 +57,7 @@ const DrawerDownRight = (props: Props) => {
       <Divider />
       <Button
         onClick={() => {
-          router.push("/account/orders");
+          router.push(PAGE.ORDERS);
           onClose();
         }}
         size="large"

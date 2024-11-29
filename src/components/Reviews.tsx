@@ -43,9 +43,9 @@ const Reviews = (props: Props) => {
     }
   }, [productId]);
 
-  const getRatings = async () => {
+  const getRatings = async (p?: number) => {
     setIsLoading(true);
-    const url = `${API.RATING}?productId=${productId}&page=${page}`;
+    const url = `${API.RATING}?productId=${productId}&page=${p?? 1}`;
     try {
       const res = await handleAPI(url);
       setPageData(res.data.result);
@@ -168,7 +168,7 @@ const Reviews = (props: Props) => {
           total={pageData.totalElements}
           align="end"
           onChange={async (v) => {
-            console.log(v);
+            getRatings(v);
           }}
           pageSize={5}
         />

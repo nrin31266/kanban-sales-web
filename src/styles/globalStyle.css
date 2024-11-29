@@ -415,3 +415,7 @@
 .custom-tab-item:hover {
   color: #40a9ff;
 } */
+
+.slick-dots .slick-dots-bottom{
+  z-index: 5;
+}

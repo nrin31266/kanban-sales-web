@@ -18,6 +18,11 @@ export interface ProductResponse {
   supplierResponse: SupplierResponse
   categoryResponse: CategoryResponse[]
 
-  maxPrice?:number;
-  minPrice?: number;
+  maxPrice:number;
+  minPrice: number;
+
+  totalSold: number;
+
+  countRating: number
+  averageRating: number
 }

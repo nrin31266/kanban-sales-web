@@ -27,6 +27,8 @@ import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import Reviews from "@/components/Reviews";
 import LoadingComponent from "@/components/LoadingComponent";
+import { colors } from "@/constants/appInfos";
+import { GoStarFill } from "react-icons/go";
 
 // {
 //   productProp,
@@ -124,7 +126,15 @@ const ProductDetail = () => {
             <div className="row m-0" style={{ backgroundColor: "white" }}>
               <div className="col-sm-12 col-md-4">
                 <div className="text-center p-4">
-                  <Image src={productDetail&&productDetail?.length> 0? photoSelected : product.images[0]} width="100%" alt="Product image" />
+                  <Image
+                    src={
+                      productDetail && productDetail?.length > 0
+                        ? photoSelected
+                        : product.images[0]
+                    }
+                    width="100%"
+                    alt="Product image"
+                  />
                 </div>
                 <ScrollItems
                   onClick={() => {}}
@@ -133,40 +143,63 @@ const ProductDetail = () => {
                 />
               </div>
               <div className="col">
-                <div className="row">
-                  <div className="col-sm-12 col-md-8">
-                    <Typography.Title level={3}>
-                      {product.title}
-                    </Typography.Title>
-                  </div>
-                  <div className="col">
-                    <Space>
-                      <Tag
-                        color={
-                          subProductSelected
-                            ? subProductSelected.quantity > 0
-                              ? "green"
-                              : "red"
-                            : "orange"
-                        }
-                      >
-                        {productStatus}
-                      </Tag>
-                      <Typography.Title level={5}>Sold 100</Typography.Title>
-                    </Space>
-                  </div>
+                <div className="">
+                  <Typography.Title level={3}>{product.title}</Typography.Title>
                 </div>
+                <Typography.Title type="secondary" level={5}>
+                  {product.supplierResponse.name}
+                </Typography.Title>
+                <div className="d-flex" style={{ alignItems: "center" }}>
+                  <Tag
+                    className="mr-3"
+                    style={{ fontSize: "1rem" }}
+                    color={
+                      subProductSelected
+                        ? subProductSelected.quantity > 0
+                          ? "green"
+                          : "red"
+                        : "orange"
+                    }
+                  >
+                    {productStatus}
+                  </Tag>
+
+                  <Typography.Text
+                    style={{ fontSize: "1rem", fontWeight: "500" }}
+                  >
+                    {product.totalSold ?? 0}
+                  </Typography.Text>
+                  <Typography.Text
+                    type="secondary"
+                    style={{ fontSize: "1rem", fontWeight: "" }}
+                  >
+                    &nbsp;{"sold"}
+                  </Typography.Text>
+                </div>
+
                 {subProductSelected && (
                   <div>
-                    <Typography.Title type="secondary" level={5}>
-                      {product.supplierResponse.name}
-                    </Typography.Title>
-                    <div>
-                      <Rate disabled defaultValue={5} />
-                      <Typography.Text type="secondary">(5.0)</Typography.Text>
-                      <Typography.Text type="secondary">
-                        (1024 Reviews)
+                    <div className="d-flex" style={{ alignItems: "center" }}>
+                      <Typography.Text
+                        style={{ fontSize: "1rem", fontWeight: "500" }}
+                      >
+                        {product.averageRating.toFixed(1)}
                       </Typography.Text>
+                      <GoStarFill
+                        className="ml-1 mr-2"
+                        size={30}
+                        color={colors[4]}
+                      />
+                      <div>
+                      <Typography.Text
+                        style={{ fontSize: "1rem", fontWeight: "500" }}
+                      >
+                        {product.countRating}&nbsp;
+                      </Typography.Text>
+                      <Typography.Text type="secondary">
+                        {product.countRating > 1 ? "reviews" : "review"}
+                      </Typography.Text>
+                      </div>
                     </div>
                     {subProductSelected.discount ? (
                       <Space>
@@ -216,7 +249,12 @@ const ProductDetail = () => {
                       {
                         key: "tab-2",
                         label: "Reviews",
-                        children: <Reviews subProducts={productDetail} productId={product.id} />,
+                        children: (
+                          <Reviews
+                            subProducts={productDetail}
+                            productId={product.id}
+                          />
+                        ),
                       },
                     ]}
                   />

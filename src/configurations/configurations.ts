@@ -31,7 +31,8 @@ export const API = {
   USER_PROFILE: '/profiles/users',
   GET_MENU_CATEGORIES_TREE: "/kanban/categories/get-menu-tree",
   ORDERS: 'kanban/orders',
-  RATING: 'kanban/rating'
+  RATING: 'kanban/rating',
+  LOCATIONS: '/locations'
 };
 
 export const PAGE = {
@@ -44,7 +45,8 @@ export const PAGE = {
   PRODUCTS: '/products',
   CART: '/cart',
   CHECKOUT: '/shop/checkout',
-  MY_ACCOUNT: '/account/my-account'
+  MY_ACCOUNT: '/account/my-account',
+  ORDERS: '/orders'
 }
 
 export const APP = {

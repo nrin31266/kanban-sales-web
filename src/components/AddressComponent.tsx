@@ -156,10 +156,10 @@ const AddressComponent = (props: Props) => {
   const getProvinces = async () => {
     setIsLoading(true);
     try {
-      const res: any = await axios(
-        "https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1"
+      const res: any = await handleAPI(
+        `${API.LOCATIONS}/provinces/getAll?limit=-1`
       );
-      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+      const selects = res.data.result.map((v: ProvincesResponse) => ({
         label: v.name,
         value: v.code,
       }));
@@ -178,10 +178,10 @@ const AddressComponent = (props: Props) => {
   const getDistricts = async (provinceCode: string) => {
     setIsLoading(true);
     try {
-      const res = await axios(
-        `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`
+      const res = await handleAPI(
+        `${API.LOCATIONS}/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`
       );
-      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+      const selects = res.data.result.map((v: ProvincesResponse) => ({
         label: v.name,
         value: v.code,
       }));
@@ -200,10 +200,10 @@ const AddressComponent = (props: Props) => {
   const getWards = async (districtCode: string) => {
     setIsLoading(true);
     try {
-      const res = await axios(
-        `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
+      const res = await handleAPI(
+        `${API.LOCATIONS}/wards/getByDistrict?districtCode=${districtCode}&limit=-1`
       );
-      const selects = res.data.data.data.map((v: ProvincesResponse) => ({
+      const selects = res.data.result.map((v: ProvincesResponse) => ({
         label: v.name,
         value: v.code,
       }));
