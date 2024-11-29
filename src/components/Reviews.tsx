@@ -74,8 +74,8 @@ const Reviews = (props: Props) => {
                     style={{
                       display: "inline-block",
                       backgroundColor: value as string,
-                      width: 20,
-                      height: 20,
+                      width: 10,
+                      height: 10,
                       borderRadius: "8%",
                     }}
                   ></div>
@@ -136,6 +136,7 @@ const Reviews = (props: Props) => {
                         <div>
                           {item.imageUrls.map((imgUrl) => (
                             <Image
+                              style={{objectFit: 'cover'}}
                               key={item.id + imgUrl}
                               src={imgUrl}
                               width={100}

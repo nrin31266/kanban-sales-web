@@ -302,7 +302,7 @@ const Cart = () => {
             className=""
             id="scrollableDiv"
             style={{
-              height: "80vh",
+              maxHeight: "80vh",
               overflow: "auto",
               padding: "8px 8px",
               // border: "1px solid rgba(140, 140, 140, 0.35)",
@@ -319,10 +319,9 @@ const Cart = () => {
                   <div>
                     <Skeleton active />
                     <Skeleton active />
-                    <Skeleton active />
                   </div>
                 ) : (
-                  "End"
+                  <></>
                 )
               }
               scrollableTarget="scrollableDiv"

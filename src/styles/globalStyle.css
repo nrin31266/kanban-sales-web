@@ -113,6 +113,7 @@
 }
 
 .product-item-layout {
+  height: 100%;
   padding: 0.2rem;
   border: 1px solid rgb(232, 232, 232);
 }
@@ -234,22 +235,33 @@
 }
 
 .sub-product-gallery img {
-  border: 1px solid silver;
-  border-radius: 6;
+  border-radius: 0;
+  object-fit: cover;
 }
 
 .sub-product-gallery div,
 .category-gallery div {
   width: 100%;
   display: grid;
-  grid-template-columns: auto;
-  margin: 10px 10px;
+  grid-template-columns: auto auto;
+  gap: 10px;
 }
 
-.category-gallery img {
+.category-gallery-item {
   object-fit: cover;
-  border-radius: 6;
-  border: 1px solid silver;
+  gap: 0.2rem;
+  display: grid;
+  grid-template-columns: auto;
+  margin-top: 0.5rem;
+}
+
+.category-gallery-item:hover{
+    transform: scale(1.06);
+}
+
+.category-gallery-item img{
+  border: 1px solid rgb(228, 221, 221);
+  padding: 0.2rem;
 }
 
 .sub-product-gallery::-webkit-scrollbar,
@@ -260,21 +272,21 @@
 .gallery-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
   position: relative; /* Giới hạn phạm vi của các nút */
   overflow: visible;
 }
-
-.gallery-wrap #btn-back {
-  left: -15px; /* Đảm bảo sử dụng giá trị px */
+.gallery-wrap #btn-next,  #btn-back{
   top: 50%; /* Đưa nút lên giữa theo chiều dọc */
   transform: translateY(-50%); /* Đảm bảo căn chỉnh giữa */
 }
+.gallery-wrap #btn-back {
+  left: 0; /* Đảm bảo sử dụng giá trị px */
+
+}
 
 .gallery-wrap #btn-next {
-  right: -15px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 0;
+
 }
 
 .gallery-wrap #btn-next,
@@ -309,9 +321,15 @@
 }
 
 .sub-product-gallery a:hover,
-.category-gallery a:hover {
-  transform: scale(1.1);
+.category-gallery a:hover img {
+  /* transform: scale(1.1); */
 }
+
+.sub-product-gallery a:hover img {
+  /* transform: scale(1.1); */
+  border: 1px solid rgb(216, 216, 216);
+}
+
 .category-gallery a:hover .category-content {
   font-weight: 500;
 }

@@ -18,7 +18,7 @@ const TabBarComponent = (props: Props) => {
       <div className={`${padding ? `p-${padding}` : ""}`}>
         <div className="row m-0">
           <div className={`${titleRight ? "col-9" : "col"} ${titleAlign}`}>
-            <Typography.Title level={titleLevel}>{title} </Typography.Title>
+            <Typography.Title className="m-0" level={titleLevel}>{title} </Typography.Title>
           </div>
           {titleRight && <div className="col-3 text-right">{titleRight}</div>}
         </div>

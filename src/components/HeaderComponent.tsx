@@ -35,6 +35,7 @@ import CartComponent from "./CartComponent";
 import DrawerDownLeft from "./DrawerDownLeft";
 import DrawerDownRight from "./DrawerDownRight";
 import MainSearch from "./MainSearch";
+import Logo from "./Logo";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -116,10 +117,7 @@ const HeaderComponent = () => {
                 }}
               />
               <Link className="ml-2" href={PAGE.HOME}>
-                <div  style={{fontSize: '1.5rem', fontWeight: 'bold', background: 'white', padding: '0 9px', borderRadius: '4px'}}>
-                  <span style={{color: colors[2]}} className="mr-1">R</span>
-                  <span style={{color: colors[2]}}>T</span>
-                </div>
+                <Logo />
               </Link>
             </div>
             <div
