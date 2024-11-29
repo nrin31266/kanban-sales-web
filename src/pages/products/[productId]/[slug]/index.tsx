@@ -114,132 +114,137 @@ const ProductDetail = () => {
             url={`${APP.baseURL}/products/${product.id}/${product.slug}`}
           />
           <div className="container product-detail">
-            <div className="bg-white">
-              <Breadcrumb
-                items={[
-                  { key: "home", title: <Link href={PAGE.HOME}>Home</Link> },
-                  { key: "shop", title: <Link href={PAGE.SHOP}>Shop</Link> },
-                  { key: "product", title: product.title },
-                ]}
-              />
-            </div>
-            <div className="row m-0" style={{ backgroundColor: "white" }}>
-              <div className="col-sm-12 col-md-4">
-                <div className="text-center p-4">
-                  <Image
-                    src={
-                      productDetail && productDetail?.length > 0
-                        ? photoSelected
-                        : product.images[0]
-                    }
-                    width="100%"
-                    alt="Product image"
-                  />
-                </div>
-                <ScrollItems
-                  onClick={() => {}}
-                  onPhotoSelected={setPhotoSelected}
-                  product={product}
+            <div className="product-detail-main">
+              <div className="bg-white p-2">
+                <Breadcrumb
+                  items={[
+                    { key: "home", title: <Link href={PAGE.HOME}>Home</Link> },
+                    { key: "shop", title: <Link href={PAGE.SHOP}>Shop</Link> },
+                    { key: "product", title: product.title },
+                  ]}
                 />
               </div>
-              <div className="col">
-                <div className="">
-                  <Typography.Title level={3}>{product.title}</Typography.Title>
-                </div>
-                <Typography.Title type="secondary" level={5}>
-                  {product.supplierResponse.name}
-                </Typography.Title>
-                <div className="d-flex" style={{ alignItems: "center" }}>
-                  <Tag
-                    className="mr-3"
-                    style={{ fontSize: "1rem" }}
-                    color={
-                      subProductSelected
-                        ? subProductSelected.quantity > 0
-                          ? "green"
-                          : "red"
-                        : "orange"
-                    }
-                  >
-                    {productStatus}
-                  </Tag>
-
-                  <Typography.Text
-                    style={{ fontSize: "1rem", fontWeight: "500" }}
-                  >
-                    {product.totalSold ?? 0}
-                  </Typography.Text>
-                  <Typography.Text
-                    type="secondary"
-                    style={{ fontSize: "1rem", fontWeight: "" }}
-                  >
-                    &nbsp;{"sold"}
-                  </Typography.Text>
-                </div>
-
-                {subProductSelected && (
-                  <div>
-                    <div className="d-flex" style={{ alignItems: "center" }}>
-                      <Typography.Text
-                        style={{ fontSize: "1rem", fontWeight: "500" }}
-                      >
-                        {product.averageRating.toFixed(1)}
-                      </Typography.Text>
-                      <GoStarFill
-                        className="ml-1 mr-2"
-                        size={30}
-                        color={colors[4]}
-                      />
-                      <div>
-                      <Typography.Text
-                        style={{ fontSize: "1rem", fontWeight: "500" }}
-                      >
-                        {product.countRating}&nbsp;
-                      </Typography.Text>
-                      <Typography.Text type="secondary">
-                        {product.countRating > 1 ? "reviews" : "review"}
-                      </Typography.Text>
-                      </div>
-                    </div>
-                    {subProductSelected.discount ? (
-                      <Space>
-                        <Typography.Title level={3}>
-                          {FormatCurrency.VND.format(
-                            subProductSelected.discount
-                          )}
-                        </Typography.Title>
-                        <Typography.Title type="secondary" level={3}>
-                          <del>
-                            {FormatCurrency.VND.format(
-                              subProductSelected.price
-                            )}
-                          </del>
-                        </Typography.Title>
-                      </Space>
-                    ) : (
-                      <Typography.Title level={3}>
-                        {FormatCurrency.VND.format(subProductSelected.price)}
-                      </Typography.Title>
-                    )}
+              <div className="row m-0" style={{ backgroundColor: "white" }}>
+                <div className="col-sm-12 col-md-4">
+                  <div className="text-center p-4">
+                    <Image
+                      src={
+                        productDetail && productDetail?.length > 0
+                          ? photoSelected
+                          : product.images[0]
+                      }
+                      width="100%"
+                      alt="Product image"
+                    />
                   </div>
-                )}
-                {productDetail && productDetail.length > 0 && (
-                  <ChangeSubProduct
-                    isVisible={true}
-                    type="main"
-                    initData={{
-                      product: product,
-                      subProducts: productDetail,
-                    }}
-                    onChangeProductDetail={handleSubProductChange}
+                  <ScrollItems
+                    onClick={() => {}}
+                    onPhotoSelected={setPhotoSelected}
+                    product={product}
                   />
-                )}
+                </div>
+                <div className="col">
+                  <div className="">
+                    <Typography.Title level={3}>
+                      {product.title}
+                    </Typography.Title>
+                  </div>
+                  <Typography.Title type="secondary" level={5}>
+                    {product.supplierResponse.name}
+                  </Typography.Title>
+                  <div className="d-flex" style={{ alignItems: "center" }}>
+                    <Tag
+                      className="mr-3"
+                      style={{ fontSize: "1rem" }}
+                      color={
+                        subProductSelected
+                          ? subProductSelected.quantity > 0
+                            ? "green"
+                            : "red"
+                          : "orange"
+                      }
+                    >
+                      {productStatus}
+                    </Tag>
+
+                    <Typography.Text
+                      style={{ fontSize: "1rem", fontWeight: "500" }}
+                    >
+                      {product.totalSold ?? 0}
+                    </Typography.Text>
+                    <Typography.Text
+                      type="secondary"
+                      style={{ fontSize: "1rem", fontWeight: "" }}
+                    >
+                      &nbsp;{"sold"}
+                    </Typography.Text>
+                  </div>
+
+                  {subProductSelected && (
+                    <div>
+                      <div className="d-flex" style={{ alignItems: "center" }}>
+                        <Typography.Text
+                          style={{ fontSize: "1rem", fontWeight: "500" }}
+                        >
+                          {product.averageRating.toFixed(1)}
+                        </Typography.Text>
+                        <GoStarFill
+                          className="ml-1 mr-2"
+                          size={30}
+                          color={colors[4]}
+                        />
+                        <div>
+                          <Typography.Text
+                            style={{ fontSize: "1rem", fontWeight: "500" }}
+                          >
+                            {product.countRating}&nbsp;
+                          </Typography.Text>
+                          <Typography.Text type="secondary">
+                            {product.countRating > 1 ? "reviews" : "review"}
+                          </Typography.Text>
+                        </div>
+                      </div>
+                      {subProductSelected.discount ? (
+                        <Space>
+                          <Typography.Title level={3}>
+                            {FormatCurrency.VND.format(
+                              subProductSelected.discount
+                            )}
+                          </Typography.Title>
+                          <Typography.Title type="secondary" level={3}>
+                            <del>
+                              {FormatCurrency.VND.format(
+                                subProductSelected.price
+                              )}
+                            </del>
+                          </Typography.Title>
+                        </Space>
+                      ) : (
+                        <Typography.Title level={3}>
+                          {FormatCurrency.VND.format(subProductSelected.price)}
+                        </Typography.Title>
+                      )}
+                    </div>
+                  )}
+                  {productDetail && productDetail.length > 0 && (
+                    <ChangeSubProduct
+                      isVisible={true}
+                      type="main"
+                      initData={{
+                        product: product,
+                        subProducts: productDetail,
+                      }}
+                      onChangeProductDetail={handleSubProductChange}
+                    />
+                  )}
+                </div>
               </div>
             </div>
             <Section
               children={
                 <div className="bg-white">
                   <Tabs
+                  className="p-2"
                     items={[
                       {
                         key: "tab-1",
@@ -263,19 +268,22 @@ const ProductDetail = () => {
             />
             <Section
               children={
-                <TabBarComponent
-                  title="Related products"
-                  titleLevel={5}
-                  children={
-                    <div className="row m-0">
-                      {relatedProducts &&
-                        relatedProducts.length > 0 &&
-                        relatedProducts.map((item) => (
-                          <ProductItem key={item.id} product={item} />
-                        ))}
-                    </div>
-                  }
-                />
+                <div>
+                  <TabBarComponent
+                padding={2}
+                title="Related products"
+                titleLevel={5}
+                children={
+                  <div className="row m-0">
+                    {relatedProducts &&
+                      relatedProducts.length > 0 &&
+                      relatedProducts.map((item) => (
+                        <ProductItem key={item.id} product={item} />
+                      ))}
+                  </div>
+                }
+              />
+                </div>
               }
             />
           </div>
