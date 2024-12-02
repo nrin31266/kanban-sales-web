@@ -31,17 +31,6 @@ const login = () => {
   const [isLogin, setIsLogin] = useState(false);
   const auth: AuthModel = useSelector(authSelector);
 
-  useEffect(() => {
-    if (isLogin) {
-      getUserInfo();
-      getUserProfile();
-      router.push(
-        productId && productSlug
-          ? `${PAGE.PRODUCTS}/${productId}/${productSlug}`
-          : PAGE.HOME
-      );
-    }
-  }, [isLogin]);
 
   const handleLogin = async (values: LoginRequest) => {
     setIsLoading(true);
@@ -60,32 +49,8 @@ const login = () => {
     }
   };
 
-  const getUserInfo = async () => {
-    setIsLoading(true);
-    try {
-      const res = await handleAPI(API.USER_INFO);
-      const response: ApiResponse<UserInfoResponse> = res.data;
-      dispatch(
-        addAuth({ accessToken: auth.accessToken, userInfo: response.result })
-      );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  const getUserProfile = async () => {
-    setIsLoading(true);
-    try {
-      const res = await handleAPI(`${API.USER_PROFILE}/my-info`);
-      dispatch(addUserProfile(res.data.result));
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+
 
   return (
     <div>

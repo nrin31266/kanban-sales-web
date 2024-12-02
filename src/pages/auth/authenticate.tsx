@@ -21,6 +21,7 @@ const Authenticate = () => {
   const auth: AuthModel = useSelector(authSelector);
   const [isVerify, setIsVerify] = useState(false);
 
+
   useEffect(() => {
     if (isInitLoad.current) {
       isInitLoad.current = false;
@@ -56,11 +57,8 @@ const Authenticate = () => {
   }, []);
 
   const handleLogin = async () => {
-    await getUserInfo();
-    await getUserProfile();
-    if(!checkActiveEmail){
-
-    }
+    await handleReSendOtp();
+    setIsVerify(true);
 
   };
 
@@ -68,15 +66,18 @@ const Authenticate = () => {
     setIsVerify(true);
   }
 
-  const checkActiveEmail = () =>{
-    if(auth.userInfo.emailVerified === true){
-      return true;
-    }else{
-      return false;
+  const handleReSendOtp = async () => {
+    console.log("re send");
+    const userId = sessionStorage.getItem("userId");
+    setIsLoading(true);
+    try {
+      await handleAPI(`${API.CREATE_OTP}/${userId}`, undefined, "post");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
-
-
+  };
 
 
 
@@ -91,8 +92,7 @@ const Authenticate = () => {
       console.log(response);
       const accessToken = response.result.token;
       dispatch(addAuth({ ...auth, accessToken: accessToken }));
-      getUserInfo();
-
+      setIsLogin(true);
     } catch (error) {
       console.log(error);
     }

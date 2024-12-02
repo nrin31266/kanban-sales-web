@@ -1,22 +1,18 @@
 import handleAPI from "@/apis/handleAPI";
 import { API } from "@/configurations/configurations";
-import { UserResponse } from "@/model/UserModel";
 import {
   faArrowLeft,
   faArrowRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Input, message, Typography } from "antd";
+import { Button, Input, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { VerifyOtpRequest, VerifyOtpResponse } from "../model/OtpModel";
-import { ApiResponse } from "@/model/AppModel";
-import { useDispatch } from 'react-redux';
 
 
 interface Props {
   onFinish: () => void;
   onClose: () => void;
-  onLogin?: (token: string)=> void
+  onLogin?: (token: string)=> void,
 }
 
 const VerifyOtp = (props: Props) => {
@@ -45,6 +41,8 @@ const VerifyOtp = (props: Props) => {
   useEffect(() => {
     focusWhenInputNull();
   }, []);
+
+
 
   useEffect(() => {
     const time = setInterval(() => {
@@ -196,7 +194,7 @@ const VerifyOtp = (props: Props) => {
       >
         {timeReSendOtp < 0 ? (
           <Button
-            loading={isLoading}
+            disabled={isLoading}
             type="text"
             size="large"
             onClick={() => handleReSendOtp()}

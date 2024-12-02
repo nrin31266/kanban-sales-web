@@ -36,29 +36,20 @@ const Register = () => {
   const [isAgreeToTheTerms, setIsAgreeToTheTerms] = useState<boolean>(false);
   const [isRegister, setIsRegister] = useState<boolean>(false);
   const [loginData, setLoginData] = useState<LoginRequest>();
-  type NotificationPlacement = NotificationArgsProps['placement'];
+  type NotificationPlacement = NotificationArgsProps["placement"];
   const [isCreated, setIsCreated] = useState(false);
   const auth: AuthModel = useSelector(authSelector);
   const [api, contextHolder] = notification.useNotification();
-  
 
   const openNotification = (placement: NotificationPlacement) => {
     api.warning({
       message: `Terms`,
-      description:
-        'To create an account, you need to agree to our terms',
+      description: "To create an account, you need to agree to our terms",
       placement,
     });
   };
   const dispatch = useDispatch();
 
-    
-
-  
-
-
-
- 
   const handleRegister = async (values: CreateUserRequest) => {
     console.log(values);
     if (values.password.length < 8) {
@@ -75,11 +66,11 @@ const Register = () => {
     try {
       const resR = await handleAPI(apiRe, values, "post");
       console.log(resR);
-      const resLogin = await handleAPI(apiLogin, values, 'post');
-      console.log(resLogin)
+      const resLogin = await handleAPI(apiLogin, values, "post");
+      console.log(resLogin);
       sessionStorage.setItem("userId", resLogin.data.result);
       sessionStorage.setItem("authType", "register");
-      router.push('/auth/authenticate')
+      router.push("/auth/authenticate");
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -88,97 +79,83 @@ const Register = () => {
     }
   };
 
-  const getUserProfile = async () => {
-    setIsLoading(true);
-    try {
-      const res = await handleAPI(`${API.USER_PROFILE}/my-info`);
-      console.log(res.data);
-      dispatch(addUserProfile(res.data.result));
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
-
   return (
     <>
-          <div className="mb-4">
-            <Typography.Title>Create new account</Typography.Title>
-            <Typography.Title type="secondary" level={5}>
-              Please enter detail information
-            </Typography.Title>
-          </div>
-          <Form
-            disabled={isLoading}
-            form={form}
-            layout="vertical"
-            onFinish={handleRegister}
-            size="large"
-          >
-            <Form.Item
-              name={"name"}
-              label={"Name"}
-              required={true}
-              rules={[{ message: "Please enter name", required: true }]}
-            >
-              <Input placeholder="Ronaldo" allowClear />
-            </Form.Item>
-            <Form.Item
-              name={"email"}
-              label={"Email"}
-              required={true}
-              rules={[{ message: "Please enter email", required: true }]}
-            >
-              <Input type="email" placeholder="ronaldo@gmail.com" allowClear />
-            </Form.Item>
-            <Form.Item
-              name={"password"}
-              label={"Password"}
-              rules={[{ message: "Please enter password", required: true }]}
-            >
-              <Input.Password
-                minLength={8}
-                type="password"
-                placeholder="Enter password"
-                allowClear
-              />
-            </Form.Item>
-          </Form>
-          <div>
-            <Checkbox
-              checked={isAgreeToTheTerms}
-              onChange={(val) => setIsAgreeToTheTerms(val.target.checked)}
-            >
-              Agree to our<Link href=""> Terms</Link>
-            </Checkbox>
-          </div>
-          <div className="mt-2">
-            <Button
-              loading={isLoading}
-              size="large"
-              style={{ width: "100%" }}
-              type="primary"
-              onClick={form.submit}
-            >
-              Create
-            </Button>
-          </div>
-          <div className="mt-3">
-            <SocialLogin />
-          </div>
-          <div className="mt-3">
-            <Button
-              style={{ width: "100%" }}
-              type="link"
-              onClick={() => router.push(PAGE.LOGIN)}
-            >
-              Go to login
-            </Button>
-          </div>
-        </>
+      {contextHolder}
+      <div className="mb-4">
+        <Typography.Title>Create new account</Typography.Title>
+        <Typography.Title type="secondary" level={5}>
+          Please enter detail information
+        </Typography.Title>
+      </div>
+      <Form
+        disabled={isLoading}
+        form={form}
+        layout="vertical"
+        onFinish={handleRegister}
+        size="large"
+      >
+        <Form.Item
+          name={"name"}
+          label={"Name"}
+          required={true}
+          rules={[{ message: "Please enter name", required: true }]}
+        >
+          <Input placeholder="Ronaldo" allowClear />
+        </Form.Item>
+        <Form.Item
+          name={"email"}
+          label={"Email"}
+          required={true}
+          rules={[{ message: "Please enter email", required: true }]}
+        >
+          <Input type="email" placeholder="ronaldo@gmail.com" allowClear />
+        </Form.Item>
+        <Form.Item
+          name={"password"}
+          label={"Password"}
+          rules={[{ message: "Please enter password", required: true }]}
+        >
+          <Input.Password
+            minLength={8}
+            type="password"
+            placeholder="Enter password"
+            allowClear
+          />
+        </Form.Item>
+      </Form>
+      <div>
+        <Checkbox
+          checked={isAgreeToTheTerms}
+          onChange={(val) => setIsAgreeToTheTerms(val.target.checked)}
+        >
+          Agree to our<Link href=""> Terms</Link>
+        </Checkbox>
+      </div>
+      <div className="mt-2">
+        <Button
+          loading={isLoading}
+          size="large"
+          style={{ width: "100%" }}
+          type="primary"
+          onClick={form.submit}
+        >
+          Create
+        </Button>
+      </div>
+      <div className="mt-3">
+        <SocialLogin />
+      </div>
+      <div className="mt-3">
+        <Button
+          style={{ width: "100%" }}
+          type="link"
+          onClick={() => router.push(PAGE.LOGIN)}
+        >
+          Go to login
+        </Button>
+      </div>
+    </>
   );
 };
 
