@@ -1,15 +1,17 @@
 import { colors } from "@/constants/appInfos";
 import React from "react";
 
-const Logo = () => {
+const Logo = ({size}:{size?: number}) => {
   return (
     <div
+    className="logo"
       style={{
-        fontSize: "1.5rem",
+        fontSize: `${size?? '1.5'}rem`,
         fontWeight: "bold",
         background: "white",
-        padding: "0 9px",
+        padding: "0 0.9rem",
         borderRadius: "4px",
+        width: 'max-content'
       }}
     >
       <span style={{ color: colors[2] }} className="">

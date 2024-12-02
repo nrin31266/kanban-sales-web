@@ -31,7 +31,7 @@ const SocialLogin = () => {
     onClick={handleContinueWithGoogle}
     style={{
       width: '100%',
-      backgroundColor: '#E9F0D4'
+      backgroundColor: 'white'
     }}
     size="large"
       icon={

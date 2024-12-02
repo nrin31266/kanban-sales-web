@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { localDataNames } from "../constants/appInfos";
 import FooterComponent from "@/components/FooterComponent";
+import AuthLayout from "@/pages/auth/components/AuthLayout";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -63,9 +64,9 @@ const Routers = ({ Component, pageProps }: any) => {
     <Spin />
   ) : path && path.includes("/auth") ? ( // Kiểm tra nếu thuộc "/auth"
     <Layout>
-      <Content>
+      <AuthLayout>
         <Component {...pageProps} />
-      </Content>
+      </AuthLayout>
     </Layout>
   ) : path && (path.includes("/account") || path.includes("/orders")) ? ( // Kiểm tra nếu thuộc "/account"
     <Layout>
