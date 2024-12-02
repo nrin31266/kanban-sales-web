@@ -9,7 +9,8 @@ const initialState: AuthModel = {
         id: '',
         email: '',
         roles: []
-    }
+    },
+    type: ''
 };
 
 const authSlice = createSlice({

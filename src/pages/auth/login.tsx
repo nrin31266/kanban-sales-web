@@ -14,7 +14,7 @@ import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
 import { addUserProfile } from "@/reducx/reducers/profileReducer";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, message, Typography } from "antd";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -47,13 +47,14 @@ const login = () => {
     setIsLoading(true);
     const api = `${API.LOGIN}`;
     try {
-      const res = await handleAPI(api, values, "post");
-      const response: ApiResponse<LoginResponse> = res.data;
-      const accessToken = response.result.token;
-      dispatch(addAuth({ accessToken: accessToken }));
-      setIsLogin(true);
-    } catch (error) {
+      const resLogin = await handleAPI(api, values, "post");
+      console.log(resLogin)
+      sessionStorage.setItem("userId", resLogin.data.result);
+      sessionStorage.setItem("authType", "login");
+      router.push('/auth/authenticate');
+    } catch (error:any) {
       console.log(error);
+      message.error(error.message);
     } finally {
       setIsLoading(false);
     }

@@ -10,12 +10,13 @@ import { Button, Input, message, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { VerifyOtpRequest, VerifyOtpResponse } from "../model/OtpModel";
 import { ApiResponse } from "@/model/AppModel";
+import { useDispatch } from 'react-redux';
+
 
 interface Props {
   onFinish: () => void;
   onClose: () => void;
-  userId?: string;
-  onVerifyAccount?: () => void
+  onLogin?: (token: string)=> void
 }
 
 const VerifyOtp = (props: Props) => {
@@ -38,7 +39,7 @@ const VerifyOtp = (props: Props) => {
   const [otpCode, setOtpCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [messageError, setMessageError] = useState("");
-  const { onFinish, onClose, userId, onVerifyAccount } = props;
+  const { onFinish, onClose, onLogin } = props;
   const [timeReSendOtp, setTimeReSendOtp] = useState(30);
 
   useEffect(() => {
@@ -46,10 +47,10 @@ const VerifyOtp = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const time = setInterval(()=>{
-      setTimeReSendOtp(times=> times - 1);
-    }, 1000)
-    console.log('a');
+    const time = setInterval(() => {
+      setTimeReSendOtp((times) => times - 1);
+    }, 1000);
+    console.log("a");
     return () => clearInterval(time);
   }, []);
 
@@ -73,22 +74,18 @@ const VerifyOtp = (props: Props) => {
   };
   const handleOtpVerify = async () => {
     console.log("verify");
-    const request: VerifyOtpRequest = { otp: otpCode };
     setIsLoading(true);
     try {
-      const res = await handleAPI(API.USER_VERIFY, request, "post");
-      const response: ApiResponse<VerifyOtpResponse> = res.data;
-      const isValid = response.result.verified;
-      if (isValid) {
-        onFinish();
-        onVerifyAccount && onVerifyAccount();
+      if(onLogin){
+        const userId = sessionStorage.getItem("userId");
+        const res = await handleAPI(API.LOGIN_OTP, {otp: otpCode, userId: userId}, 'post');
+        console.log(res.data)
+        onLogin(res.data.result.token);
         onClose();
-        message.success("Verify email successfully");
-      } else {
-        setMessageError(response.result.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      setMessageError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -111,16 +108,16 @@ const VerifyOtp = (props: Props) => {
     }
   };
 
-  const handleReSendOtp =async ()=>{
-    console.log('re send');
+  const handleReSendOtp = async () => {
+    console.log("re send");
+    const userId = sessionStorage.getItem("userId");
     setIsLoading(true);
     try {
-     await handleAPI(API.CREATE_OTP, undefined, 'post');
-     setTimeReSendOtp(30);
-
+      await handleAPI(`${API.CREATE_OTP}/${userId}`, undefined, "post");
+      setTimeReSendOtp(30);
     } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -202,18 +199,20 @@ const VerifyOtp = (props: Props) => {
             loading={isLoading}
             type="text"
             size="large"
-            onClick={()=> handleReSendOtp()}
+            onClick={() => handleReSendOtp()}
           >
             <FontAwesomeIcon
-                icon={faArrowRotateLeft}
-                style={{ color: "#74C0FC" }}
-                
-              />
+              icon={faArrowRotateLeft}
+              style={{ color: "#74C0FC" }}
+            />
             Re-send OTP
           </Button>
         ) : (
           <div>
-            <Typography.Title level={5}>You can re send email after <span style={{color: 'red'}}>{timeReSendOtp}</span>s</Typography.Title>
+            <Typography.Title level={5}>
+              You can re send email after{" "}
+              <span style={{ color: "red" }}>{timeReSendOtp}</span>s
+            </Typography.Title>
           </div>
         )}
       </div>

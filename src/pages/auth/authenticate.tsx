@@ -1,90 +1,150 @@
-import { Empty, Spin, Typography } from "antd";
-import React, { useEffect, useState } from "react";
-import { LoadingOutlined } from "@ant-design/icons";
+import React, { useEffect, useRef, useState } from "react";
 import handleAPI from "@/apis/handleAPI";
 import { API, PAGE } from "@/configurations/configurations";
 import { ApiResponse } from "@/model/AppModel";
 import { AuthModel, LoginResponse } from "@/model/AuthenticationModel";
-import { useDispatch } from "react-redux";
-import { addAuth } from "@/reducx/reducers/authReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { addAuth, authSelector, removeAuth } from "@/reducx/reducers/authReducer";
 import { useRouter } from "next/router";
 import { UserInfoResponse } from "@/model/UserModel";
+import LoadingComponent from "@/components/LoadingComponent";
+import { addUserProfile, removeUserProfile } from "@/reducx/reducers/profileReducer";
+import { Typography } from "antd";
+import VerifyOtp from "@/components/VerifyOtp";
 
 const Authenticate = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>();
   const dispatch = useDispatch();
   const router = useRouter();
+  const isInitLoad = useRef(true);
+  const auth: AuthModel = useSelector(authSelector);
+  const [isVerify, setIsVerify] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    const authCodeRegex = /code=([^&]+)/;
-    const isMatch = window.location.href.match(authCodeRegex);
-    if (!isMatch) {
-      return;
-    } else {
-      handleLoginWithGoogle(isMatch);
+    if (isInitLoad.current) {
+      isInitLoad.current = false;
+      const authType = sessionStorage.getItem("authType");
+      switch (authType) {
+        case "login": {
+          handleLogin();
+          break;
+        }
+        case "register": {
+          handleRegister();
+          break;
+        }
+        case "google": {
+          //
+          const authCodeRegex = /code=([^&]+)/;
+          const isMatch = router.asPath.match(authCodeRegex);
+          //
+
+          if (!isMatch) {
+            return;
+          } else {
+            handleLoginWithGoogle(isMatch);
+          }
+          break;
+        }
+        default: {
+          console.log(authType);
+          router.push(PAGE.LOGIN);
+        }
+      }
     }
   }, []);
 
-  useEffect(() => {
-    if (isLogin) {
-      router.push(PAGE.HOME);
+  const handleLogin = async () => {
+    await getUserInfo();
+    await getUserProfile();
+    if(!checkActiveEmail){
+
     }
-  }, [isLogin]);
+
+  };
+
+  const handleRegister = async()=>{
+    setIsVerify(true);
+  }
+
+  const checkActiveEmail = () =>{
+    if(auth.userInfo.emailVerified === true){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+
+
+
 
   const handleLoginWithGoogle = async (isMatch: string[]) => {
     const authCode = isMatch[1];
     console.log(authCode);
     const api = `${API.LOGIN_WITH_GOOGLE(authCode)}`;
+    setIsLoading(true);
     try {
       const res = await handleAPI(api, undefined, "post");
       const response: ApiResponse<LoginResponse> = res.data;
       console.log(response);
       const accessToken = response.result.token;
-      const auth: AuthModel = { accessToken: accessToken };
-      dispatch(addAuth(auth));
-      getUserInfo(accessToken);
-      setIsLogin(true);
+      dispatch(addAuth({ ...auth, accessToken: accessToken }));
+      getUserInfo();
+
     } catch (error) {
       console.log(error);
     }
   };
-  const getUserInfo = async (accessToken: string) => {
-    
+  const getUserInfo = async () => {
     try {
-      //Gọi api gì đó
       const res = await handleAPI(API.USER_INFO);
       const response: ApiResponse<UserInfoResponse> = res.data;
-      dispatch(
-        addAuth({ accessToken: accessToken, userInfo: response.result })
-      );
+      dispatch(addAuth({ ...auth, userInfo: response.result }));
     } catch (error) {
       console.log(error);
     }
   };
 
-  return isLoading ? (
-    <div
-      className="d-flex"
-      style={{
-        justifyContent: "center",
-        width: "100%",
-        height: "100vh",
-        alignItems: "center",
-      }}
-    >
-      <div>
-        <Spin
-          indicator={
-            <LoadingOutlined style={{ fontSize: 48, color: "" }} spin />
-          }
-        />
-      </div>
-    </div>
+  const getUserProfile = async () => {
+    try {
+      const res = await handleAPI(`${API.USER_PROFILE}/my-info`);
+      dispatch(addUserProfile(res.data.result));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const Verified = async ()=>{
+    await getUserInfo();
+    await getUserProfile();
+
+    router.push(PAGE.HOME);
+  }
+
+  useEffect(() => {
+    if(isLogin){
+      Verified();
+    }
+  }, [isLogin]);
+
+  return isVerify ? (
+    <>
+      <VerifyOtp
+        onClose={() => setIsVerify(false)}
+        onFinish={() => {}}
+        onLogin={async (token)=>{
+          dispatch(addAuth({...auth, accessToken: token}));
+          setIsLogin(true);
+        }}
+      />
+    </>
   ) : (
     <div>
-      ...
+      <LoadingComponent>
+        <Typography.Title level={4}>Wait a moment</Typography.Title>
+      </LoadingComponent>
     </div>
   );
 };

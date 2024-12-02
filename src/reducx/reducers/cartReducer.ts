@@ -47,11 +47,14 @@ const cartSlice = createSlice({
     addAllProduct: (state, action) => {
       state.data = action.payload;
     },
+    removeAllProduct: (state, _action)=>{
+      state.data = initialState;
+    }
   },
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { addProduct, removeProduct, addAllProduct } = cartSlice.actions;
+export const { addProduct, removeProduct, addAllProduct, removeAllProduct } = cartSlice.actions;
 
 export const cartSelector = (state: any) => state.cartReducer.data;
 

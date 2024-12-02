@@ -3,7 +3,8 @@ import { UserInfo } from "./UserModel";
 
 export interface AuthModel{
     accessToken: string,
-    userInfo?: UserInfo,
+    userInfo: UserInfo,
+    type: string
 }
 
 export interface LogoutRequest{

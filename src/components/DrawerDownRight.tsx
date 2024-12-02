@@ -15,6 +15,7 @@ import { FiLogOut } from "react-icons/fi";
 import { useRouter } from "next/router";
 import { PAGE } from "@/configurations/configurations";
 import { removeUserProfile } from "@/reducx/reducers/profileReducer";
+import { removeAllProduct } from "@/reducx/reducers/cartReducer";
 
 interface Props {
   onClose: () => void;
@@ -31,6 +32,7 @@ const DrawerDownRight = (props: Props) => {
     localStorage.removeItem("userProfile");
     dispatch(removeAuth(undefined));
     dispatch(removeUserProfile(undefined));
+    dispatch(removeAllProduct(undefined));
     router.push(PAGE.LOGIN);
   };
 

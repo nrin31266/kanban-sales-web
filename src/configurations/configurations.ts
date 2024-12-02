@@ -1,7 +1,8 @@
 export const API = {
   USERS: "/identity/users",
   USER_INFO: "/identity/users/info",
-  LOGIN: "/identity/auth/login",
+  LOGIN: "/identity/auth/check",
+  LOGIN_OTP: "/identity/auth/login",
   LOGOUT: "/identity/auth/logout",
   LOGIN_WITH_GOOGLE: (code: string)=> `/identity/auth/outbound/google-login?code=${code}`,
   REGISTER: "/identity/users/create",

@@ -30,7 +30,7 @@ const AuthLayout = (props: Props) => {
     <div style={{height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
         <Card
             className="col-sm-12 col-md-8 col-lg-6"
-            style={{ backgroundColor: "", height: '80%' }}
+            style={{height: '80%' }}
           >
             <div className="d-flex" style={{ justifyContent: "center" }}>
                   <Logo size={3} />

@@ -1,7 +1,10 @@
 import { OAuthConfig } from "@/configurations/configurations";
+import { AuthModel } from "@/model/AuthenticationModel";
+import { addAuth, authSelector } from "@/reducx/reducers/authReducer";
 import { Button, message } from "antd";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 
 
 
@@ -9,8 +12,9 @@ import { useDispatch } from "react-redux";
 const SocialLogin = () => {
   const [isLoading, setIsLoading] =useState(false);
   const dispatch = useDispatch();
+  const auth: AuthModel = useSelector(authSelector);
   
-  const handleContinueWithGoogle = () => {
+  const handleContinueWithGoogle =async () => {
     const callbackUrl = OAuthConfig.redirectUri;
     const authUrl = OAuthConfig.authUri;
     const googleClientId = OAuthConfig.clientId;
@@ -18,7 +22,8 @@ const SocialLogin = () => {
     const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
         callbackUrl
     )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
-
+    dispatch(addAuth({...auth, type: 'google'}));
+    sessionStorage.setItem("authType", "google");
     console.log(targetUrl);
 
     window.location.href = targetUrl;
