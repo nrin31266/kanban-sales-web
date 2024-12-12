@@ -25,4 +25,8 @@ export interface ProductResponse {
 
   countRating: number
   averageRating: number
+
+  // subProducts: any;
+  // categories: any;
+  // suppliers: any;
 }

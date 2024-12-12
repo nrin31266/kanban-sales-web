@@ -244,7 +244,7 @@ const ChangeSubProduct = (props: Props) => {
       if (res) {
         dispatch(addProduct(res));
         setCount(1);
-        message.success('Ok');
+        message.success('Add product to cart successfully');
       }
     });
   };

@@ -106,7 +106,7 @@ const Reviews = (props: Props) => {
               <List.Item>
                 <List.Item.Meta
                   avatar={
-                    <Avatar size={40} shape="circle" src={item.avatar ?? ""} />
+                    <Avatar size={40} shape="circle" src={item.avatar ?? "https://th.bing.com/th/id/R.168824d10e82ec611011d572adb57d33?rik=ckwL%2fl%2f3xh1cFw&pid=ImgRaw&r=0"} />
                   }
                   title={
                     <>
