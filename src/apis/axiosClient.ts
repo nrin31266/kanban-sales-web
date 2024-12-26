@@ -1,11 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import queryString from "query-string";
-import { localDataNames } from "../constants/appInfos";
-import handleAPI from "./handleAPI";
-import { API, APP } from "../configurations/configurations";
 import { AuthModel } from "@/model/AuthenticationModel";
-import { ApiResponse } from "@/model/AppModel";
 import { CustomAxiosResponse } from "@/model/AxiosModel";
+import axios, { AxiosError } from "axios";
+import queryString from "query-string";
+import { APP } from "../configurations/configurations";
+import { localDataNames } from "../constants/appInfos";
 
 
 export const getAuth = () => {
@@ -21,7 +19,6 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   async (config: any) => {
     const authData:AuthModel = getAuth();
-
     config.headers = {
       Authorization: authData.accessToken
         ? `Bearer ${authData.accessToken}`

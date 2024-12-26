@@ -38,5 +38,4 @@ export const userProfileReducer = userProfileSlice.reducer;
 export const { addUserProfile, removeUserProfile } = userProfileSlice.actions;
 
 
-export const userProfileSelector = (state: any) =>
-  state.userProfileReducer.data;
+export const userProfileSelector = (state: any) => state.userProfileReducer.data;
